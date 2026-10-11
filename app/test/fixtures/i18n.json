@@ -1,0 +1,21 @@
+{
+  "note": "Text formatting cases checked by both tools/rules-check/i18n.test.mjs and app/test/strings_test.dart.",
+  "cases": [
+    { "lang": "en", "key": "alert.open_trench", "params": { "days": 1 }, "expected": "Trench open 1 day" },
+    { "lang": "en", "key": "alert.open_trench", "params": { "days": 9 }, "expected": "Trench open 9 days" },
+    { "lang": "ar", "key": "alert.open_trench", "params": { "days": 1 }, "expected": "الحفرة مفتوحة منذ 1 يوم" },
+    { "lang": "ar", "key": "alert.open_trench", "params": { "days": 2 }, "expected": "الحفرة مفتوحة منذ 2 يومين" },
+    { "lang": "ar", "key": "alert.open_trench", "params": { "days": 9 }, "expected": "الحفرة مفتوحة منذ 9 أيام" },
+    { "lang": "ar", "key": "alert.open_trench", "params": { "days": 11 }, "expected": "الحفرة مفتوحة منذ 11 يوماً" },
+    { "lang": "ar", "key": "alert.open_trench", "params": { "days": 100 }, "expected": "الحفرة مفتوحة منذ 100 يوم" },
+    { "lang": "en", "key": "board.summary", "params": { "count": 1, "late": 0, "hold": 2 }, "expected": "1 order with work under way · 0 late · 2 on hold" },
+    { "lang": "ar", "key": "board.summary", "params": { "count": 23, "late": 4, "hold": 1 }, "expected": "23 أمراً قيد العمل · متأخر 4 · متوقف 1" },
+    { "lang": "en", "key": "toast.orderCompletedBody", "params": { "count": 11, "days": 34 }, "expected": "All 11 steps done in 34 days" },
+    { "lang": "ar", "key": "toast.orderCompletedBody", "params": { "count": 7, "days": 1 }, "expected": "أُنجزت كل الخطوات (7 خطوات) خلال 1 يوم" },
+    { "lang": "en", "key": "data.notSynced", "params": { "device": "Phone", "hours": 1, "count": 3 }, "expected": "Phone hasn't synced for 1 hour. 3 changes waiting on it." },
+    { "lang": "ar", "key": "data.notSynced", "params": { "device": "الجوال", "hours": 26, "count": 2 }, "expected": "لم تتم مزامنة الجوال منذ 26 ساعة. 2 تغييرين بانتظاره." },
+    { "lang": "en", "key": "order.progress", "params": { "closed": 3, "total": 11 }, "expected": "3 of 11" },
+    { "lang": "en", "key": "alert.stalled", "params": {}, "expected": "No change for {days#day}" },
+    { "lang": "ar", "key": "no.such.key", "params": {}, "expected": "no.such.key" }
+  ]
+}

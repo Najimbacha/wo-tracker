@@ -1,0 +1,18 @@
+# Flutter / Dart
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/pubspec.lock.bak
+*.iml
+.idea/
+# Secrets never go in the repo
+*.env
+.env*
+secrets/
+*.key
+*.pem
+# OS
+.DS_Store
+Thumbs.db
+node_modules/

@@ -1,0 +1,227 @@
+{
+  "about": "A hand-checked portfolio of 10 orders and the exact figures every screen and report must show for it on 2026-10-11. Used by tools/rules-check/insights.test.mjs and app/test/insights_test.dart.",
+  "today": "2026-10-11",
+  "orders": [
+    { "id": "O1", "woNumber": "441782012", "type": "402", "category": "extension", "receivedDate": "2026-10-02",
+      "contractor": "Al Rashid", "district": "Al Malqa", "street": "Anas Ibn Malik Rd", "networkRef": "SS-1142 / F-07",
+      "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 18, "tiled": false }, { "id": "s2", "base": "asphalt", "width": 80, "lengthM": 12, "tiled": false }],
+      "meters": [{ "id": "m1" }], "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 42 }],
+      "permits": [{ "number": "P-88213", "appliedDate": "2026-10-04", "startDate": "2026-10-06", "endDate": "2026-10-19" }],
+      "steps": { "kashfeya": { "done": "2026-10-03" }, "tasreeh_applied": { "done": "2026-10-04" }, "excavation": { "done": "2026-10-06" },
+        "cable_installed": { "done": "2026-10-07" }, "warning_tape": { "done": "2026-10-07" }, "concrete@s1": { "done": "2026-10-08" } } },
+    { "id": "O2", "woNumber": "441745503", "type": "402", "category": "extension", "receivedDate": "2026-09-28",
+      "contractor": "Al Rashid", "district": "Al Ghadir",
+      "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+      "permits": [{ "number": "P-88160", "appliedDate": "2026-10-01", "startDate": "2026-10-06", "endDate": "2026-10-25" }],
+      "steps": { "kashfeya": { "done": "2026-09-29" }, "tasreeh_applied": { "done": "2026-10-01" } } },
+    { "id": "O3", "woNumber": "441687104", "type": "402", "category": "extension", "receivedDate": "2026-09-22",
+      "contractor": "Al Bawani", "district": "Al Wurud",
+      "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 22, "tiled": false }], "meters": [{ "id": "m1" }],
+      "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 22 }],
+      "permits": [{ "number": "P-87990", "appliedDate": "2026-09-25", "startDate": "2026-10-01", "endDate": "2026-10-20" }],
+      "steps": { "kashfeya": { "done": "2026-09-23" }, "tasreeh_applied": { "done": "2026-09-25" }, "excavation": { "done": "2026-10-03" },
+        "cable_installed": { "done": "2026-10-04" }, "warning_tape": { "done": "2026-10-04" } } },
+    { "id": "O4", "woNumber": "441571003", "type": "802", "category": "extension", "receivedDate": "2026-09-20",
+      "contractor": "Al Bawani", "district": "Al Narjis",
+      "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "cableRuns": [{ "sizeMm2": 70, "voltage": "LV", "lengthM": 30 }],
+      "permits": [{ "number": "P-87600", "appliedDate": "2026-09-21", "startDate": "2026-09-23", "endDate": "2026-10-07" }],
+      "steps": { "kashfeya": { "done": "2026-09-20" }, "tasreeh_applied": { "done": "2026-09-21" }, "excavation": { "done": "2026-09-24" },
+        "cable_installed": { "done": "2026-09-25" }, "warning_tape": { "done": "2026-09-25" }, "compaction@s1": { "done": "2026-10-01" },
+        "certificate": { "done": "2026-10-08" }, "documents_submitted": { "done": "2026-10-11" } } },
+    { "id": "O5", "woNumber": "441520911", "type": "801", "category": "extension", "receivedDate": "2026-10-01",
+      "contractor": "Al Rashid", "district": "Hittin",
+      "meters": [{ "id": "m1", "number": "78820451" }, { "id": "m2", "number": "78820452" }, { "id": "m3" }],
+      "steps": { "meter_installed@m1": { "done": "2026-10-02" }, "meter_on@m1": { "done": "2026-10-02" }, "form_190@m1": { "done": "2026-10-03" },
+        "form_200@m1": { "done": "2026-10-03" }, "meter_installed@m2": { "done": "2026-10-05" } } },
+    { "id": "O6", "woNumber": "T-55", "type": "402", "category": "emergency", "receivedDate": "2026-10-01",
+      "district": "Al Yasmin",
+      "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 8, "tiled": false }], "meters": [{ "id": "m1" }],
+      "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 8 }],
+      "steps": { "kashfeya": { "done": "2026-10-01" }, "excavation": { "done": "2026-10-02" } } },
+    { "id": "O7", "woNumber": "441830201", "type": "402", "category": "extension", "receivedDate": "2026-10-03",
+      "contractor": "Al Bawani", "district": "Al Malqa", "street": "طريق أنس بن مالك", "notes": "طلب الإدارة: أولوية",
+      "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 24, "tiled": false }], "meters": [{ "id": "m1" }],
+      "permits": [{ "number": "P-88540", "appliedDate": "2026-10-06", "startDate": "2026-10-16", "endDate": "2026-10-30" }],
+      "steps": { "kashfeya": { "done": "2026-10-05" }, "tasreeh_applied": { "done": "2026-10-06" } } },
+    { "id": "O8", "woNumber": "441823107", "type": "402", "category": "extension", "receivedDate": "2026-10-11",
+      "contractor": "Al Rashid", "district": "Al Narjis",
+      "segments": [], "meters": [{ "id": "m1" }],
+      "steps": { "kashfeya": { "done": "2026-10-11" } } },
+    { "id": "O9", "woNumber": "441790822", "type": "402", "category": "extension", "receivedDate": "2026-10-09",
+      "contractor": "Al Rashid", "district": "Al Yasmin", "deleted": true,
+      "segments": [], "meters": [{ "id": "m1" }], "steps": {} },
+    { "id": "O10", "woNumber": "441700506", "type": "802", "category": "extension", "receivedDate": "2026-09-01",
+      "contractor": "Al Bawani", "district": "Al Rabi",
+      "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 10, "tiled": false }],
+      "permits": [{ "number": "P-87000", "appliedDate": "2026-09-02", "startDate": "2026-09-04", "endDate": "2026-09-25" }],
+      "steps": { "kashfeya": { "done": "2026-09-01" }, "tasreeh_applied": { "done": "2026-09-02" } },
+      "status": { "state": "cancelled" } }
+  ],
+
+  "pipeline": {
+    "activeCount": 7,
+    "steps": {
+      "kashfeya": { "ready": 0, "total": 0 },
+      "tasreeh_applied": { "ready": 2, "total": 2 },
+      "excavation": { "ready": 1, "total": 3 },
+      "cable_installed": { "ready": 1, "total": 4 },
+      "warning_tape": { "ready": 0, "total": 4 },
+      "concrete": { "ready": 1, "total": 3 },
+      "asphalt": { "ready": 1, "total": 4 },
+      "sub_base": { "ready": 1, "total": 1 },
+      "asphalt_stage_1": { "ready": 0, "total": 1 },
+      "asphalt_stage_2": { "ready": 0, "total": 1 },
+      "compaction": { "ready": 0, "total": 1 },
+      "meter_installed": { "ready": 1, "total": 7 },
+      "meter_on": { "ready": 1, "total": 7 },
+      "certificate": { "ready": 0, "total": 7 },
+      "documents_submitted": { "ready": 0, "total": 7 }
+    },
+    "buckets": { "kashfeyaNotDone": 0, "tasreehNotApplied": 2, "appliedNoDates": 0, "startsInFuture": 1, "expiredWorkOpen": 0, "lateStart": 1 }
+  },
+
+  "startsByDay": [
+    { "date": "2026-10-11", "count": 0 }, { "date": "2026-10-12", "count": 0 }, { "date": "2026-10-13", "count": 0 },
+    { "date": "2026-10-14", "count": 0 }, { "date": "2026-10-15", "count": 0 }, { "date": "2026-10-16", "count": 1, "orders": ["O7"] },
+    { "date": "2026-10-17", "count": 0 }
+  ],
+
+  "board": {
+    "kashfeya": [],
+    "tasreeh": [ { "id": "O6", "next": "tasreeh_applied", "daysWaiting": 10, "severity": "critical" }, { "id": "O8", "next": "tasreeh_applied", "daysWaiting": 0, "severity": null } ],
+    "starting": [ { "id": "O7", "next": "excavation", "daysWaiting": 0, "startsOn": "2026-10-16", "severity": null } ],
+    "civil": [ { "id": "O2", "next": "excavation", "daysWaiting": 5, "severity": "critical" } ],
+    "restoration": [ { "id": "O3", "next": "concrete@s1", "daysWaiting": 7, "severity": "critical" }, { "id": "O1", "next": "asphalt@s1", "daysWaiting": 3, "severity": null } ],
+    "meter": [ { "id": "O5", "next": "meter_on@m2", "daysWaiting": 6, "severity": "warning" } ],
+    "closeout": []
+  },
+
+  "followUp": [
+    { "contractor": "Al Rashid", "orders": 4, "late": 2, "groups": [
+      { "group": "start_field_work", "severity": "critical", "items": [ { "id": "O2", "steps": ["excavation"], "daysWaiting": 5 } ] },
+      { "group": "meter_closeout", "severity": "warning", "items": [ { "id": "O5", "steps": ["meter_on@m2", "meter_installed@m3"], "daysWaiting": 10 } ] },
+      { "group": "close_trench", "severity": null, "items": [{ "id": "O1", "steps": ["sub_base@s2"], "daysWaiting": 4 }] },
+      { "group": "surface", "severity": null, "items": [{ "id": "O1", "steps": ["asphalt@s1"], "daysWaiting": 3 }] },
+      { "group": "paperwork", "severity": null, "items": [ { "id": "O8", "steps": ["tasreeh_applied"], "daysWaiting": 0 } ] } ] },
+    { "contractor": "Al Bawani", "orders": 2, "late": 1, "groups": [
+      { "group": "close_trench", "severity": "critical", "items": [ { "id": "O3", "steps": ["concrete@s1"], "daysWaiting": 7 } ] },
+      { "group": "upcoming", "severity": null, "items": [ { "id": "O7", "steps": [], "daysWaiting": 0, "startsOn": "2026-10-16" } ] } ] },
+    { "contractor": "(not assigned)", "orders": 1, "late": 1, "groups": [
+      { "group": "cable_tape", "severity": "critical", "items": [ { "id": "O6", "steps": ["cable_installed"], "daysWaiting": 9 } ] },
+      { "group": "paperwork", "severity": "critical", "items": [ { "id": "O6", "steps": ["tasreeh_applied"], "daysWaiting": 10 } ] } ] }
+  ],
+
+  "search": [
+    { "query": "88213", "results": [ ["O1", "tasreeh", "P-88213"] ] },
+    { "query": "p88213", "results": [ ["O1", "tasreeh", "P-88213"] ] },
+    { "query": "882", "results": [ ["O5", "meter", "78820451"], ["O5", "meter", "78820452"], ["O1", "tasreeh", "P-88213"] ] },
+    { "query": "malqa", "results": [ ["O1", "place", "Al Malqa"], ["O7", "place", "Al Malqa"] ] },
+    { "query": "اولويه", "results": [ ["O7", "note", "طلب الإدارة: أولوية"] ] },
+    { "query": "٤٤١٧٤٥٥٠٣", "results": [ ["O2", "workOrder", "441745503"] ] },
+    { "query": "4417", "results": [ ["O2", "workOrder", "441745503"], ["O1", "workOrder", "441782012"], ["O10", "workOrder", "441700506"] ] },
+    { "query": "441790822", "results": [] },
+    { "query": "   ", "results": [] }
+  ],
+
+  "filters": [
+    { "name": "no filter: every order that is not deleted, newest first", "criteria": {}, "ids": ["O8", "O7", "O1", "O5", "O6", "O2", "O3", "O4", "O10"] },
+    { "name": "open only", "criteria": { "status": ["open"] }, "ids": ["O8", "O7", "O1", "O5", "O6", "O2", "O3"] },
+    { "name": "Al Rashid's 80 cm jobs still needing asphalt stage 2", "criteria": { "contractors": ["Al Rashid"], "surfaces": ["asphalt_80"], "steps": [{ "step": "asphalt_stage_2", "state": "not_done" }] }, "ids": ["O1"] },
+    { "name": "Kashfeya done and tasreeh not applied", "criteria": { "steps": [{ "step": "kashfeya", "state": "done" }, { "step": "tasreeh_applied", "state": "not_done" }] }, "ids": ["O8", "O6"] },
+    { "name": "late start", "criteria": { "quick": ["late_start"] }, "ids": ["O2"] },
+    { "name": "needs attention", "criteria": { "quick": ["needs_attention"] }, "ids": ["O5", "O6", "O2", "O3"] },
+    { "name": "received 1 to 3 October", "criteria": { "received": { "from": "2026-10-01", "to": "2026-10-03" } }, "ids": ["O7", "O1", "O5", "O6"] },
+    { "name": "type 801", "criteria": { "types": ["801"] }, "ids": ["O5"] },
+    { "name": "emergency", "criteria": { "categories": ["emergency"] }, "ids": ["O6"] },
+    { "name": "LV cable", "criteria": { "voltages": ["LV"] }, "ids": ["O1", "O6", "O3", "O4"] },
+    { "name": "no digging", "criteria": { "surfaces": ["no_digging"] }, "ids": ["O5"] },
+    { "name": "tasreeh starts in the future", "criteria": { "tasreeh": ["future"] }, "ids": ["O7"] },
+    { "name": "tasreeh not entered yet", "criteria": { "tasreeh": ["none"] }, "ids": ["O8", "O6"] },
+    { "name": "tasreeh active", "criteria": { "tasreeh": ["active"] }, "ids": ["O1", "O2", "O3"] },
+    { "name": "tasreeh expired", "criteria": { "tasreeh": ["expired"] }, "ids": ["O4", "O10"] },
+    { "name": "excavation done 1 to 5 October", "criteria": { "steps": [{ "step": "excavation", "state": "done", "from": "2026-10-01", "to": "2026-10-05" }] }, "ids": ["O6", "O3"] },
+    { "name": "completed", "criteria": { "status": ["completed"] }, "ids": ["O4"] },
+    { "name": "cancelled", "criteria": { "status": ["cancelled"] }, "ids": ["O10"] },
+    { "name": "deleted orders appear only when asked", "criteria": { "includeDeleted": true, "types": ["402"], "contractors": ["Al Rashid"] }, "ids": ["O8", "O9", "O1", "O2"] }
+  ],
+
+  "daily": {
+    "date": "2026-10-11",
+    "received": 1, "receivedPrev": 0,
+    "stepsCompleted": 2, "ordersTouched": 2,
+    "completed": 1, "completedPrev": 0,
+    "completedList": [ { "id": "O4", "days": 21 } ],
+    "open": 7, "attention": 4,
+    "attentionByCode": { "late_start": 1, "open_trench": 2, "meter_not_on": 1, "tawari_tasreeh_missing": 1 },
+    "byStage": { "kashfeya": 0, "tasreeh": 2, "starting": 1, "civil": 1, "restoration": 2, "meter": 1, "closeout": 0 },
+    "stepsByKey": { "documents_submitted": 1, "kashfeya": 1 },
+    "contractors": [
+      { "contractor": "Al Rashid", "open": 4, "completedInPeriod": 0, "lateStarts": 1, "avgDaysToFinish": null, "finished": 0, "finishDaysTotal": 0 },
+      { "contractor": "Al Bawani", "open": 2, "completedInPeriod": 1, "lateStarts": 0, "avgDaysToFinish": 21, "finished": 1, "finishDaysTotal": 21 },
+      { "contractor": "(not assigned)", "open": 1, "completedInPeriod": 0, "lateStarts": 0, "avgDaysToFinish": null, "finished": 0, "finishDaysTotal": 0 }
+    ],
+    "quantities": { "cableLV": 0, "cableMV": 0, "asphalt40": 0, "asphalt80": 0, "soil": 0, "tiles": 0 },
+    "delays": [
+      { "id": "O6", "code": "open_trench", "days": 9, "severity": "critical" },
+      { "id": "O3", "code": "open_trench", "days": 8, "severity": "critical" },
+      { "id": "O2", "code": "late_start", "days": 5, "severity": "critical" },
+      { "id": "O5", "code": "meter_not_on", "days": 6, "severity": "warning" }
+    ],
+    "trendPoints": [ { "date": "2026-09-28", "received": 1, "completed": 0 }, { "date": "2026-10-01", "received": 2, "completed": 0 }, { "date": "2026-10-11", "received": 1, "completed": 1 } ],
+    "trendLength": 14
+  },
+
+  "monthly": {
+    "from": "2026-10-01", "to": "2026-10-31", "today": "2026-10-11",
+    "received": 5, "stepsCompleted": 23, "completed": 1,
+    "quantities": { "cableLV": 64, "cableMV": 0, "asphalt40": 0, "asphalt80": 0, "soil": 30, "tiles": 0 }
+  },
+
+  "ranges": [
+    { "date": "2026-10-11", "week": { "from": "2026-10-10", "to": "2026-10-16" }, "month": { "from": "2026-10-01", "to": "2026-10-31" } },
+    { "date": "2026-10-10", "week": { "from": "2026-10-10", "to": "2026-10-16" } },
+    { "date": "2026-10-16", "week": { "from": "2026-10-10", "to": "2026-10-16" } },
+    { "date": "2026-10-09", "week": { "from": "2026-10-03", "to": "2026-10-09" } },
+    { "date": "2028-02-15", "month": { "from": "2028-02-01", "to": "2028-02-29" } }
+  ],
+  "extraCases": [
+    {
+      "name": "Tasreeh not applicable is 'not needed', not 'applied, no dates'",
+      "today": "2026-10-11",
+      "orders": [
+        { "id": "E1", "type": "402", "category": "extension", "woNumber": "441700621", "receivedDate": "2026-10-01",
+          "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 12 }], "meters": [{ "id": "m1" }],
+          "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "na": true, "reason": "Private land" } } }
+      ],
+      "pipelineBuckets": { "kashfeyaNotDone": 0, "tasreehNotApplied": 0, "appliedNoDates": 0, "startsInFuture": 0, "expiredWorkOpen": 0, "lateStart": 0 },
+      "filters": [
+        { "criteria": { "tasreeh": ["not_needed"] }, "ids": ["E1"] },
+        { "criteria": { "tasreeh": ["none"] }, "ids": [] }
+      ]
+    },
+    {
+      "name": "Documents marked not applicable: still completed, on the last day any step was done",
+      "today": "2026-10-11",
+      "orders": [
+        { "id": "E2", "type": "801", "category": "extension", "woNumber": "441700622", "receivedDate": "2026-10-01", "contractor": "Al Bawani", "meters": [{ "id": "m1" }],
+          "steps": { "meter_installed@m1": { "done": "2026-10-02" }, "meter_on@m1": { "done": "2026-10-03" }, "form_190@m1": { "done": "2026-10-04" },
+            "form_200@m1": { "done": "2026-10-05" }, "certificate": { "done": "2026-10-06" }, "documents_submitted": { "na": true, "reason": "SEC closed it" } } }
+      ],
+      "report": { "from": "2026-10-01", "to": "2026-10-11", "today": "2026-10-11",
+        "completed": 1, "completedList": [["E2", 5]], "completedOn": [["2026-10-06", 1], ["2026-10-07", 0]],
+        "contractors": [["Al Bawani", 1, 1, 5]] }
+    },
+    {
+      "name": "80 cm sub-base is in 'Close the trench'",
+      "today": "2026-10-11",
+      "orders": [
+        { "id": "E3", "type": "802", "category": "extension", "woNumber": "441700623", "receivedDate": "2026-10-01", "contractor": "Al Rashid",
+          "segments": [{ "id": "s1", "base": "asphalt", "width": 80, "lengthM": 15 }], "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 30 }],
+          "permits": [{ "number": "P-90023", "appliedDate": "2026-10-02", "startDate": "2026-10-03", "endDate": "2026-11-03" }],
+          "steps": { "kashfeya": { "done": "2026-10-01" }, "tasreeh_applied": { "done": "2026-10-02" }, "excavation": { "done": "2026-10-08" },
+            "cable_installed": { "done": "2026-10-09" }, "warning_tape": { "done": "2026-10-09" } } }
+      ],
+      "followUpGroups": [["Al Rashid", "close_trench", ["sub_base@s1"], 2]]
+    }
+  ]
+}

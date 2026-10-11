@@ -1,0 +1,79 @@
+# Nightly encrypted backup of the whole database to Google Drive.
+# Runs at 02:00 Riyadh time (23:00 UTC). Also keeps the free Supabase project active.
+# Secrets (repo Settings > Secrets and variables > Actions):
+#   SUPABASE_DB_URL    Postgres connection string (Supabase > Connect > Session pooler)
+#   BACKUP_PASSPHRASE  Long random passphrase used to encrypt backups. Keep a copy somewhere safe.
+#   RCLONE_CONFIG      rclone config text with a Google Drive remote named "gdrive"
+name: Nightly backup
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Install PostgreSQL 17 client and rclone
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 rclone
+          /usr/lib/postgresql/17/bin/pg_dump --version
+
+      - name: Dump the database
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          stamp=$(TZ=Asia/Riyadh date +%Y-%m-%d)
+          echo "STAMP=$stamp" >> "$GITHUB_ENV"
+          /usr/lib/postgresql/17/bin/pg_dump "$DB_URL" --schema=public --format=custom --no-owner --no-acl --file "wo-$stamp.dump"
+          # Record row counts and the dump time so the weekly restore test can verify the backup.
+          psql "$DB_URL" -At -c "
+            select json_build_object('taken_at', now(), 'counts', json_object_agg(t, c))
+            from (
+              select 'work_orders' t, count(*) c from public.work_orders union all
+              select 'steps', count(*) from public.steps union all
+              select 'permits', count(*) from public.permits union all
+              select 'segments', count(*) from public.segments union all
+              select 'meters', count(*) from public.meters union all
+              select 'activity_log', count(*) from public.activity_log
+            ) x" > "wo-$stamp.counts.json"
+          cat "wo-$stamp.counts.json"
+          test -s "wo-$stamp.dump"
+
+      - name: Encrypt
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$PASS" --symmetric --cipher-algo AES256 \
+            --output "wo-$STAMP.dump.gpg" "wo-$STAMP.dump"
+          shred -u "wo-$STAMP.dump"
+
+      - name: Upload to Google Drive
+        env:
+          RCLONE_CONFIG_TEXT: ${{ secrets.RCLONE_CONFIG }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s\n' "$RCLONE_CONFIG_TEXT" > ~/.config/rclone/rclone.conf
+          rclone copy "wo-$STAMP.dump.gpg" "gdrive:WO Tracker/Backups/database/"
+          rclone copy "wo-$STAMP.counts.json" "gdrive:WO Tracker/Backups/database/"
+          # Keep 90 days of daily backups, and the backup from the 1st of every month forever.
+          rclone delete "gdrive:WO Tracker/Backups/database/" --min-age 90d --exclude "wo-*-01.*"
+          rclone lsl "gdrive:WO Tracker/Backups/database/" | tail -5
+
+      - name: Keep a second copy on GitHub for 14 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: wo-backup-${{ env.STAMP }}
+          path: |
+            wo-${{ env.STAMP }}.dump.gpg
+            wo-${{ env.STAMP }}.counts.json
+          retention-days: 14

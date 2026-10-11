@@ -1,0 +1,198 @@
+{
+  "note": "Hand-checked cases for every action that changes an order. Run by tools/rules-check/actions.test.mjs and app/test/actions_test.dart. 'patch' is merged into the named order (steps are merged key by key).",
+  "today": "2026-10-11",
+  "orders": {
+    "A": {
+      "id": "A", "type": "402", "category": "extension", "woNumber": "441700101", "receivedDate": "2026-10-01",
+      "district": "Al Olaya", "contractor": "Al-Bina",
+      "permits": [{ "number": "T-1001", "appliedDate": "2026-10-03", "startDate": "2026-10-06", "endDate": "2026-10-20" }],
+      "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 30 }, { "id": "s2", "base": "soil", "width": 40, "lengthM": 12 }],
+      "meters": [{ "id": "m1", "number": "MTR-1" }],
+      "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 42 }],
+      "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" } },
+      "lastChangeDate": "2026-10-03"
+    },
+    "B": {
+      "id": "B", "type": "403", "category": "extension", "woNumber": "441700102", "receivedDate": "2026-10-02",
+      "permits": [{ "number": "T-1002", "appliedDate": "2026-10-03", "startDate": "2026-10-05", "endDate": "2026-10-25" }],
+      "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" } },
+      "lastChangeDate": "2026-10-03"
+    },
+    "C": {
+      "id": "C", "type": "402", "category": "extension", "woNumber": "441700103", "receivedDate": "2026-10-01",
+      "permits": [{ "number": "T-1003", "appliedDate": "2026-10-03", "startDate": "2026-10-04", "endDate": "2026-10-30" }],
+      "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 20 }, { "id": "s2", "base": "soil", "width": 40, "lengthM": 15 }],
+      "meters": [{ "id": "m1" }],
+      "cableRuns": [{ "sizeMm2": 70, "voltage": "LV", "lengthM": 35 }],
+      "steps": {
+        "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-05" },
+        "cable_installed": { "done": "2026-10-06" }, "warning_tape": { "done": "2026-10-07" }
+      },
+      "lastChangeDate": "2026-10-07"
+    },
+    "D": {
+      "id": "D", "type": "402", "category": "extension", "woNumber": "441700104", "receivedDate": "2026-10-05",
+      "permits": [{ "number": "T-1004", "appliedDate": "2026-10-07", "startDate": "2026-10-15", "endDate": "2026-10-30" }],
+      "steps": { "kashfeya": { "done": "2026-10-06" }, "tasreeh_applied": { "done": "2026-10-07" } },
+      "lastChangeDate": "2026-10-07"
+    },
+    "T": {
+      "id": "T", "type": "402", "category": "extension", "woNumber": "441700105", "receivedDate": "2026-10-09",
+      "segments": [{ "id": "s9", "base": "soil", "width": 40, "lengthM": 10 }],
+      "meters": [{ "id": "m9" }],
+      "steps": { "kashfeya": { "done": "2026-10-10" } },
+      "lastChangeDate": "2026-10-10"
+    },
+    "E": {
+      "id": "E", "type": "401", "category": "extension", "woNumber": "441700106", "receivedDate": "2026-10-01", "needsExcavation": true,
+      "meters": [{ "id": "m1", "number": "MTR-6", "oldNumber": "OLD-6" }],
+      "steps": { "kashfeya": { "done": "2026-10-02" } },
+      "lastChangeDate": "2026-10-02"
+    },
+    "Z": {
+      "id": "Z", "type": "801", "category": "extension", "woNumber": "441700108", "receivedDate": "2026-10-01",
+      "meters": [{ "id": "m1" }],
+      "steps": {
+        "meter_installed@m1": { "done": "2026-10-02" }, "meter_on@m1": { "done": "2026-10-03" }, "form_190@m1": { "done": "2026-10-04" },
+        "form_200@m1": { "done": "2026-10-05" }, "certificate": { "done": "2026-10-08" }
+      },
+      "lastChangeDate": "2026-10-08"
+    },
+    "Y": {
+      "id": "Y", "type": "801", "category": "extension", "woNumber": "441700109", "receivedDate": "2026-10-10",
+      "meters": [{ "id": "m1" }],
+      "lastChangeDate": "2026-10-10"
+    },
+    "X": {
+      "id": "X", "type": "801", "category": "extension", "woNumber": "441700107", "receivedDate": "2026-09-20", "district": "Al Nahda", "deleted": true, "permits": [{ "number": "BL-77" }]
+    }
+  },
+  "cases": [
+    { "name": "excavation on the day after tasreeh start", "action": "markDone", "order": "A", "args": { "step": "excavation", "date": "2026-10-07" },
+      "expect": { "ok": true, "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-07" } }, "lastChangeDate": "2026-10-07", "completed": false } },
+    { "name": "a note written on a step stays when it is marked done", "action": "markDone", "order": "A", "patch": { "steps": { "excavation": { "note": "Dig by hand near the gas line" } } }, "args": { "step": "excavation", "date": "2026-10-07" },
+      "expect": { "ok": true, "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-07", "note": "Dig by hand near the gas line" } } } },
+    { "name": "excavation before tasreeh start is refused", "action": "markDone", "order": "A", "args": { "step": "excavation", "date": "2026-10-05" },
+      "expect": { "ok": false, "errors": ["before_tasreeh_start"], "errorData": [{ "date": "2026-10-06" }] } },
+    { "name": "cable before excavation is refused", "action": "markDone", "order": "A", "args": { "step": "cable_installed", "date": "2026-10-07" },
+      "expect": { "ok": false, "errors": ["waiting_for"], "errorData": [{ "steps": ["excavation"] }] } },
+    { "name": "future date is refused", "action": "markDone", "order": "A", "args": { "step": "excavation", "date": "2026-10-12" },
+      "expect": { "ok": false, "errors": ["future_date"] } },
+    { "name": "nothing can be marked on a cancelled order", "action": "markDone", "order": "A", "patch": { "status": { "state": "cancelled", "reason": "SEC cancelled" } }, "args": { "step": "excavation", "date": "2026-10-07" },
+      "expect": { "ok": false, "errors": ["not_active"] } },
+    { "name": "step date before the previous step is refused", "action": "markDone", "order": "C", "args": { "step": "compaction@s1", "date": "2026-10-06" },
+      "expect": { "ok": false, "errors": ["before_previous_step"], "errorData": [{ "date": "2026-10-07" }] } },
+    { "name": "back-dated step does not move the last change date backwards", "action": "markDone", "order": "C", "patch": { "lastChangeDate": "2026-10-09" }, "args": { "step": "compaction@s1", "date": "2026-10-08" },
+      "expect": { "ok": true, "lastChangeDate": "2026-10-09" } },
+    { "name": "last step completes the order", "action": "markDone", "order": "Z", "args": { "step": "documents_submitted", "date": "2026-10-11" },
+      "expect": { "ok": true, "completed": true, "lastChangeDate": "2026-10-11" } },
+
+    { "name": "N/A needs a written reason", "action": "markNA", "order": "A", "args": { "step": "warning_tape", "reason": "   " },
+      "expect": { "ok": false, "errors": ["reason_required"] } },
+    { "name": "N/A with reason, even before earlier steps", "action": "markNA", "order": "A", "args": { "step": "warning_tape", "reason": " Existing duct, no tape " },
+      "expect": { "ok": true, "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" }, "warning_tape": { "na": true, "reason": "Existing duct, no tape" } }, "lastChangeDate": "2026-10-11" } },
+    { "name": "N/A on a finished step is refused", "action": "markNA", "order": "A", "args": { "step": "kashfeya", "reason": "x" },
+      "expect": { "ok": false, "errors": ["already_closed"] } },
+    { "name": "N/A on a step this type does not have", "action": "markNA", "order": "A", "args": { "step": "foundation", "reason": "x" },
+      "expect": { "ok": false, "errors": ["unknown_step"] } },
+
+    { "name": "clearing excavation also clears cable and tape", "action": "clearStep", "order": "C", "args": { "step": "excavation" },
+      "expect": { "ok": true, "cleared": ["excavation", "cable_installed", "warning_tape"], "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" } } } },
+    { "name": "clearing a step keeps its note", "action": "clearStep", "order": "C", "patch": { "steps": { "warning_tape": { "done": "2026-10-07", "note": "Red tape, 30 cm deep" } } }, "args": { "step": "cable_installed" },
+      "expect": { "ok": true, "cleared": ["cable_installed", "warning_tape"], "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-05" }, "warning_tape": { "note": "Red tape, 30 cm deep" } } } },
+    { "name": "preview before clearing cable", "action": "clearPreview", "order": "C", "args": { "step": "cable_installed" },
+      "expect": { "ok": true, "alsoClears": ["warning_tape"] } },
+    { "name": "clearing a step that is not done", "action": "clearStep", "order": "C", "args": { "step": "compaction@s1" },
+      "expect": { "ok": false, "errors": ["not_closed"] } },
+
+    { "name": "bulk excavation: marks what it can, explains the rest", "action": "bulkMarkDone", "orders": ["A", "B", "C", "D"], "args": { "stepKey": "excavation", "date": "2026-10-10" },
+      "expect": { "ok": true, "updated": [{ "id": "A", "steps": ["excavation"] }],
+        "skipped": [{ "id": "B", "errors": ["unknown_step"] }, { "id": "C", "errors": ["already_closed"] }, { "id": "D", "errors": ["before_tasreeh_start"] }] } },
+    { "name": "bulk compaction marks every soil segment", "action": "bulkMarkDone", "orders": ["C"], "args": { "stepKey": "compaction", "date": "2026-10-08" },
+      "expect": { "ok": true, "updated": [{ "id": "C", "steps": ["compaction@s1", "compaction@s2"] }], "skipped": [] } },
+
+    { "name": "put on hold", "action": "putOnHold", "order": "A", "args": { "from": "2026-10-09", "reason": "Customer objection", "review": "2026-10-20" },
+      "expect": { "ok": true, "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "Customer objection", "review": "2026-10-20" }] } },
+    { "name": "already on hold", "action": "putOnHold", "order": "A", "patch": { "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "No material" }] } }, "args": { "from": "2026-10-10", "reason": "x" },
+      "expect": { "ok": false, "errors": ["already_on_hold"] } },
+    { "name": "hold without reason, in the future", "action": "putOnHold", "order": "A", "args": { "from": "2026-10-12", "reason": "" },
+      "expect": { "ok": false, "errors": ["reason_required", "future_date"] } },
+    { "name": "hold may not overlap an earlier hold", "action": "putOnHold", "order": "A", "patch": { "status": { "state": "open", "holdPeriods": [{ "from": "2026-10-04", "to": "2026-10-08", "reason": "No material" }] } }, "args": { "from": "2026-10-07", "reason": "Road closure" },
+      "expect": { "ok": false, "errors": ["hold_overlap"], "errorData": [{ "date": "2026-10-08" }] } },
+    { "name": "a completed order cannot go on hold", "action": "putOnHold", "order": "Z", "patch": { "steps": { "documents_submitted": { "done": "2026-10-10" } } }, "args": { "from": "2026-10-11", "reason": "x" },
+      "expect": { "ok": false, "errors": ["not_active"], "errorData": [{ "state": "completed" }] } },
+
+    { "name": "resume", "action": "resume", "order": "A", "patch": { "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "No material" }] } }, "args": { "date": "2026-10-11" },
+      "expect": { "ok": true, "state": "open", "holdPeriods": [{ "from": "2026-10-09", "to": "2026-10-11", "reason": "No material" }] } },
+    { "name": "resume before the hold started", "action": "resume", "order": "A", "patch": { "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "No material" }] } }, "args": { "date": "2026-10-08" },
+      "expect": { "ok": false, "errors": ["before_hold_start"], "errorData": [{ "date": "2026-10-09" }] } },
+    { "name": "resume an order that is not on hold", "action": "resume", "order": "A", "args": { "date": "2026-10-11" },
+      "expect": { "ok": false, "errors": ["not_on_hold"] } },
+
+    { "name": "cancel while on hold ends the hold today", "action": "cancel", "order": "A", "patch": { "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "No material" }] } }, "args": { "reason": " SEC cancelled " },
+      "expect": { "ok": true, "state": "cancelled", "reason": "SEC cancelled", "holdPeriods": [{ "from": "2026-10-09", "to": "2026-10-11", "reason": "No material" }] } },
+    { "name": "a completed order cannot be cancelled", "action": "cancel", "order": "Z", "patch": { "steps": { "documents_submitted": { "done": "2026-10-10" } } }, "args": { "reason": "x" },
+      "expect": { "ok": false, "errors": ["not_active"] } },
+    { "name": "cancel needs a reason", "action": "cancel", "order": "A", "args": { "reason": " " },
+      "expect": { "ok": false, "errors": ["reason_required"] } },
+
+    { "name": "merge and carry finished steps", "action": "merge", "order": "C", "patch": { "steps": { "compaction@s1": { "done": "2026-10-08" } } }, "target": "T", "args": { "reason": "Replaced by new order", "carry": true },
+      "expect": { "ok": true, "state": "merged", "mergedInto": "T", "carried": ["tasreeh_applied", "excavation", "cable_installed", "warning_tape"], "notCarried": ["kashfeya", "compaction@s1"],
+        "targetSteps": { "kashfeya": { "done": "2026-10-10" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-05" }, "cable_installed": { "done": "2026-10-06" }, "warning_tape": { "done": "2026-10-07" } },
+        "targetLastChangeDate": "2026-10-10" } },
+    { "name": "merge never copies meter steps or close-out paperwork", "action": "merge", "order": "Z", "target": "Y", "args": { "reason": "Replaced", "carry": true },
+      "expect": { "ok": true, "carried": [], "notCarried": ["meter_installed@m1", "meter_on@m1", "form_190@m1", "form_200@m1", "certificate"], "targetSteps": {} } },
+    { "name": "merge without carrying steps", "action": "merge", "order": "C", "target": "T", "args": { "reason": "Replaced", "carry": false },
+      "expect": { "ok": true, "state": "merged", "carried": [], "notCarried": [], "targetSteps": { "kashfeya": { "done": "2026-10-10" } } } },
+    { "name": "merge into itself", "action": "merge", "order": "A", "target": "A", "args": { "reason": "x", "carry": false },
+      "expect": { "ok": false, "errors": ["merge_into_self"] } },
+    { "name": "merge without a target", "action": "merge", "order": "A", "target": null, "args": { "reason": "x", "carry": false },
+      "expect": { "ok": false, "errors": ["merge_target_required"] } },
+    { "name": "merge into a cancelled order", "action": "merge", "order": "A", "target": "T", "targetPatch": { "status": { "state": "cancelled", "reason": "x" } }, "args": { "reason": "x", "carry": true },
+      "expect": { "ok": false, "errors": ["merge_target_inactive"] } },
+
+    { "name": "reopen a cancelled order", "action": "reopen", "order": "A", "patch": { "status": { "state": "cancelled", "reason": "By mistake", "holdPeriods": [] } }, "args": {},
+      "expect": { "ok": true, "status": { "state": "open", "holdPeriods": [] } } },
+    { "name": "reopen an open order", "action": "reopen", "order": "A", "args": {},
+      "expect": { "ok": false, "errors": ["not_cancelled"] } },
+
+    { "name": "switching excavation off drops kashfeya", "action": "editImpact", "order": "E", "args": { "after": { "needsExcavation": false } },
+      "expect": { "impact": ["kashfeya"] } },
+    { "name": "removing a segment drops its finished steps", "action": "editImpact", "order": "A", "patch": { "steps": { "concrete@s1": { "done": "2026-10-09" } } }, "args": { "after": { "segments": [{ "id": "s2", "base": "soil", "width": 40, "lengthM": 12 }] } },
+      "expect": { "impact": ["concrete@s1"] } },
+    { "name": "changing 402 to 802 drops meter steps", "action": "editImpact", "order": "A", "patch": { "steps": { "meter_installed@m1": { "done": "2026-10-09" } } }, "args": { "after": { "type": "802" } },
+      "expect": { "impact": ["meter_installed@m1"] } },
+    { "name": "editing the street changes nothing", "action": "editImpact", "order": "C", "args": { "after": { "street": "King Fahd Rd" } },
+      "expect": { "impact": [] } },
+
+    { "name": "form for 401", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension" } },
+      "expect": { "spec": { "excavationSwitch": true, "tasreeh": false, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": true, "workBeforeTasreeh": false } } },
+    { "name": "form for 401 with excavation", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension", "needsExcavation": true } },
+      "expect": { "spec": { "excavationSwitch": true, "tasreeh": true, "segments": true, "cableRuns": true, "meters": true, "oldMeterNumber": true } } },
+    { "name": "form for 403", "action": "formSpec", "args": { "draft": { "type": "403", "category": "extension" } },
+      "expect": { "spec": { "excavationSwitch": false, "tasreeh": true, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": false } } },
+    { "name": "form for 805 emergency", "action": "formSpec", "args": { "draft": { "type": "805", "category": "emergency" } },
+      "expect": { "spec": { "tasreeh": true, "segments": false, "meters": false, "workBeforeTasreeh": true } } },
+
+    { "name": "typed numbers are cleaned before saving", "action": "normalizeDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": " ٤٤١٧٠٠١٠١ ", "permits": [{ "number": "ت-۱۲۳ " }], "meters": [{ "id": "m1", "number": "٠٥٦٧", "oldNumber": " 88" }] } },
+      "expect": { "draft": { "type": "402", "category": "extension", "woNumber": "441700101", "permits": [{ "number": "ت-123" }], "meters": [{ "id": "m1", "number": "0567", "oldNumber": "88" }] } } },
+    { "name": "same number typed with Arabic digits", "action": "validateDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": "٤٤١٧٠٠١٠١", "receivedDate": "2026-10-11", "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": ["duplicate_wo"], "errorData": [{ "id": "A", "date": "2026-10-01", "district": "Al Olaya" }] } },
+    { "name": "same number as a deleted order", "action": "validateDraft", "args": { "draft": { "type": "801", "category": "extension", "woNumber": "441700107", "receivedDate": "2026-10-11", "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": ["duplicate_wo_deleted"], "errorData": [{ "id": "X" }] } },
+    { "name": "editing an order is not a duplicate of itself", "action": "validateDraft", "args": { "draft": { "id": "A", "type": "402", "category": "extension", "woNumber": "441700101", "receivedDate": "2026-10-01", "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": [] } },
+    { "name": "missing number, received in the future", "action": "validateDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": "", "receivedDate": "2026-10-12", "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": ["wo_number_required", "future_date"] } },
+    { "name": "missing received date", "action": "validateDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": "441700199", "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": ["received_required"] } },
+    { "name": "tasreeh number already used on another order", "action": "validateDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": "441700199", "receivedDate": "2026-10-11", "permits": [{ "number": "t-1003" }], "meters": [{ "id": "m1" }] } },
+      "expect": { "errors": ["duplicate_permit_other"], "errorData": [{ "permit": "t-1003", "wo": "441700103" }] } },
+    { "name": "an order of a meter type needs at least one meter", "action": "validateDraft", "args": { "draft": { "type": "801", "category": "extension", "woNumber": "441700198", "receivedDate": "2026-10-11" } },
+      "expect": { "errors": ["meter_required"] } },
+    { "name": "a deleted order keeps its tasreeh number", "action": "validateDraft", "args": { "draft": { "type": "802", "category": "extension", "woNumber": "441700197", "receivedDate": "2026-10-11", "permits": [{ "number": "BL-77" }] } },
+      "expect": { "errors": ["duplicate_permit_deleted"], "errorData": [{ "permit": "BL-77", "wo": "441700107" }] } },
+    { "name": "emergency number with letters is fine", "action": "validateDraft", "args": { "draft": { "type": "802", "category": "emergency", "woNumber": "T-55", "receivedDate": "2026-10-11" } },
+      "expect": { "errors": [] } }
+  ]
+}

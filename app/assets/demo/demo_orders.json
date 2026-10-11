@@ -1,0 +1,3863 @@
+{
+ "note": "Demo data only. Never load into the real database. Dates are for \"today\" below; Demo mode shifts them to the real date.",
+ "today": "2026-10-11",
+ "orders": [
+  {
+   "id": "demo-001",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441791404",
+   "receivedDate": "2026-10-11",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "حي الملقا",
+   "street": "Olaya St",
+   "networkRef": "SS-MLQ / F21 / TR-9702",
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-001-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 114,
+     "tiled": false
+    },
+    {
+     "id": "demo-001-s2",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 83,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-001-m1",
+     "number": "20304258"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 231
+    }
+   ],
+   "permits": [],
+   "steps": {},
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-11"
+  },
+  {
+   "id": "demo-002",
+   "type": "804",
+   "category": "extension",
+   "woNumber": "441748376",
+   "receivedDate": "2026-10-10",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Aqiq",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-002-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 89,
+     "tiled": false
+    },
+    {
+     "id": "demo-002-s2",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 85,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 185
+    }
+   ],
+   "permits": [],
+   "steps": {},
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-003",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441736746",
+   "receivedDate": "2026-10-08",
+   "needsExcavation": false,
+   "contractor": "Al-Bina Contracting",
+   "district": "Al Malqa",
+   "street": null,
+   "networkRef": "SS-NKH / F10 / TR-5241",
+   "notes": "Second meter for the annex.",
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-004",
+   "type": "804",
+   "category": "extension",
+   "woNumber": "441730392",
+   "receivedDate": "2026-10-05",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "الصحافة",
+   "street": null,
+   "networkRef": "SS-HTN / F18 / TR-5144",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-004-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 24,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 107
+    },
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 30
+    }
+   ],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-06"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-005",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441796467",
+   "receivedDate": "2026-10-04",
+   "needsExcavation": false,
+   "contractor": "Qimam Contracting",
+   "district": "Al Rawdah",
+   "street": "Takhassusi St",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-005-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 78,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-005-m1",
+     "number": "71428042"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 123
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10407",
+     "appliedDate": "2026-10-07",
+     "startDate": "2026-10-14",
+     "endDate": "2026-11-13"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-05"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-07"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-07"
+  },
+  {
+   "id": "demo-006",
+   "type": "403",
+   "category": "extension",
+   "woNumber": "441715009",
+   "receivedDate": "2026-10-02",
+   "needsExcavation": false,
+   "contractor": "Afaq Engineering",
+   "district": "الصحافة",
+   "street": null,
+   "networkRef": null,
+   "notes": "Second meter for the annex.",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-006-m1",
+     "number": "35685803"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10414",
+     "appliedDate": "2026-10-05",
+     "startDate": "2026-10-12",
+     "endDate": "2026-11-10"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-03"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-05"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-05"
+  },
+  {
+   "id": "demo-007",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441779549",
+   "receivedDate": "2026-10-06",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Qurtubah",
+   "street": "Prince Turki St",
+   "networkRef": "SS-HTN / F12 / TR-3330",
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-007-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 89,
+     "tiled": false
+    },
+    {
+     "id": "demo-007-s2",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 88,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 213
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10421",
+     "appliedDate": "2026-10-08",
+     "startDate": "2026-10-16",
+     "endDate": "2026-11-15"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-07"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-008",
+   "type": "401",
+   "category": "extension",
+   "woNumber": "441746515",
+   "receivedDate": "2026-10-02",
+   "needsExcavation": true,
+   "contractor": "Sahm Al-Sharq",
+   "district": "Al Yasmin",
+   "street": null,
+   "networkRef": "SS-YSM / F4 / TR-6394",
+   "notes": "المقاول طلب تأجيل الحفر بسبب مدرسة قريبة",
+   "segments": [
+    {
+     "id": "demo-008-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 9,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-008-m1",
+     "number": "12378223",
+     "oldNumber": "99931295"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 64
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10428",
+     "appliedDate": "2026-10-05",
+     "startDate": "2026-10-13",
+     "endDate": "2026-10-31"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-03"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-05"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-05"
+  },
+  {
+   "id": "demo-009",
+   "type": "403",
+   "category": "extension",
+   "woNumber": "441721045",
+   "receivedDate": "2026-09-01",
+   "needsExcavation": false,
+   "contractor": "Sahm Al-Sharq",
+   "district": "حي النرجس",
+   "street": null,
+   "networkRef": "SS-NKH / F21 / TR-8212",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-009-m1",
+     "number": "76844911"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-19"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-21"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-21"
+  },
+  {
+   "id": "demo-010",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441779626",
+   "receivedDate": "2026-09-29",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "حي الملقا",
+   "street": "Abu Bakr Rd",
+   "networkRef": "SS-ULY / F15 / TR-2344",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-010-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 114,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-010-m1",
+     "number": "65768433"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 126
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10435",
+     "appliedDate": "2026-10-04",
+     "startDate": "2026-10-09",
+     "endDate": "2026-11-08"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-30"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-04"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-04"
+  },
+  {
+   "id": "demo-011",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441756291",
+   "receivedDate": "2026-09-21",
+   "needsExcavation": false,
+   "contractor": "Al-Falak Power",
+   "district": "Al Olaya",
+   "street": "Abu Bakr Rd",
+   "networkRef": null,
+   "notes": "المقاول طلب تأجيل الحفر بسبب مدرسة قريبة",
+   "segments": [
+    {
+     "id": "demo-011-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 40,
+     "tiled": false
+    },
+    {
+     "id": "demo-011-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 100,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 203
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10442",
+     "appliedDate": "2026-09-29",
+     "startDate": "2026-10-03",
+     "endDate": "2026-11-02"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-23"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-29"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-29"
+  },
+  {
+   "id": "demo-012",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441762745",
+   "receivedDate": "2026-09-26",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Qurtubah",
+   "street": "Anas Bin Malik Rd",
+   "networkRef": null,
+   "notes": null,
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10449",
+     "appliedDate": "2026-10-02",
+     "startDate": "2026-10-08",
+     "endDate": "2026-11-07"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-27"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-02"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-02"
+  },
+  {
+   "id": "demo-013",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441749175",
+   "receivedDate": "2026-10-01",
+   "needsExcavation": false,
+   "contractor": "Rawabi Electric",
+   "district": "حي النرجس",
+   "street": "Abu Bakr Rd",
+   "networkRef": "SS-NKH / F14 / TR-8233",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-013-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 78,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-013-m1",
+     "number": "61943631"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 161
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10456",
+     "appliedDate": "2026-10-04",
+     "startDate": "2026-10-07",
+     "endDate": "2026-11-06"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-02"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-04"
+    },
+    "excavation": {
+     "done": "2026-10-08"
+    },
+    "cable_installed": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-014",
+   "type": "404",
+   "category": "extension",
+   "woNumber": "441785736",
+   "receivedDate": "2026-09-16",
+   "needsExcavation": false,
+   "contractor": "Afaq Engineering",
+   "district": "حي النرجس",
+   "street": "Takhassusi St",
+   "networkRef": "SS-HTN / F7 / TR-3726",
+   "notes": "Close to a gas line, dig by hand near the corner.",
+   "segments": [
+    {
+     "id": "demo-014-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 9,
+     "tiled": false
+    },
+    {
+     "id": "demo-014-s2",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 28,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-014-m1",
+     "number": "40934497"
+    },
+    {
+     "id": "demo-014-m2",
+     "number": "82345579"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "MV",
+     "lengthM": 75
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10463",
+     "appliedDate": "2026-09-21",
+     "startDate": "2026-09-28",
+     "endDate": "2026-10-28"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-17"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-21"
+    },
+    "excavation": {
+     "done": "2026-10-02"
+    },
+    "cable_installed": {
+     "done": "2026-10-02"
+    },
+    "warning_tape": {
+     "done": "2026-10-03"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-03"
+  },
+  {
+   "id": "demo-015",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441742873",
+   "receivedDate": "2026-09-23",
+   "needsExcavation": false,
+   "contractor": "Al-Falak Power",
+   "district": "Al Olaya",
+   "street": "Imam Saud Rd",
+   "networkRef": "SS-NKH / F18 / TR-1179",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-015-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 104,
+     "tiled": false
+    },
+    {
+     "id": "demo-015-s2",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 56,
+     "tiled": false
+    },
+    {
+     "id": "demo-015-s3",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 29,
+     "tiled": true
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-015-m1",
+     "number": "23545096"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 140
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10470",
+     "appliedDate": "2026-09-26",
+     "startDate": "2026-09-28",
+     "endDate": "2026-10-28"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-24"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-26"
+    },
+    "excavation": {
+     "done": "2026-09-29"
+    },
+    "cable_installed": {
+     "done": "2026-09-30"
+    },
+    "warning_tape": {
+     "done": "2026-10-01"
+    },
+    "concrete@demo-015-s1": {
+     "done": "2026-10-02"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-02"
+  },
+  {
+   "id": "demo-016",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441781486",
+   "receivedDate": "2026-09-09",
+   "needsExcavation": false,
+   "contractor": "Rawabi Electric",
+   "district": "Al Nakheel",
+   "street": "Anas Bin Malik Rd",
+   "networkRef": "SS-MLQ / F9 / TR-8666",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-016-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 99,
+     "tiled": false
+    },
+    {
+     "id": "demo-016-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 19,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 108
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10477",
+     "appliedDate": "2026-09-12",
+     "startDate": "2026-09-14",
+     "endDate": "2026-09-28"
+    },
+    {
+     "number": "BL-48-10484",
+     "appliedDate": "2026-09-27",
+     "startDate": "2026-09-29",
+     "endDate": "2026-10-29"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-10"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-12"
+    },
+    "excavation": {
+     "done": "2026-09-16"
+    },
+    "cable_installed": {
+     "done": "2026-09-20"
+    },
+    "warning_tape": {
+     "done": "2026-09-25"
+    },
+    "sub_base@demo-016-s1": {
+     "done": "2026-10-05"
+    },
+    "asphalt_stage_1@demo-016-s1": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-017",
+   "type": "804",
+   "category": "extension",
+   "woNumber": "441777127",
+   "receivedDate": "2026-09-15",
+   "needsExcavation": false,
+   "contractor": "Qimam Contracting",
+   "district": "Qurtubah",
+   "street": null,
+   "networkRef": "SS-NKH / F5 / TR-1218",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-017-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 53,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 168
+    },
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 17
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10491",
+     "appliedDate": "2026-09-18",
+     "startDate": "2026-09-19",
+     "endDate": "2026-10-15"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-16"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-18"
+    },
+    "excavation": {
+     "done": "2026-09-21"
+    },
+    "cable_installed": {
+     "done": "2026-09-24"
+    },
+    "warning_tape": {
+     "done": "2026-09-27"
+    },
+    "sub_base@demo-017-s1": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-018",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441789999",
+   "receivedDate": "2026-09-01",
+   "needsExcavation": false,
+   "contractor": "Al-Wafa Electrical",
+   "district": "Al Sulimaniyah",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-018-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 55,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-018-m1",
+     "number": "43315235"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 53
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10498",
+     "appliedDate": "2026-09-04",
+     "startDate": "2026-09-06",
+     "endDate": "2026-10-06"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-02"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-04"
+    },
+    "excavation": {
+     "done": "2026-09-08"
+    },
+    "cable_installed": {
+     "done": "2026-09-15"
+    },
+    "warning_tape": {
+     "done": "2026-09-22"
+    },
+    "concrete@demo-018-s1": {
+     "done": "2026-09-29"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-29"
+  },
+  {
+   "id": "demo-019",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441745644",
+   "receivedDate": "2026-09-27",
+   "needsExcavation": false,
+   "contractor": "Tamkeen Works",
+   "district": "Al Yasmin",
+   "street": "Anas Bin Malik Rd",
+   "networkRef": "SS-YSM / F6 / TR-3947",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10505",
+     "appliedDate": "2026-10-01",
+     "startDate": "2026-10-04",
+     "endDate": "2026-11-03"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-28"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-01"
+    },
+    "poles": {
+     "done": "2026-10-07"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-07"
+  },
+  {
+   "id": "demo-020",
+   "type": "805",
+   "category": "extension",
+   "woNumber": "441735435",
+   "receivedDate": "2026-09-19",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Hittin",
+   "street": "شارع الأمير سلطان",
+   "networkRef": "SS-HTN / F11 / TR-3966",
+   "notes": null,
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10512",
+     "appliedDate": "2026-09-23",
+     "startDate": "2026-09-25",
+     "endDate": "2026-10-25"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-20"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-23"
+    },
+    "poles": {
+     "done": "2026-09-29"
+    },
+    "stringing": {
+     "done": "2026-10-05"
+    },
+    "stay_earthing": {
+     "done": "2026-10-09"
+    },
+    "line_energized": {
+     "done": "2026-10-09"
+    },
+    "foundation": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-021",
+   "type": "403",
+   "category": "extension",
+   "woNumber": "441781381",
+   "receivedDate": "2026-09-21",
+   "needsExcavation": false,
+   "contractor": "Al-Falak Power",
+   "district": "Al Nakheel",
+   "street": "King Fahd Rd",
+   "networkRef": "SS-NKH / F4 / TR-1504",
+   "notes": "Second meter for the annex.",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-021-m1",
+     "number": "16810975"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10519",
+     "appliedDate": "2026-09-24",
+     "startDate": "2026-09-26",
+     "endDate": "2026-10-26"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-22"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-24"
+    },
+    "poles": {
+     "done": "2026-09-28"
+    },
+    "stringing": {
+     "done": "2026-09-30"
+    },
+    "stay_earthing": {
+     "done": "2026-10-02"
+    },
+    "line_energized": {
+     "done": "2026-10-04"
+    },
+    "meter_installed@demo-021-m1": {
+     "done": "2026-10-06"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-06"
+  },
+  {
+   "id": "demo-022",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441772146",
+   "receivedDate": "2026-09-06",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Al Rawdah",
+   "street": "Prince Turki St",
+   "networkRef": "SS-ULY / F7 / TR-8397",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-022-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 50,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-022-m1",
+     "number": "73407051"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 97
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10526",
+     "appliedDate": "2026-09-10",
+     "startDate": "2026-09-12",
+     "endDate": "2026-10-12"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-07"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-10"
+    },
+    "excavation": {
+     "done": "2026-09-13"
+    },
+    "cable_installed": {
+     "done": "2026-09-18"
+    },
+    "warning_tape": {
+     "done": "2026-09-23"
+    },
+    "compaction@demo-022-s1": {
+     "done": "2026-09-29"
+    },
+    "meter_installed@demo-022-m1": {
+     "done": "2026-10-04"
+    },
+    "meter_on@demo-022-m1": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-023",
+   "type": "404",
+   "category": "extension",
+   "woNumber": "441755088",
+   "receivedDate": "2026-08-27",
+   "needsExcavation": false,
+   "contractor": "Rawabi Electric",
+   "district": "Al Nakheel",
+   "street": "King Fahd Rd",
+   "networkRef": null,
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-023-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 110,
+     "tiled": false
+    },
+    {
+     "id": "demo-023-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 51,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-023-m1",
+     "number": "72959054"
+    },
+    {
+     "id": "demo-023-m2",
+     "number": "41814175"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 89
+    },
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 71
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10533",
+     "appliedDate": "2026-08-31",
+     "startDate": "2026-09-02",
+     "endDate": "2026-10-02"
+    },
+    {
+     "number": "BL-48-10540",
+     "appliedDate": "2026-10-01",
+     "startDate": "2026-10-03",
+     "endDate": "2026-11-02"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-28"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-31"
+    },
+    "excavation": {
+     "done": "2026-09-04"
+    },
+    "cable_installed": {
+     "done": "2026-09-06"
+    },
+    "warning_tape": {
+     "done": "2026-09-08"
+    },
+    "sub_base@demo-023-s1": {
+     "done": "2026-09-10"
+    },
+    "asphalt_stage_1@demo-023-s1": {
+     "done": "2026-09-11"
+    },
+    "asphalt_stage_2@demo-023-s1": {
+     "done": "2026-09-13"
+    },
+    "concrete@demo-023-s2": {
+     "done": "2026-09-15"
+    },
+    "asphalt@demo-023-s2": {
+     "done": "2026-09-17"
+    },
+    "foundation": {
+     "done": "2026-09-19"
+    },
+    "transformer_installed": {
+     "done": "2026-09-21"
+    },
+    "earthing": {
+     "done": "2026-09-22"
+    },
+    "transformer_energized": {
+     "done": "2026-09-24"
+    },
+    "meter_installed@demo-023-m1": {
+     "done": "2026-09-26"
+    },
+    "meter_on@demo-023-m1": {
+     "done": "2026-09-28"
+    },
+    "form_190@demo-023-m1": {
+     "done": "2026-09-30"
+    },
+    "form_200@demo-023-m1": {
+     "done": "2026-10-02"
+    },
+    "meter_installed@demo-023-m2": {
+     "done": "2026-10-03"
+    },
+    "meter_on@demo-023-m2": {
+     "done": "2026-10-05"
+    },
+    "form_190@demo-023-m2": {
+     "done": "2026-10-07"
+    },
+    "form_200@demo-023-m2": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-024",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441798591",
+   "receivedDate": "2026-10-07",
+   "needsExcavation": false,
+   "contractor": "Al-Wafa Electrical",
+   "district": "Al Yasmin",
+   "street": "شارع الأمير سلطان",
+   "networkRef": "SS-HTN / F4 / TR-1822",
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-024-m1",
+     "number": "74840662"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-024-m1": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-025",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441755233",
+   "receivedDate": "2026-10-09",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Yasmin",
+   "street": null,
+   "networkRef": "SS-MLQ / F10 / TR-4304",
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-025-m1",
+     "number": "88014091"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {},
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-026",
+   "type": "401",
+   "category": "extension",
+   "woNumber": "441769017",
+   "receivedDate": "2026-10-08",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Al Aqiq",
+   "street": null,
+   "networkRef": null,
+   "notes": "المقاول طلب تأجيل الحفر بسبب مدرسة قريبة",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-026-m1",
+     "number": "88032577",
+     "oldNumber": "59148657"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "breaker_meter_changed@demo-026-m1": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-027",
+   "type": "409",
+   "category": "extension",
+   "woNumber": "441764443",
+   "receivedDate": "2026-10-05",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Malqa",
+   "street": "شارع الأمير سلطان",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-027-m1",
+     "number": "33379172",
+     "oldNumber": "57975854"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_relocated@demo-027-m1": {
+     "done": "2026-10-07"
+    },
+    "meter_on@demo-027-m1": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-028",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441733136",
+   "receivedDate": "2026-08-22",
+   "needsExcavation": false,
+   "contractor": "Afaq Engineering",
+   "district": "Hittin",
+   "street": "Imam Saud Rd",
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-028-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 67,
+     "tiled": false
+    },
+    {
+     "id": "demo-028-s2",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 117,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-028-m1",
+     "number": "86676081"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 230
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10547",
+     "appliedDate": "2026-08-26",
+     "startDate": "2026-08-28",
+     "endDate": "2026-09-27"
+    },
+    {
+     "number": "BL-48-10554",
+     "appliedDate": "2026-09-26",
+     "startDate": "2026-09-28",
+     "endDate": "2026-10-28"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-23"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-26"
+    },
+    "excavation": {
+     "done": "2026-08-30"
+    },
+    "cable_installed": {
+     "done": "2026-09-03"
+    },
+    "warning_tape": {
+     "done": "2026-09-07"
+    },
+    "sub_base@demo-028-s1": {
+     "done": "2026-09-11"
+    },
+    "asphalt_stage_1@demo-028-s1": {
+     "done": "2026-09-15"
+    },
+    "asphalt_stage_2@demo-028-s1": {
+     "done": "2026-09-18"
+    },
+    "compaction@demo-028-s2": {
+     "done": "2026-09-22"
+    },
+    "meter_installed@demo-028-m1": {
+     "done": "2026-09-26"
+    },
+    "meter_on@demo-028-m1": {
+     "done": "2026-09-30"
+    },
+    "form_190@demo-028-m1": {
+     "done": "2026-10-04"
+    },
+    "form_200@demo-028-m1": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-029",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441719448",
+   "receivedDate": "2026-09-03",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Aqiq",
+   "street": "Takhassusi St",
+   "networkRef": "SS-ULY / F20 / TR-6625",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10561",
+     "appliedDate": "2026-09-07",
+     "startDate": "2026-09-09",
+     "endDate": "2026-10-09"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-04"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-07"
+    },
+    "poles": {
+     "done": "2026-09-11"
+    },
+    "stringing": {
+     "done": "2026-09-17"
+    },
+    "stay_earthing": {
+     "done": "2026-09-24"
+    },
+    "line_energized": {
+     "done": "2026-09-30"
+    },
+    "certificate": {
+     "done": "2026-10-07"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-07"
+  },
+  {
+   "id": "demo-030",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441792959",
+   "receivedDate": "2026-08-12",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Nakheel",
+   "street": "King Fahd Rd",
+   "networkRef": "SS-YSM / F9 / TR-4587",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-030-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 105,
+     "tiled": false
+    },
+    {
+     "id": "demo-030-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 116,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-030-m1",
+     "number": "96403967"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 112
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10568",
+     "appliedDate": "2026-08-16",
+     "startDate": "2026-08-18",
+     "endDate": "2026-09-17"
+    },
+    {
+     "number": "BL-48-10575",
+     "appliedDate": "2026-09-16",
+     "startDate": "2026-09-18",
+     "endDate": "2026-10-18"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-13"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-16"
+    },
+    "excavation": {
+     "done": "2026-08-20"
+    },
+    "cable_installed": {
+     "done": "2026-08-23"
+    },
+    "warning_tape": {
+     "done": "2026-08-27"
+    },
+    "concrete@demo-030-s1": {
+     "done": "2026-08-30"
+    },
+    "asphalt@demo-030-s1": {
+     "done": "2026-09-03"
+    },
+    "concrete@demo-030-s2": {
+     "done": "2026-09-06"
+    },
+    "asphalt@demo-030-s2": {
+     "done": "2026-09-10"
+    },
+    "meter_installed@demo-030-m1": {
+     "done": "2026-09-13"
+    },
+    "meter_on@demo-030-m1": {
+     "done": "2026-09-17"
+    },
+    "form_190@demo-030-m1": {
+     "done": "2026-09-20"
+    },
+    "form_200@demo-030-m1": {
+     "done": "2026-09-24"
+    },
+    "certificate": {
+     "done": "2026-09-27"
+    },
+    "documents_submitted": {
+     "done": "2026-10-01"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-01"
+  },
+  {
+   "id": "demo-031",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441725652",
+   "receivedDate": "2026-09-29",
+   "needsExcavation": false,
+   "contractor": "Tamkeen Works",
+   "district": "حي الملقا",
+   "street": "Olaya St",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-031-m1",
+     "number": "17512854"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-031-m1": {
+     "done": "2026-10-01"
+    },
+    "meter_on@demo-031-m1": {
+     "done": "2026-10-02"
+    },
+    "form_190@demo-031-m1": {
+     "done": "2026-10-04"
+    },
+    "form_200@demo-031-m1": {
+     "done": "2026-10-05"
+    },
+    "certificate": {
+     "done": "2026-10-07"
+    },
+    "documents_submitted": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-032",
+   "type": "401",
+   "category": "extension",
+   "woNumber": "441748557",
+   "receivedDate": "2026-10-04",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Qurtubah",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-032-m1",
+     "number": "94770115",
+     "oldNumber": "41725383"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "breaker_meter_changed@demo-032-m1": {
+     "done": "2026-10-06"
+    },
+    "meter_on@demo-032-m1": {
+     "done": "2026-10-07"
+    },
+    "form_190@demo-032-m1": {
+     "done": "2026-10-08"
+    },
+    "form_200@demo-032-m1": {
+     "done": "2026-10-08"
+    },
+    "certificate": {
+     "done": "2026-10-09"
+    },
+    "documents_submitted": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-033",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441773162",
+   "receivedDate": "2026-08-17",
+   "needsExcavation": false,
+   "contractor": "Afaq Engineering",
+   "district": "Al Rawdah",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10582",
+     "appliedDate": "2026-08-21",
+     "startDate": "2026-08-23",
+     "endDate": "2026-09-22"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-18"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-21"
+    },
+    "poles": {
+     "done": "2026-08-25"
+    },
+    "stringing": {
+     "done": "2026-08-30"
+    },
+    "stay_earthing": {
+     "done": "2026-09-04"
+    },
+    "line_energized": {
+     "done": "2026-09-09"
+    },
+    "certificate": {
+     "done": "2026-09-14"
+    },
+    "documents_submitted": {
+     "done": "2026-09-19"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-19"
+  },
+  {
+   "id": "demo-034",
+   "type": "804",
+   "category": "extension",
+   "woNumber": "441774225",
+   "receivedDate": "2026-07-23",
+   "needsExcavation": false,
+   "contractor": "Afaq Engineering",
+   "district": "الصحافة",
+   "street": "شارع الأمير سلطان",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-034-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 62,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 229
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10589",
+     "appliedDate": "2026-07-28",
+     "startDate": "2026-07-30",
+     "endDate": "2026-08-29"
+    },
+    {
+     "number": "BL-48-10596",
+     "appliedDate": "2026-08-28",
+     "startDate": "2026-08-30",
+     "endDate": "2026-09-29"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-07-24"
+    },
+    "tasreeh_applied": {
+     "done": "2026-07-28"
+    },
+    "excavation": {
+     "done": "2026-08-02"
+    },
+    "cable_installed": {
+     "done": "2026-08-08"
+    },
+    "warning_tape": {
+     "done": "2026-08-13"
+    },
+    "concrete@demo-034-s1": {
+     "done": "2026-08-19"
+    },
+    "asphalt@demo-034-s1": {
+     "done": "2026-08-24"
+    },
+    "foundation": {
+     "done": "2026-08-30"
+    },
+    "transformer_installed": {
+     "done": "2026-09-05"
+    },
+    "earthing": {
+     "done": "2026-09-10"
+    },
+    "transformer_energized": {
+     "done": "2026-09-16"
+    },
+    "certificate": {
+     "done": "2026-09-21"
+    },
+    "documents_submitted": {
+     "done": "2026-09-27"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-27"
+  },
+  {
+   "id": "demo-035",
+   "type": "409",
+   "category": "extension",
+   "woNumber": "441726416",
+   "receivedDate": "2026-09-21",
+   "needsExcavation": true,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Malqa",
+   "street": null,
+   "networkRef": "SS-YSM / F12 / TR-4698",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-035-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 20,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-035-m1",
+     "number": "99798094",
+     "oldNumber": "62081513"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 242
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10603",
+     "appliedDate": "2026-09-25",
+     "startDate": "2026-09-26",
+     "endDate": "2026-10-26"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-22"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-25"
+    },
+    "excavation": {
+     "done": "2026-09-27"
+    },
+    "cable_installed": {
+     "done": "2026-09-28"
+    },
+    "warning_tape": {
+     "done": "2026-09-29"
+    },
+    "concrete@demo-035-s1": {
+     "done": "2026-09-30"
+    },
+    "asphalt@demo-035-s1": {
+     "done": "2026-10-01"
+    },
+    "meter_relocated@demo-035-m1": {
+     "done": "2026-10-01"
+    },
+    "meter_on@demo-035-m1": {
+     "done": "2026-10-02"
+    },
+    "form_190@demo-035-m1": {
+     "done": "2026-10-03"
+    },
+    "form_200@demo-035-m1": {
+     "done": "2026-10-04"
+    },
+    "certificate": {
+     "done": "2026-10-05"
+    },
+    "documents_submitted": {
+     "done": "2026-10-06"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-06"
+  },
+  {
+   "id": "demo-036",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441735804",
+   "receivedDate": "2026-09-08",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "الصحافة",
+   "street": null,
+   "networkRef": "SS-NKH / F22 / TR-9725",
+   "notes": "Customer asked to finish before school starts.",
+   "segments": [
+    {
+     "id": "demo-036-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 81,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-036-m1",
+     "number": "36940042"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 23
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10610",
+     "appliedDate": "2026-09-11",
+     "startDate": "2026-09-13",
+     "endDate": "2026-10-13"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-09"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-11"
+    },
+    "excavation": {
+     "done": "2026-09-14"
+    },
+    "cable_installed": {
+     "done": "2026-09-17"
+    },
+    "warning_tape": {
+     "done": "2026-09-19"
+    },
+    "concrete@demo-036-s1": {
+     "done": "2026-09-22"
+    },
+    "asphalt@demo-036-s1": {
+     "done": "2026-09-25"
+    },
+    "meter_installed@demo-036-m1": {
+     "done": "2026-09-27"
+    },
+    "meter_on@demo-036-m1": {
+     "done": "2026-09-30"
+    },
+    "form_190@demo-036-m1": {
+     "done": "2026-10-03"
+    },
+    "form_200@demo-036-m1": {
+     "done": "2026-10-06"
+    },
+    "certificate": {
+     "done": "2026-10-08"
+    },
+    "documents_submitted": {
+     "done": "2026-10-11"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-11"
+  },
+  {
+   "id": "demo-037",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441778167",
+   "receivedDate": "2026-08-26",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Malqa",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-037-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 32,
+     "tiled": false
+    },
+    {
+     "id": "demo-037-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 114,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 50
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10617",
+     "appliedDate": "2026-08-29",
+     "startDate": "2026-08-31",
+     "endDate": "2026-09-30"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-27"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-29"
+    },
+    "excavation": {
+     "done": "2026-09-01"
+    },
+    "cable_installed": {
+     "done": "2026-09-04"
+    },
+    "warning_tape": {
+     "done": "2026-09-07"
+    },
+    "sub_base@demo-037-s1": {
+     "done": "2026-09-09"
+    },
+    "asphalt_stage_1@demo-037-s1": {
+     "done": "2026-09-12"
+    },
+    "asphalt_stage_2@demo-037-s1": {
+     "done": "2026-09-15"
+    },
+    "concrete@demo-037-s2": {
+     "done": "2026-09-18"
+    },
+    "asphalt@demo-037-s2": {
+     "done": "2026-09-20"
+    },
+    "certificate": {
+     "done": "2026-09-23"
+    },
+    "documents_submitted": {
+     "done": "2026-09-26"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-26"
+  },
+  {
+   "id": "demo-038",
+   "type": "402",
+   "category": "emergency",
+   "woNumber": "T-97795",
+   "receivedDate": "2026-10-08",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Aqiq",
+   "street": null,
+   "networkRef": "SS-YSM / F5 / TR-7414",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-038-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 115,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-038-m1",
+     "number": "97969647"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 44
+    }
+   ],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-08"
+    },
+    "excavation": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-039",
+   "type": "802",
+   "category": "emergency",
+   "woNumber": "T-94034",
+   "receivedDate": "2026-10-01",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "الصحافة",
+   "street": "Takhassusi St",
+   "networkRef": "SS-MLQ / F3 / TR-6827",
+   "notes": "Close to a gas line, dig by hand near the corner.",
+   "segments": [
+    {
+     "id": "demo-039-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 107,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 144
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10624",
+     "appliedDate": "2026-10-05",
+     "startDate": "2026-10-06",
+     "endDate": "2026-11-05"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-01"
+    },
+    "excavation": {
+     "done": "2026-10-02"
+    },
+    "tasreeh_applied": {
+     "done": "2026-10-05"
+    },
+    "cable_installed": {
+     "done": "2026-10-06"
+    },
+    "warning_tape": {
+     "done": "2026-10-09"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09"
+  },
+  {
+   "id": "demo-040",
+   "type": "803",
+   "category": "emergency",
+   "woNumber": "T-35680",
+   "receivedDate": "2026-10-10",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Aqiq",
+   "street": "Abu Bakr Rd",
+   "networkRef": null,
+   "notes": "Close to a gas line, dig by hand near the corner.",
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-10"
+    },
+    "poles": {
+     "done": "2026-10-11"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-11"
+  },
+  {
+   "id": "demo-041",
+   "type": "801",
+   "category": "emergency",
+   "woNumber": "T-32018",
+   "receivedDate": "2026-10-05",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Olaya",
+   "street": "Olaya St",
+   "networkRef": "SS-YSM / F8 / TR-6745",
+   "notes": "المقاول طلب تأجيل الحفر بسبب مدرسة قريبة",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-041-m1",
+     "number": "86787562"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-041-m1": {
+     "done": "2026-10-06"
+    },
+    "meter_on@demo-041-m1": {
+     "done": "2026-10-07"
+    },
+    "form_190@demo-041-m1": {
+     "done": "2026-10-08"
+    },
+    "form_200@demo-041-m1": {
+     "done": "2026-10-08"
+    },
+    "certificate": {
+     "done": "2026-10-09"
+    },
+    "documents_submitted": {
+     "done": "2026-10-10"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-10"
+  },
+  {
+   "id": "demo-042",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441792305",
+   "receivedDate": "2026-09-25",
+   "needsExcavation": false,
+   "contractor": "Sahm Al-Sharq",
+   "district": "Al Sulimaniyah",
+   "street": "Abu Bakr Rd",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-042-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 19,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-042-m1",
+     "number": "27524697"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 187
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10631",
+     "appliedDate": "2026-09-29",
+     "startDate": "2026-10-02",
+     "endDate": "2026-11-01"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-26"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-29"
+    }
+   },
+   "status": {
+    "state": "on_hold",
+    "holdPeriods": [
+     {
+      "from": "2026-10-05",
+      "to": null,
+      "reason": "Customer objection",
+      "review": "2026-10-15"
+     }
+    ]
+   },
+   "lastChangeDate": "2026-09-29"
+  },
+  {
+   "id": "demo-043",
+   "type": "804",
+   "category": "extension",
+   "woNumber": "441780846",
+   "receivedDate": "2026-08-24",
+   "needsExcavation": false,
+   "contractor": "Al-Falak Power",
+   "district": "Al Malqa",
+   "street": null,
+   "networkRef": "SS-MLQ / F2 / TR-5395",
+   "notes": "Customer asked to finish before school starts.",
+   "segments": [
+    {
+     "id": "demo-043-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 21,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 500,
+     "voltage": "MV",
+     "lengthM": 208
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10638",
+     "appliedDate": "2026-08-28",
+     "startDate": "2026-08-30",
+     "endDate": "2026-10-09"
+    },
+    {
+     "number": "BL-48-10645",
+     "appliedDate": "2026-10-08",
+     "startDate": "2026-10-10",
+     "endDate": "2026-11-09"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-25"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-28"
+    },
+    "excavation": {
+     "done": "2026-09-01"
+    },
+    "cable_installed": {
+     "done": "2026-09-14"
+    },
+    "warning_tape": {
+     "done": "2026-09-21"
+    },
+    "concrete@demo-043-s1": {
+     "done": "2026-10-01"
+    },
+    "asphalt@demo-043-s1": {
+     "done": "2026-10-07"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": [
+     {
+      "from": "2026-09-03",
+      "to": "2026-09-13",
+      "reason": "No material"
+     }
+    ]
+   },
+   "lastChangeDate": "2026-10-07"
+  },
+  {
+   "id": "demo-044",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441720423",
+   "receivedDate": "2026-09-30",
+   "needsExcavation": false,
+   "contractor": "Qimam Contracting",
+   "district": "الصحافة",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-044-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 92,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 85
+    }
+   ],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-01"
+    }
+   },
+   "status": {
+    "state": "cancelled",
+    "holdPeriods": [],
+    "reason": "SEC cancelled: customer withdrew the request"
+   },
+   "lastChangeDate": "2026-10-01"
+  },
+  {
+   "id": "demo-045",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441753922",
+   "receivedDate": "2026-10-03",
+   "needsExcavation": false,
+   "contractor": "Sahm Al-Sharq",
+   "district": "الصحافة",
+   "street": "Abu Bakr Rd",
+   "networkRef": "SS-ULY / F7 / TR-9517",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-045-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 110,
+     "tiled": false
+    },
+    {
+     "id": "demo-045-s2",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 66,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-045-m1",
+     "number": "52512568"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 106
+    }
+   ],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-04"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-23"
+    },
+    "excavation": {
+     "done": "2026-09-27"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-04"
+  },
+  {
+   "id": "demo-046",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441797945",
+   "receivedDate": "2026-09-20",
+   "needsExcavation": false,
+   "contractor": "Tamkeen Works",
+   "district": "Al Aqiq",
+   "street": "King Fahd Rd",
+   "networkRef": "SS-YSM / F2 / TR-3753",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-046-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 17,
+     "tiled": false
+    },
+    {
+     "id": "demo-046-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 105,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-046-m1",
+     "number": "54304760"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 68
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10652",
+     "appliedDate": "2026-09-23",
+     "startDate": "2026-09-25",
+     "endDate": "2026-10-25"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-21"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-23"
+    },
+    "excavation": {
+     "done": "2026-09-27"
+    }
+   },
+   "status": {
+    "state": "merged",
+    "holdPeriods": [],
+    "reason": "Replaced by a new work order from SEC",
+    "mergedInto": "demo-045"
+   },
+   "lastChangeDate": "2026-09-27"
+  },
+  {
+   "id": "demo-047",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441775875",
+   "receivedDate": "2026-10-09",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Al Nakheel",
+   "street": "Olaya St",
+   "networkRef": "SS-MLQ / F4 / TR-2879",
+   "notes": "Entered twice by mistake",
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {},
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-09",
+   "deleted": true
+  },
+  {
+   "id": "demo-048",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441717133",
+   "receivedDate": "2026-09-13",
+   "needsExcavation": false,
+   "contractor": "Dar Al-Itqan",
+   "district": "Al Malqa",
+   "street": null,
+   "networkRef": "SS-MLQ / F2 / TR-2353",
+   "notes": "Close to a gas line, dig by hand near the corner.",
+   "segments": [
+    {
+     "id": "demo-048-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 116,
+     "tiled": false
+    },
+    {
+     "id": "demo-048-s2",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 102,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-048-m1",
+     "number": "53479931"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 106
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10659",
+     "appliedDate": "2026-09-16",
+     "startDate": "2026-09-18",
+     "endDate": "2026-10-18"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-14"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-16"
+    },
+    "excavation": {
+     "done": "2026-09-20"
+    },
+    "cable_installed": {
+     "done": "2026-09-23"
+    },
+    "warning_tape": {
+     "na": true,
+     "reason": "Cable laid in an existing duct"
+    },
+    "compaction@demo-048-s1": {
+     "done": "2026-09-29"
+    },
+    "compaction@demo-048-s2": {
+     "na": true,
+     "reason": "Segment inside customer yard, customer restores"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-30"
+  },
+  {
+   "id": "demo-049",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441742154",
+   "receivedDate": "2026-10-07",
+   "needsExcavation": false,
+   "contractor": null,
+   "district": "حي الملقا",
+   "street": "Anas Bin Malik Rd",
+   "networkRef": "SS-MLQ / F4 / TR-1995",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-049-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 99,
+     "tiled": false
+    },
+    {
+     "id": "demo-049-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 101,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 87
+    }
+   ],
+   "permits": [],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-10-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-08"
+  },
+  {
+   "id": "demo-050",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441783301",
+   "receivedDate": "2026-08-16",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Hittin",
+   "street": null,
+   "networkRef": "SS-MLQ / F18 / TR-1931",
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-050-s1",
+     "base": "soil",
+     "width": 40,
+     "lengthM": 15,
+     "tiled": false
+    },
+    {
+     "id": "demo-050-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 10,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-050-m1",
+     "number": "40696880"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 210
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10666",
+     "appliedDate": "2026-08-18",
+     "startDate": "2026-08-20",
+     "endDate": "2026-09-19"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-17"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-18"
+    },
+    "excavation": {
+     "done": "2026-08-20"
+    },
+    "cable_installed": {
+     "done": "2026-08-23"
+    },
+    "warning_tape": {
+     "done": "2026-08-26"
+    },
+    "compaction@demo-050-s1": {
+     "done": "2026-08-30"
+    },
+    "concrete@demo-050-s2": {
+     "done": "2026-09-02"
+    },
+    "asphalt@demo-050-s2": {
+     "done": "2026-09-05"
+    },
+    "meter_installed@demo-050-m1": {
+     "done": "2026-09-08"
+    },
+    "meter_on@demo-050-m1": {
+     "done": "2026-09-11"
+    },
+    "form_190@demo-050-m1": {
+     "done": "2026-09-14"
+    },
+    "form_200@demo-050-m1": {
+     "done": "2026-09-18"
+    },
+    "certificate": {
+     "done": "2026-09-21"
+    },
+    "documents_submitted": {
+     "done": "2026-09-24"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-24"
+  },
+  {
+   "id": "demo-051",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441716312",
+   "receivedDate": "2026-07-31",
+   "needsExcavation": false,
+   "contractor": "Nasr Al-Jazeera",
+   "district": "Al Sulimaniyah",
+   "street": "Imam Saud Rd",
+   "networkRef": null,
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-051-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 9,
+     "tiled": false
+    },
+    {
+     "id": "demo-051-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 7,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-051-m1",
+     "number": "77801649"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 132
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10673",
+     "appliedDate": "2026-08-02",
+     "startDate": "2026-08-04",
+     "endDate": "2026-09-03"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-01"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-02"
+    },
+    "excavation": {
+     "done": "2026-08-04"
+    },
+    "cable_installed": {
+     "done": "2026-08-07"
+    },
+    "warning_tape": {
+     "done": "2026-08-10"
+    },
+    "concrete@demo-051-s1": {
+     "done": "2026-08-13"
+    },
+    "asphalt@demo-051-s1": {
+     "done": "2026-08-16"
+    },
+    "concrete@demo-051-s2": {
+     "done": "2026-08-19"
+    },
+    "asphalt@demo-051-s2": {
+     "done": "2026-08-21"
+    },
+    "meter_installed@demo-051-m1": {
+     "done": "2026-08-24"
+    },
+    "meter_on@demo-051-m1": {
+     "done": "2026-08-27"
+    },
+    "form_190@demo-051-m1": {
+     "done": "2026-08-30"
+    },
+    "form_200@demo-051-m1": {
+     "done": "2026-09-02"
+    },
+    "certificate": {
+     "done": "2026-09-05"
+    },
+    "documents_submitted": {
+     "done": "2026-09-08"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-08"
+  },
+  {
+   "id": "demo-052",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441729557",
+   "receivedDate": "2026-07-23",
+   "needsExcavation": false,
+   "contractor": "Rawabi Electric",
+   "district": "Al Olaya",
+   "street": "Takhassusi St",
+   "networkRef": null,
+   "notes": "Close to a gas line, dig by hand near the corner.",
+   "segments": [
+    {
+     "id": "demo-052-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 25,
+     "tiled": false
+    },
+    {
+     "id": "demo-052-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 97,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-052-m1",
+     "number": "94023121"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 169
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10680",
+     "appliedDate": "2026-07-25",
+     "startDate": "2026-07-27",
+     "endDate": "2026-08-26"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-07-24"
+    },
+    "tasreeh_applied": {
+     "done": "2026-07-25"
+    },
+    "excavation": {
+     "done": "2026-07-27"
+    },
+    "cable_installed": {
+     "done": "2026-07-30"
+    },
+    "warning_tape": {
+     "done": "2026-08-01"
+    },
+    "sub_base@demo-052-s1": {
+     "done": "2026-08-04"
+    },
+    "asphalt_stage_1@demo-052-s1": {
+     "done": "2026-08-07"
+    },
+    "asphalt_stage_2@demo-052-s1": {
+     "done": "2026-08-09"
+    },
+    "concrete@demo-052-s2": {
+     "done": "2026-08-12"
+    },
+    "asphalt@demo-052-s2": {
+     "done": "2026-08-15"
+    },
+    "meter_installed@demo-052-m1": {
+     "done": "2026-08-18"
+    },
+    "meter_on@demo-052-m1": {
+     "done": "2026-08-20"
+    },
+    "form_190@demo-052-m1": {
+     "done": "2026-08-23"
+    },
+    "form_200@demo-052-m1": {
+     "done": "2026-08-26"
+    },
+    "certificate": {
+     "done": "2026-08-28"
+    },
+    "documents_submitted": {
+     "done": "2026-08-31"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-08-31"
+  },
+  {
+   "id": "demo-053",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441798743",
+   "receivedDate": "2026-09-07",
+   "needsExcavation": false,
+   "contractor": "Al-Wafa Electrical",
+   "district": "حي النرجس",
+   "street": "شارع الأمير سلطان",
+   "networkRef": "SS-ULY / F6 / TR-5706",
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-053-m1",
+     "number": "47598872"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-053-m1": {
+     "done": "2026-09-08"
+    },
+    "meter_on@demo-053-m1": {
+     "done": "2026-09-10"
+    },
+    "form_190@demo-053-m1": {
+     "done": "2026-09-11"
+    },
+    "form_200@demo-053-m1": {
+     "done": "2026-09-13"
+    },
+    "certificate": {
+     "done": "2026-09-14"
+    },
+    "documents_submitted": {
+     "done": "2026-09-16"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-16"
+  },
+  {
+   "id": "demo-054",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441785285",
+   "receivedDate": "2026-10-04",
+   "needsExcavation": false,
+   "contractor": "Rawabi Electric",
+   "district": "Al Yasmin",
+   "street": null,
+   "networkRef": "SS-ULY / F23 / TR-6720",
+   "notes": "Second meter for the annex.",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-054-m1",
+     "number": "59253681"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-054-m1": {
+     "done": "2026-10-11"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-10-11"
+  },
+  {
+   "id": "demo-055",
+   "type": "401",
+   "category": "extension",
+   "woNumber": "441767304",
+   "receivedDate": "2026-08-03",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Qurtubah",
+   "street": "Abu Bakr Rd",
+   "networkRef": "SS-YSM / F3 / TR-7732",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-055-m1",
+     "number": "72876595",
+     "oldNumber": "16812516"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "breaker_meter_changed@demo-055-m1": {
+     "done": "2026-08-04"
+    },
+    "meter_on@demo-055-m1": {
+     "done": "2026-08-06"
+    },
+    "form_190@demo-055-m1": {
+     "done": "2026-08-07"
+    },
+    "form_200@demo-055-m1": {
+     "done": "2026-08-09"
+    },
+    "certificate": {
+     "done": "2026-08-10"
+    },
+    "documents_submitted": {
+     "done": "2026-08-12"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-08-12"
+  },
+  {
+   "id": "demo-056",
+   "type": "803",
+   "category": "extension",
+   "woNumber": "441797044",
+   "receivedDate": "2026-09-08",
+   "needsExcavation": false,
+   "contractor": "Nasr Al-Jazeera",
+   "district": "Al Nakheel",
+   "street": "Anas Bin Malik Rd",
+   "networkRef": "SS-NKH / F1 / TR-7469",
+   "notes": null,
+   "segments": [],
+   "meters": [],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10687",
+     "appliedDate": "2026-09-10",
+     "startDate": "2026-09-12",
+     "endDate": "2026-10-12"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-09"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-10"
+    },
+    "poles": {
+     "done": "2026-09-20"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-20"
+  },
+  {
+   "id": "demo-057",
+   "type": "802",
+   "category": "extension",
+   "woNumber": "441774604",
+   "receivedDate": "2026-08-07",
+   "needsExcavation": false,
+   "contractor": "Al-Bina Contracting",
+   "district": "Al Yasmin",
+   "street": "Olaya St",
+   "networkRef": "SS-YSM / F2 / TR-5960",
+   "notes": "Baladiya inspector visits on Sundays.",
+   "segments": [
+    {
+     "id": "demo-057-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 61,
+     "tiled": false
+    },
+    {
+     "id": "demo-057-s2",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 34,
+     "tiled": false
+    }
+   ],
+   "meters": [],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 251
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10694",
+     "appliedDate": "2026-08-09",
+     "startDate": "2026-08-11",
+     "endDate": "2026-09-10"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-08"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-09"
+    },
+    "excavation": {
+     "done": "2026-08-11"
+    },
+    "cable_installed": {
+     "done": "2026-08-15"
+    },
+    "warning_tape": {
+     "done": "2026-08-20"
+    },
+    "concrete@demo-057-s1": {
+     "done": "2026-08-24"
+    },
+    "asphalt@demo-057-s1": {
+     "done": "2026-08-28"
+    },
+    "concrete@demo-057-s2": {
+     "done": "2026-09-02"
+    },
+    "asphalt@demo-057-s2": {
+     "done": "2026-09-06"
+    },
+    "certificate": {
+     "done": "2026-09-11"
+    },
+    "documents_submitted": {
+     "done": "2026-09-15"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-15"
+  },
+  {
+   "id": "demo-058",
+   "type": "403",
+   "category": "extension",
+   "woNumber": "441762699",
+   "receivedDate": "2026-09-08",
+   "needsExcavation": false,
+   "contractor": "Al-Wafa Electrical",
+   "district": "Al Olaya",
+   "street": "Imam Saud Rd",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-058-m1",
+     "number": "61293596"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [
+    {
+     "number": "BL-48-10701",
+     "appliedDate": "2026-09-10",
+     "startDate": "2026-09-12",
+     "endDate": "2026-10-12"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-09"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-10"
+    },
+    "poles": {
+     "done": "2026-09-20"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-20"
+  },
+  {
+   "id": "demo-059",
+   "type": "409",
+   "category": "extension",
+   "woNumber": "441781284",
+   "receivedDate": "2026-08-29",
+   "needsExcavation": false,
+   "contractor": "Nasr Al-Jazeera",
+   "district": "Al Sulimaniyah",
+   "street": null,
+   "networkRef": null,
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-059-m1",
+     "number": "66423834",
+     "oldNumber": "78082760"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_relocated@demo-059-m1": {
+     "done": "2026-08-30"
+    },
+    "meter_on@demo-059-m1": {
+     "done": "2026-09-01"
+    },
+    "form_190@demo-059-m1": {
+     "done": "2026-09-02"
+    },
+    "form_200@demo-059-m1": {
+     "done": "2026-09-04"
+    },
+    "certificate": {
+     "done": "2026-09-05"
+    },
+    "documents_submitted": {
+     "done": "2026-09-07"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-07"
+  },
+  {
+   "id": "demo-060",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441770542",
+   "receivedDate": "2026-09-10",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Al Yasmin",
+   "street": "Abu Bakr Rd",
+   "networkRef": null,
+   "notes": "يوجد كابل اتصالات قريب من مسار الحفر",
+   "segments": [
+    {
+     "id": "demo-060-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 120,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-060-m1",
+     "number": "99445690"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 185,
+     "voltage": "LV",
+     "lengthM": 73
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10708",
+     "appliedDate": "2026-09-12",
+     "startDate": "2026-09-14",
+     "endDate": "2026-10-14"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-09-11"
+    },
+    "tasreeh_applied": {
+     "done": "2026-09-12"
+    },
+    "excavation": {
+     "done": "2026-09-14"
+    },
+    "cable_installed": {
+     "done": "2026-09-17"
+    },
+    "warning_tape": {
+     "done": "2026-09-19"
+    },
+    "concrete@demo-060-s1": {
+     "done": "2026-09-22"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-22"
+  },
+  {
+   "id": "demo-061",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441767766",
+   "receivedDate": "2026-08-18",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Hittin",
+   "street": "King Fahd Rd",
+   "networkRef": "SS-HTN / F10 / TR-8291",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-061-s1",
+     "base": "asphalt",
+     "width": 40,
+     "lengthM": 78,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-061-m1",
+     "number": "22813692"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 300,
+     "voltage": "LV",
+     "lengthM": 120
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10715",
+     "appliedDate": "2026-08-20",
+     "startDate": "2026-08-22",
+     "endDate": "2026-09-21"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-08-19"
+    },
+    "tasreeh_applied": {
+     "done": "2026-08-20"
+    },
+    "excavation": {
+     "done": "2026-08-22"
+    },
+    "cable_installed": {
+     "done": "2026-08-25"
+    },
+    "warning_tape": {
+     "done": "2026-08-29"
+    },
+    "concrete@demo-061-s1": {
+     "done": "2026-09-01"
+    },
+    "asphalt@demo-061-s1": {
+     "done": "2026-09-05"
+    },
+    "meter_installed@demo-061-m1": {
+     "done": "2026-09-08"
+    },
+    "meter_on@demo-061-m1": {
+     "done": "2026-09-12"
+    },
+    "form_190@demo-061-m1": {
+     "done": "2026-09-15"
+    },
+    "form_200@demo-061-m1": {
+     "done": "2026-09-19"
+    },
+    "certificate": {
+     "done": "2026-09-22"
+    },
+    "documents_submitted": {
+     "done": "2026-09-26"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-26"
+  },
+  {
+   "id": "demo-062",
+   "type": "402",
+   "category": "extension",
+   "woNumber": "441714851",
+   "receivedDate": "2026-07-20",
+   "needsExcavation": false,
+   "contractor": "Masar Al-Taqa",
+   "district": "Hittin",
+   "street": "King Fahd Rd",
+   "networkRef": "SS-MLQ / F23 / TR-6905",
+   "notes": null,
+   "segments": [
+    {
+     "id": "demo-062-s1",
+     "base": "asphalt",
+     "width": 80,
+     "lengthM": 102,
+     "tiled": false
+    }
+   ],
+   "meters": [
+    {
+     "id": "demo-062-m1",
+     "number": "24787796"
+    }
+   ],
+   "cableRuns": [
+    {
+     "sizeMm2": 70,
+     "voltage": "LV",
+     "lengthM": 162
+    }
+   ],
+   "permits": [
+    {
+     "number": "BL-48-10722",
+     "appliedDate": "2026-07-22",
+     "startDate": "2026-07-24",
+     "endDate": "2026-08-23"
+    }
+   ],
+   "steps": {
+    "kashfeya": {
+     "done": "2026-07-21"
+    },
+    "tasreeh_applied": {
+     "done": "2026-07-22"
+    },
+    "excavation": {
+     "done": "2026-07-24"
+    },
+    "cable_installed": {
+     "done": "2026-07-27"
+    },
+    "warning_tape": {
+     "done": "2026-07-30"
+    },
+    "sub_base@demo-062-s1": {
+     "done": "2026-08-03"
+    },
+    "asphalt_stage_1@demo-062-s1": {
+     "done": "2026-08-06"
+    },
+    "asphalt_stage_2@demo-062-s1": {
+     "done": "2026-08-09"
+    },
+    "meter_installed@demo-062-m1": {
+     "done": "2026-08-12"
+    },
+    "meter_on@demo-062-m1": {
+     "done": "2026-08-15"
+    },
+    "form_190@demo-062-m1": {
+     "done": "2026-08-18"
+    },
+    "form_200@demo-062-m1": {
+     "done": "2026-08-22"
+    },
+    "certificate": {
+     "done": "2026-08-25"
+    },
+    "documents_submitted": {
+     "done": "2026-08-28"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-08-28"
+  },
+  {
+   "id": "demo-063",
+   "type": "801",
+   "category": "extension",
+   "woNumber": "441746225",
+   "receivedDate": "2026-09-04",
+   "needsExcavation": false,
+   "contractor": "Bawabat Al-Noor",
+   "district": "Al Nakheel",
+   "street": null,
+   "networkRef": "SS-ULY / F17 / TR-9336",
+   "notes": null,
+   "segments": [],
+   "meters": [
+    {
+     "id": "demo-063-m1",
+     "number": "83505043"
+    }
+   ],
+   "cableRuns": [],
+   "permits": [],
+   "steps": {
+    "meter_installed@demo-063-m1": {
+     "done": "2026-09-05"
+    },
+    "meter_on@demo-063-m1": {
+     "done": "2026-09-07"
+    },
+    "form_190@demo-063-m1": {
+     "done": "2026-09-08"
+    },
+    "form_200@demo-063-m1": {
+     "done": "2026-09-10"
+    },
+    "certificate": {
+     "done": "2026-09-11"
+    },
+    "documents_submitted": {
+     "done": "2026-09-13"
+    }
+   },
+   "status": {
+    "state": "open",
+    "holdPeriods": []
+   },
+   "lastChangeDate": "2026-09-13"
+  }
+ ]
+}

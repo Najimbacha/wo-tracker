@@ -1,0 +1,21 @@
+# PowerSync sync rules: each signed-in user receives only their own rows.
+# The full history of a single user is a few MB per year, so every device keeps
+# everything locally. That makes search and reports work offline too.
+bucket_definitions:
+  user_data:
+    parameters: SELECT request.user_id() AS user_id
+    data:
+      - SELECT * FROM contractors WHERE owner_id = bucket.user_id
+      - SELECT * FROM districts WHERE owner_id = bucket.user_id
+      - SELECT * FROM cable_sizes WHERE owner_id = bucket.user_id
+      - SELECT * FROM work_orders WHERE owner_id = bucket.user_id
+      - SELECT * FROM permits WHERE owner_id = bucket.user_id
+      - SELECT * FROM segments WHERE owner_id = bucket.user_id
+      - SELECT * FROM meters WHERE owner_id = bucket.user_id
+      - SELECT * FROM cable_runs WHERE owner_id = bucket.user_id
+      - SELECT * FROM steps WHERE owner_id = bucket.user_id
+      - SELECT * FROM hold_periods WHERE owner_id = bucket.user_id
+      - SELECT * FROM attachments WHERE owner_id = bucket.user_id
+      - SELECT * FROM followups WHERE owner_id = bucket.user_id
+      - SELECT * FROM saved_views WHERE owner_id = bucket.user_id
+      - SELECT * FROM settings WHERE owner_id = bucket.user_id

@@ -1,0 +1,82 @@
+# Every Sunday, restore the newest backup into a throwaway database and check
+# that it contains every row the live database had when the backup was taken.
+# Because rows are never hard-deleted, the restored count must equal the live count
+# of rows created before the backup time. A failure emails the repo owner.
+name: Weekly restore test
+
+on:
+  schedule:
+    - cron: "0 1 * * 0"   # Sunday 04:00 Riyadh
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  restore-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL 17 client and rclone
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 rclone
+
+      - name: Download the newest backup
+        env:
+          RCLONE_CONFIG_TEXT: ${{ secrets.RCLONE_CONFIG }}
+        run: |
+          mkdir -p ~/.config/rclone
+          printf '%s\n' "$RCLONE_CONFIG_TEXT" > ~/.config/rclone/rclone.conf
+          latest=$(rclone lsf "gdrive:WO Tracker/Backups/database/" --include "wo-*.dump.gpg" | sort | tail -1)
+          test -n "$latest" || { echo "No backup found"; exit 1; }
+          base="${latest%.dump.gpg}"
+          echo "BASE=$base" >> "$GITHUB_ENV"
+          rclone copy "gdrive:WO Tracker/Backups/database/$latest" .
+          rclone copy "gdrive:WO Tracker/Backups/database/$base.counts.json" .
+          # The newest backup must be at most 2 days old.
+          day=$(echo "$base" | sed 's/^wo-//')
+          age=$(( ( $(date +%s) - $(date -d "$day" +%s) ) / 86400 ))
+          echo "Backup $day is $age day(s) old"
+          test "$age" -le 2
+
+      - name: Decrypt and restore into a throwaway database
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+          PGPASSWORD: test
+        run: |
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$PASS" --output restore.dump --decrypt "$BASE.dump.gpg"
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "create database restore_test"
+          psql -h localhost -U postgres -d restore_test -v ON_ERROR_STOP=1 -c "drop schema public cascade"
+          psql -h localhost -U postgres -d restore_test -v ON_ERROR_STOP=1 -f supabase/tests/supabase_stub.sql
+          /usr/lib/postgresql/17/bin/pg_restore -h localhost -U postgres -d restore_test --no-owner --no-acl --exit-on-error restore.dump
+          psql -h localhost -U postgres -d restore_test -v ON_ERROR_STOP=1 -f supabase/tests/supabase_stub.sql
+
+      - name: Compare with the live database
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGPASSWORD: test
+        run: |
+          taken=$(jq -r .taken_at "$BASE.counts.json")
+          fail=0
+          for t in work_orders steps permits segments meters activity_log; do
+            col=created_at; [ "$t" = activity_log ] && col=changed_at
+            restored=$(psql -h localhost -U postgres -d restore_test -At -c "select count(*) from public.$t")
+            live=$(psql "$DB_URL" -At -c "select count(*) from public.$t where $col <= '$taken'")
+            echo "$t: restored=$restored live_at_backup=$live"
+            [ "$restored" = "$live" ] || fail=1
+          done
+          test "$fail" = 0 && echo "Restore test passed"

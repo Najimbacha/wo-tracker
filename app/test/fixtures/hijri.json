@@ -1,0 +1,24 @@
+{
+  "dates": [
+    { "gregorian": "2026-10-11", "hijri": { "year": 1448, "month": 4, "day": 30 }, "en": "30 Rabiʻ II 1448", "ar": "30 ربيع الآخر 1448هـ", "note": "app start date" },
+    { "gregorian": "2025-03-01", "hijri": { "year": 1446, "month": 9, "day": 1 }, "en": "1 Ramadan 1446", "ar": "1 رمضان 1446هـ", "note": "first day of Ramadan 1446" },
+    { "gregorian": "2025-03-30", "hijri": { "year": 1446, "month": 10, "day": 1 }, "en": "1 Shawwal 1446", "ar": "1 شوال 1446هـ", "note": "Eid al-Fitr 1446" },
+    { "gregorian": "2024-04-10", "hijri": { "year": 1445, "month": 10, "day": 1 }, "en": "1 Shawwal 1445", "ar": "1 شوال 1445هـ", "note": "Eid al-Fitr 1445" },
+    { "gregorian": "2023-06-28", "hijri": { "year": 1444, "month": 12, "day": 10 }, "en": "10 Dhuʻl-Hijjah 1444", "ar": "10 ذو الحجة 1444هـ", "note": "Eid al-Adha 1444" },
+    { "gregorian": "2024-07-07", "hijri": { "year": 1446, "month": 1, "day": 1 }, "en": "1 Muharram 1446", "ar": "1 محرم 1446هـ", "note": "Hijri new year 1446" },
+    { "gregorian": "2025-06-26", "hijri": { "year": 1447, "month": 1, "day": 1 }, "en": "1 Muharram 1447", "ar": "1 محرم 1447هـ", "note": "Hijri new year 1447" },
+    { "gregorian": "2018-09-11", "hijri": { "year": 1440, "month": 1, "day": 1 }, "en": "1 Muharram 1440", "ar": "1 محرم 1440هـ", "note": "first day in the table" }
+  ],
+  "monthLengths": [
+    { "year": 1448, "month": 4, "days": 30 }
+  ],
+  "invalidHijri": [
+    { "input": [1448, 4, 31], "note": "Rabiʻ II 1448 has 30 days" },
+    { "input": [1448, 4, 0], "note": "day 0" },
+    { "input": [1448, 13, 1], "note": "month 13" },
+    { "input": [1448, 0, 1], "note": "month 0" },
+    { "input": [1439, 12, 1], "note": "before the table" },
+    { "input": [1481, 1, 1], "note": "after the table" }
+  ],
+  "outOfRange": ["2018-09-10", "2058-06-22"]
+}

@@ -1,0 +1,28 @@
+name: wo_tracker
+description: Work order tracker for electrical distribution work orders.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+# Phase 1 keeps dependencies minimal so the rules engine tests run first.
+# UI, database sync, PDF/Excel and Google Drive packages are added in the next step,
+# when `flutter pub get` can be run on the PC.
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/rules/rules.json
+    - assets/i18n/en.json
+    - assets/i18n/ar.json
+    - assets/calendar/umalqura.json
+    - assets/demo/demo_orders.json

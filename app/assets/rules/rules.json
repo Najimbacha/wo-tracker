@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "notes": "Single source of truth for work order steps. Read by the Flutter app (Dart engine) and by the reference test suite (tools/rules-check). Change this file, bump version, and run both test suites.",
+
+  "alertDefaults": {
+    "lateStartDays": 1,
+    "openTrenchDays": 7,
+    "restorationOverdueDays": 7,
+    "tasreehEndingDays": 7,
+    "meterNotOnDays": 3,
+    "stalledDays": 14,
+    "tawariTasreehMissingDays": 0
+  },
+
+  "categories": {
+    "extension": { "en": "Extension", "ar": "توصيلات", "woNumberPattern": "^[0-9]{9}$", "woNumberHint": "9 digits" },
+    "emergency": { "en": "Emergency", "ar": "طوارئ", "woNumberPattern": "^[0-9A-Za-z-]{1,30}$", "woNumberHint": "any length", "fieldWorkBeforeTasreeh": true }
+  },
+
+  "steps": {
+    "kashfeya":              { "package": "kashfeya",       "en": "Kashfeya",                    "ar": "الكشفية" },
+    "tasreeh_applied":       { "package": "tasreeh",        "en": "Tasreeh applied",             "ar": "تقديم التصريح" },
+    "excavation":            { "package": "civil",          "en": "Excavation",                  "ar": "الحفر",               "gate": "tasreehStarted" },
+    "cable_installed":       { "package": "civil",          "en": "Cable installed",             "ar": "تمديد الكيبل",        "requires": "cableRuns" },
+    "warning_tape":          { "package": "civil",          "en": "Warning tape",                "ar": "شريط التحذير" },
+    "compaction":            { "package": "restoration",    "en": "Compaction",                  "ar": "الدك" },
+    "concrete":              { "package": "restoration",    "en": "Concrete",                    "ar": "الخرسانة" },
+    "asphalt":               { "package": "restoration",    "en": "Asphalt",                     "ar": "الأسفلت" },
+    "sub_base":              { "package": "restoration",    "en": "Sub-base",                    "ar": "طبقة الأساس" },
+    "asphalt_stage_1":       { "package": "restoration",    "en": "Asphalt stage 1",             "ar": "أسفلت المرحلة الأولى" },
+    "asphalt_stage_2":       { "package": "restoration",    "en": "Asphalt stage 2",             "ar": "أسفلت المرحلة الثانية" },
+    "tiles":                 { "package": "restoration",    "en": "Tiles",                       "ar": "البلاط" },
+    "poles":                 { "package": "overhead",       "en": "Poles installed",             "ar": "تركيب الأعمدة",       "gate": "tasreehStarted" },
+    "stringing":             { "package": "overhead",       "en": "Stringing",                   "ar": "شد الموصلات" },
+    "stay_earthing":         { "package": "overhead",       "en": "Stay wires and earthing",     "ar": "الشدادات والتأريض" },
+    "line_energized":        { "package": "overhead",       "en": "Line energized",              "ar": "تشغيل الخط" },
+    "foundation":            { "package": "transformer",    "en": "Foundation",                  "ar": "القاعدة" },
+    "transformer_installed": { "package": "transformer",    "en": "Transformer installed",       "ar": "تركيب المحول" },
+    "earthing":              { "package": "transformer",    "en": "Earthing",                    "ar": "التأريض" },
+    "transformer_energized": { "package": "transformer",    "en": "Transformer energized",       "ar": "تشغيل المحول" },
+    "meter_installed":       { "package": "meter_new",      "en": "Meter installed",             "ar": "تركيب العداد" },
+    "breaker_meter_changed": { "package": "meter_change",   "en": "Breaker / meter changed",     "ar": "تغيير القاطع / العداد" },
+    "meter_relocated":       { "package": "meter_relocate", "en": "Meter relocated",             "ar": "نقل العداد" },
+    "meter_on":              { "package": "meter",          "en": "Meter on",                    "ar": "تشغيل العداد" },
+    "form_190":              { "package": "meter",          "en": "Form 190",                    "ar": "نموذج 190" },
+    "form_200":              { "package": "meter",          "en": "Form 200",                    "ar": "نموذج 200" },
+    "certificate":           { "package": "closeout",       "en": "Certificate",                 "ar": "الشهادة" },
+    "documents_submitted":   { "package": "closeout",       "en": "Documents submitted to SEC",  "ar": "تسليم المستندات للشركة" }
+  },
+
+  "packages": {
+    "kashfeya":       { "scope": "order",   "steps": ["kashfeya"],                                                    "en": "Kashfeya",    "ar": "الكشفية" },
+    "tasreeh":        { "scope": "order",   "steps": ["tasreeh_applied"],                                             "en": "Tasreeh",     "ar": "التصريح" },
+    "civil":          { "scope": "order",   "steps": ["excavation", "cable_installed", "warning_tape"],               "en": "Civil",       "ar": "الأعمال المدنية" },
+    "restoration":    { "scope": "segment",                                                                           "en": "Restoration", "ar": "إعادة السطح" },
+    "overhead":       { "scope": "order",   "steps": ["poles", "stringing", "stay_earthing", "line_energized"],       "en": "Overhead",    "ar": "الخط الهوائي" },
+    "transformer":    { "scope": "order",   "steps": ["foundation", "transformer_installed", "earthing", "transformer_energized"], "en": "Transformer", "ar": "المحول" },
+    "meter_new":      { "scope": "meter",   "steps": ["meter_installed", "meter_on", "form_190", "form_200"],         "en": "Meter",       "ar": "العداد" },
+    "meter_change":   { "scope": "meter",   "steps": ["breaker_meter_changed", "meter_on", "form_190", "form_200"],   "en": "Meter",       "ar": "العداد" },
+    "meter_relocate": { "scope": "meter",   "steps": ["meter_relocated", "meter_on", "form_190", "form_200"],         "en": "Meter",       "ar": "العداد" },
+    "closeout":       { "scope": "order",   "steps": ["certificate", "documents_submitted"],                         "en": "Close-out",   "ar": "الإغلاق" }
+  },
+
+  "segmentRecipes": {
+    "soil":       ["compaction"],
+    "asphalt_40": ["concrete", "asphalt"],
+    "asphalt_80": ["sub_base", "asphalt_stage_1", "asphalt_stage_2"]
+  },
+  "tiledStep": "tiles",
+
+  "entryDeps": {
+    "tasreeh":        [ { "whenPackage": "kashfeya", "deps": ["kashfeya"] } ],
+    "civil":          [ { "whenPackage": "tasreeh", "deps": ["tasreeh_applied"], "emergencyDrops": ["tasreeh_applied"] } ],
+    "overhead":       [ { "whenPackage": "tasreeh", "deps": ["tasreeh_applied"], "emergencyDrops": ["tasreeh_applied"] } ],
+    "restoration":    [ { "deps": ["warning_tape"] } ],
+    "transformer":    [ { "whenPackage": "civil", "deps": ["cable_installed"] }, { "whenPackage": "overhead", "deps": ["stringing"] } ],
+    "meter_new":      [ { "whenPackage": "restoration", "deps": ["warning_tape", "@restoration"] }, { "whenPackage": "overhead", "deps": ["stringing"] } ],
+    "meter_change":   [ { "whenPackage": "restoration", "deps": ["warning_tape", "@restoration"] } ],
+    "meter_relocate": [ { "whenPackage": "restoration", "deps": ["warning_tape", "@restoration"] } ],
+    "closeout":       [ { "deps": ["@all"] } ]
+  },
+
+  "requiredData": {
+    "restoration": { "kind": "segments", "blocks": "certificate", "en": "Add the surface segments", "ar": "أضف أجزاء السطح" }
+  },
+
+  "types": {
+    "401": { "en": "Change breaker, meter or both",        "ar": "تغيير القاطع أو العداد أو كليهما",  "packages": ["meter_change", "closeout"], "optionalExcavation": true },
+    "402": { "en": "Excavation and meter",                 "ar": "حفر وعداد",                         "packages": ["kashfeya", "tasreeh", "civil", "restoration", "meter_new", "closeout"] },
+    "403": { "en": "Overhead line and meter",              "ar": "خط هوائي وعداد",                    "packages": ["kashfeya", "tasreeh", "overhead", "meter_new", "closeout"] },
+    "404": { "en": "Underground, ground transformer and meter", "ar": "أرضي ومحول أرضي وعداد",        "packages": ["kashfeya", "tasreeh", "civil", "restoration", "transformer", "meter_new", "closeout"] },
+    "409": { "en": "Relocate meter",                       "ar": "نقل العداد",                        "packages": ["meter_relocate", "closeout"], "optionalExcavation": true },
+    "801": { "en": "Meter only, civil done earlier",       "ar": "عداد فقط",                          "packages": ["meter_new", "closeout"] },
+    "802": { "en": "Excavation only",                      "ar": "حفر فقط",                           "packages": ["kashfeya", "tasreeh", "civil", "restoration", "closeout"] },
+    "803": { "en": "Overhead line",                        "ar": "خط هوائي",                          "packages": ["kashfeya", "tasreeh", "overhead", "closeout"] },
+    "804": { "en": "Underground and ground transformer",   "ar": "أرضي ومحول أرضي",                   "packages": ["kashfeya", "tasreeh", "civil", "restoration", "transformer", "closeout"] },
+    "805": { "en": "Overhead and pole-mounted transformer", "ar": "هوائي ومحول على عمود",              "packages": ["kashfeya", "tasreeh", "overhead", "transformer", "closeout"] }
+  },
+  "optionalExcavationPackages": ["kashfeya", "tasreeh", "civil", "restoration"],
+
+  "stages": [
+    { "key": "kashfeya",    "packages": ["kashfeya"],                              "en": "Kashfeya",         "ar": "الكشفية" },
+    { "key": "tasreeh",     "packages": ["tasreeh"],                               "en": "Awaiting tasreeh", "ar": "بانتظار التصريح" },
+    { "key": "starting",    "gate": "tasreehStarted",                              "en": "Starting soon",    "ar": "يبدأ قريباً" },
+    { "key": "civil",       "packages": ["civil", "overhead"],                     "en": "Field work",       "ar": "العمل الميداني" },
+    { "key": "restoration", "packages": ["restoration", "transformer"],            "en": "Restoration",      "ar": "إعادة السطح" },
+    { "key": "meter",       "packages": ["meter_new", "meter_change", "meter_relocate"], "en": "Meter",      "ar": "العداد" },
+    { "key": "closeout",    "packages": ["closeout"],                              "en": "Close-out",        "ar": "الإغلاق" }
+  ]
+}

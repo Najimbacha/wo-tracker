@@ -1,0 +1,285 @@
+{
+  "about": "Hand-checked scenarios. Both engines (tools/rules-check and app/lib/domain) must produce exactly these results. Today is 2026-10-11 unless a case says otherwise.",
+  "cases": [
+    {
+      "name": "402 new extension order: only Kashfeya is ready",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441823107", "receivedDate": "2026-10-11", "segments": [], "meters": [{ "id": "m1" }], "steps": {} },
+      "expect": {
+        "total": 11, "status": "open", "stage": "kashfeya", "ready": ["kashfeya"], "alerts": [],
+        "reasons": { "certificate": ["waiting_for", "missing_segments"], "excavation": ["waiting_for", "no_tasreeh_dates"] }
+      }
+    },
+    {
+      "name": "402 tasreeh starts in 5 days: excavation waits for the start date",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441830201", "receivedDate": "2026-10-03",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 24, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88540", "appliedDate": "2026-10-06", "startDate": "2026-10-16", "endDate": "2026-10-30" }],
+        "steps": { "kashfeya": { "done": "2026-10-05" }, "tasreeh_applied": { "done": "2026-10-06" } } },
+      "expect": { "status": "open", "stage": "starting", "ready": [], "alerts": [], "reasons": { "excavation": ["tasreeh_starts"] } }
+    },
+    {
+      "name": "Late start: tasreeh started 5 days ago, not dug",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441745503", "receivedDate": "2026-09-28",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88160", "appliedDate": "2026-10-01", "startDate": "2026-10-06", "endDate": "2026-10-25" }],
+        "steps": { "kashfeya": { "done": "2026-09-29" }, "tasreeh_applied": { "done": "2026-10-01" } } },
+      "expect": { "status": "open", "stage": "civil", "ready": ["excavation"],
+        "alerts": [{ "code": "late_start", "days": 5, "severity": "critical" }] }
+    },
+    {
+      "name": "On hold: no alerts while on hold",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441745503", "receivedDate": "2026-09-28",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88160", "appliedDate": "2026-10-01", "startDate": "2026-10-06", "endDate": "2026-10-25" }],
+        "steps": { "kashfeya": { "done": "2026-09-29" }, "tasreeh_applied": { "done": "2026-10-01" } },
+        "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-08", "to": null, "reason": "Customer objection" }] } },
+      "expect": { "status": "on_hold", "stage": "civil", "ready": ["excavation"], "alerts": [] }
+    },
+    {
+      "name": "Hold days are not counted after the hold ends",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441745503", "receivedDate": "2026-09-28",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88160", "appliedDate": "2026-10-01", "startDate": "2026-10-06", "endDate": "2026-10-25" }],
+        "steps": { "kashfeya": { "done": "2026-09-29" }, "tasreeh_applied": { "done": "2026-10-01" } },
+        "status": { "state": "open", "holdPeriods": [{ "from": "2026-10-07", "to": "2026-10-09", "reason": "No material" }] } },
+      "expect": { "status": "open", "ready": ["excavation"], "alerts": [{ "code": "late_start", "days": 3, "severity": "warning" }] }
+    },
+    {
+      "name": "Emergency: excavation before tasreeh is allowed, tasreeh reminder shows",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "emergency", "woNumber": "T-55", "receivedDate": "2026-10-01",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 8, "tiled": false }], "meters": [{ "id": "m1" }],
+        "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 8 }],
+        "steps": { "kashfeya": { "done": "2026-10-01" }, "excavation": { "done": "2026-10-02" } } },
+      "expect": { "status": "open", "ready": ["tasreeh_applied", "cable_installed"],
+        "alerts": [{ "code": "open_trench", "days": 9, "severity": "critical" }, { "code": "tawari_tasreeh_missing", "days": 9, "severity": "warning" }] }
+    },
+    {
+      "name": "Mixed widths: 40 cm and 80 cm segments keep their own steps",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441782012", "receivedDate": "2026-10-02",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 18, "tiled": false }, { "id": "s2", "base": "asphalt", "width": 80, "lengthM": 12, "tiled": false }],
+        "meters": [{ "id": "m1" }], "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 42 }],
+        "permits": [{ "number": "P-88213", "appliedDate": "2026-10-04", "startDate": "2026-10-06", "endDate": "2026-10-19" }],
+        "steps": { "kashfeya": { "done": "2026-10-03" }, "tasreeh_applied": { "done": "2026-10-04" }, "excavation": { "done": "2026-10-06" },
+          "cable_installed": { "done": "2026-10-07" }, "warning_tape": { "done": "2026-10-07" }, "concrete@s1": { "done": "2026-10-08" } } },
+      "expect": { "total": 16, "status": "open", "stage": "restoration", "ready": ["asphalt@s1", "sub_base@s2"], "alerts": [],
+        "reasons": { "meter_installed@m1": ["waiting_for"] }, "waitingFor": { "meter_installed@m1": ["asphalt@s1", "sub_base@s2", "asphalt_stage_1@s2", "asphalt_stage_2@s2"] } }
+    },
+    {
+      "name": "Open trench: dug 8 days ago, no concrete",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441687104", "receivedDate": "2026-09-22",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 22, "tiled": false }], "meters": [{ "id": "m1" }],
+        "cableRuns": [{ "sizeMm2": 185, "voltage": "LV", "lengthM": 22 }],
+        "permits": [{ "number": "P-87990", "appliedDate": "2026-09-25", "startDate": "2026-10-01", "endDate": "2026-10-20" }],
+        "steps": { "kashfeya": { "done": "2026-09-23" }, "tasreeh_applied": { "done": "2026-09-25" }, "excavation": { "done": "2026-10-03" },
+          "cable_installed": { "done": "2026-10-04" }, "warning_tape": { "done": "2026-10-04" } } },
+      "expect": { "ready": ["concrete@s1"], "alerts": [{ "code": "open_trench", "days": 8, "severity": "critical" }] }
+    },
+    {
+      "name": "Tasreeh ending in 4 days with no next tasreeh",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441600001", "receivedDate": "2026-09-15",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 50, "tiled": false }],
+        "permits": [{ "number": "P-87912", "appliedDate": "2026-09-16", "startDate": "2026-09-20", "endDate": "2026-10-15" }],
+        "steps": { "kashfeya": { "done": "2026-09-15" }, "tasreeh_applied": { "done": "2026-09-16" }, "excavation": { "done": "2026-10-09" } } },
+      "expect": { "alerts": [{ "code": "next_tasreeh_needed", "daysLeft": 4, "severity": "warning" }] }
+    },
+    {
+      "name": "Tasreeh expired with work still open",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441623301", "receivedDate": "2026-09-15",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 50, "tiled": false }],
+        "permits": [{ "number": "P-87810", "appliedDate": "2026-09-16", "startDate": "2026-09-20", "endDate": "2026-10-09" }],
+        "steps": { "kashfeya": { "done": "2026-09-15" }, "tasreeh_applied": { "done": "2026-09-16" }, "excavation": { "done": "2026-10-09" } } },
+      "expect": { "alerts": [{ "code": "no_active_tasreeh", "since": "2026-10-10", "nextStarts": false, "severity": "critical" }] }
+    },
+    {
+      "name": "Long project: next tasreeh already entered, no warning",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441600002", "receivedDate": "2026-09-15",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 50, "tiled": false }],
+        "permits": [{ "number": "P-87912", "appliedDate": "2026-09-16", "startDate": "2026-09-20", "endDate": "2026-10-15" },
+                    { "number": "P-88601", "appliedDate": "2026-10-08", "startDate": "2026-10-16", "endDate": "2026-10-30" }],
+        "steps": { "kashfeya": { "done": "2026-09-15" }, "tasreeh_applied": { "done": "2026-09-16" }, "excavation": { "done": "2026-10-09" } } },
+      "expect": { "alerts": [] }
+    },
+    {
+      "name": "Gap between two tasreeh",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441600003", "receivedDate": "2026-09-15",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 50, "tiled": false }],
+        "permits": [{ "number": "P-87700", "appliedDate": "2026-09-16", "startDate": "2026-09-20", "endDate": "2026-10-05" },
+                    { "number": "P-88650", "appliedDate": "2026-10-09", "startDate": "2026-10-15", "endDate": "2026-10-30" }],
+        "steps": { "kashfeya": { "done": "2026-09-15" }, "tasreeh_applied": { "done": "2026-09-16" }, "excavation": { "done": "2026-10-05" } } },
+      "expect": { "alerts": [{ "code": "no_active_tasreeh", "since": "2026-10-06", "nextStarts": true, "severity": "critical" }] }
+    },
+    {
+      "name": "Three meters on one order",
+      "today": "2026-10-11",
+      "order": { "type": "801", "category": "extension", "woNumber": "441520911", "receivedDate": "2026-10-01",
+        "meters": [{ "id": "m1" }, { "id": "m2" }, { "id": "m3" }],
+        "steps": { "meter_installed@m1": { "done": "2026-10-02" }, "meter_on@m1": { "done": "2026-10-02" }, "form_190@m1": { "done": "2026-10-03" }, "form_200@m1": { "done": "2026-10-03" },
+          "meter_installed@m2": { "done": "2026-10-05" } } },
+      "expect": { "total": 14, "status": "open", "stage": "meter", "ready": ["meter_on@m2", "meter_installed@m3"],
+        "alerts": [{ "code": "meter_not_on", "days": 6, "severity": "warning" }] }
+    },
+    {
+      "name": "403: meter unlocks after stringing",
+      "today": "2026-10-11",
+      "order": { "type": "403", "category": "extension", "woNumber": "441700101", "receivedDate": "2026-09-30", "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88001", "appliedDate": "2026-10-01", "startDate": "2026-10-03", "endDate": "2026-10-28" }],
+        "steps": { "kashfeya": { "done": "2026-09-30" }, "tasreeh_applied": { "done": "2026-10-01" }, "poles": { "done": "2026-10-04" }, "stringing": { "done": "2026-10-06" } } },
+      "expect": { "ready": ["stay_earthing", "meter_installed@m1"], "alerts": [] }
+    },
+    {
+      "name": "804: transformer runs in parallel with restoration after cable",
+      "today": "2026-10-11",
+      "order": { "type": "804", "category": "extension", "woNumber": "441700202", "receivedDate": "2026-09-30",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 80, "lengthM": 20, "tiled": true }], "cableRuns": [{ "sizeMm2": 300, "voltage": "MV", "lengthM": 20 }],
+        "permits": [{ "number": "P-88002", "appliedDate": "2026-10-01", "startDate": "2026-10-03", "endDate": "2026-10-28" }],
+        "steps": { "kashfeya": { "done": "2026-09-30" }, "tasreeh_applied": { "done": "2026-10-01" }, "excavation": { "done": "2026-10-05" }, "cable_installed": { "done": "2026-10-06" } } },
+      "expect": { "total": 15, "ready": ["warning_tape", "foundation"], "alerts": [] }
+    },
+    {
+      "name": "Date checks when marking a step done",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441782013", "receivedDate": "2026-10-02",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 18, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88214", "appliedDate": "2026-10-04", "startDate": "2026-10-06", "endDate": "2026-10-19" }],
+        "steps": { "kashfeya": { "done": "2026-10-03" }, "tasreeh_applied": { "done": "2026-10-04" }, "excavation": { "done": "2026-10-07" } } },
+      "validate": [
+        { "step": "cable_installed", "date": "2026-10-06", "errors": ["before_previous_step", "needs_cable_runs"] },
+        { "step": "cable_installed", "date": "2026-10-12", "errors": ["future_date", "needs_cable_runs"] },
+        { "step": "warning_tape", "date": "2026-10-08", "errors": ["waiting_for"] },
+        { "step": "excavation", "date": "2026-10-08", "errors": ["already_closed"] },
+        { "step": "kashfeya", "date": "2026-10-01", "errors": ["already_closed", "before_received"] }
+      ]
+    },
+    {
+      "name": "Excavation before tasreeh start date is rejected",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441782014", "receivedDate": "2026-10-02",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 18, "tiled": false }],
+        "permits": [{ "number": "P-88215", "appliedDate": "2026-10-04", "startDate": "2026-10-08", "endDate": "2026-10-19" }],
+        "steps": { "kashfeya": { "done": "2026-10-03" }, "tasreeh_applied": { "done": "2026-10-04" } } },
+      "validate": [
+        { "step": "excavation", "date": "2026-10-07", "errors": ["before_tasreeh_start"] },
+        { "step": "excavation", "date": "2026-10-08", "errors": [] }
+      ]
+    },
+    {
+      "name": "401 with the excavation switch on",
+      "today": "2026-10-11",
+      "order": { "type": "401", "category": "extension", "woNumber": "441700303", "receivedDate": "2026-10-10", "needsExcavation": true,
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 6, "tiled": true }], "meters": [{ "id": "m1" }], "steps": {} },
+      "expect": { "total": 13, "ready": ["kashfeya"], "stage": "kashfeya" }
+    },
+    {
+      "name": "401 without excavation: change the meter straight away",
+      "today": "2026-10-11",
+      "order": { "type": "401", "category": "extension", "woNumber": "441700304", "receivedDate": "2026-10-10", "meters": [{ "id": "m1" }], "steps": {} },
+      "expect": { "total": 6, "ready": ["breaker_meter_changed@m1"], "stage": "meter", "alerts": [] }
+    },
+    {
+      "name": "Completed order",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441571003", "receivedDate": "2026-09-20",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "cableRuns": [{ "sizeMm2": 70, "voltage": "LV", "lengthM": 30 }],
+        "permits": [{ "number": "P-87600", "appliedDate": "2026-09-21", "startDate": "2026-09-23", "endDate": "2026-10-07" }],
+        "steps": { "kashfeya": { "done": "2026-09-20" }, "tasreeh_applied": { "done": "2026-09-21" }, "excavation": { "done": "2026-09-24" }, "cable_installed": { "done": "2026-09-25" },
+          "warning_tape": { "done": "2026-09-25" }, "compaction@s1": { "done": "2026-09-27" }, "certificate": { "done": "2026-10-08" }, "documents_submitted": { "done": "2026-10-11" } },
+        "lastChangeDate": "2026-10-11" },
+      "expect": { "total": 8, "status": "completed", "stage": null, "ready": [], "alerts": [] }
+    },
+    {
+      "name": "Not applicable counts as done",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441700405", "receivedDate": "2026-10-01",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 10, "tiled": false }], "cableRuns": [{ "sizeMm2": 70, "voltage": "LV", "lengthM": 10 }],
+        "permits": [{ "number": "P-88300", "appliedDate": "2026-10-02", "startDate": "2026-10-04", "endDate": "2026-10-25" }],
+        "steps": { "kashfeya": { "done": "2026-10-01" }, "tasreeh_applied": { "done": "2026-10-02" }, "excavation": { "done": "2026-10-09" }, "cable_installed": { "done": "2026-10-10" },
+          "warning_tape": { "na": true, "reason": "Cable in duct, no tape needed" } } },
+      "expect": { "ready": ["concrete@s1"], "alerts": [] }
+    },
+    {
+      "name": "Cancelled order shows no alerts",
+      "today": "2026-10-11",
+      "order": { "type": "802", "category": "extension", "woNumber": "441700506", "receivedDate": "2026-09-01",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 10, "tiled": false }],
+        "permits": [{ "number": "P-87000", "appliedDate": "2026-09-02", "startDate": "2026-09-04", "endDate": "2026-09-25" }],
+        "steps": { "kashfeya": { "done": "2026-09-01" }, "tasreeh_applied": { "done": "2026-09-02" } },
+        "status": { "state": "cancelled" }, "lastChangeDate": "2026-09-05" },
+      "expect": { "status": "cancelled", "stage": null, "alerts": [] }
+    },
+    {
+      "name": "Stalled order",
+      "today": "2026-10-11",
+      "order": { "type": "801", "category": "extension", "woNumber": "441700607", "receivedDate": "2026-09-01", "meters": [{ "id": "m1" }], "steps": {}, "lastChangeDate": "2026-09-20" },
+      "expect": { "ready": ["meter_installed@m1"], "alerts": [{ "code": "stalled", "days": 21, "severity": "warning" }] }
+    },
+    {
+      "name": "Tasreeh not applicable: digging is not held back by permit dates",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441700611", "receivedDate": "2026-10-01",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 12, "tiled": false }], "meters": [{ "id": "m1" }],
+        "cableRuns": [{ "sizeMm2": 70, "voltage": "LV", "lengthM": 25 }],
+        "steps": { "kashfeya": { "done": "2026-10-02" }, "tasreeh_applied": { "na": true, "reason": "Inside customer property, no Baladiya permit" } } },
+      "expect": { "total": 12, "status": "open", "stage": "civil", "ready": ["excavation"], "alerts": [] },
+      "validate": [
+        { "step": "excavation", "date": "2026-10-05", "errors": [] },
+        { "step": "excavation", "date": "2026-09-30", "errors": ["before_received"] }
+      ]
+    },
+    {
+      "name": "Tasreeh applied, no dates for three weeks: Awaiting tasreeh, and still flagged as stalled",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441700612", "receivedDate": "2026-09-15",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 20, "tiled": false }], "meters": [{ "id": "m1" }],
+        "steps": { "kashfeya": { "done": "2026-09-16" }, "tasreeh_applied": { "done": "2026-09-20" } }, "lastChangeDate": "2026-09-20" },
+      "expect": { "status": "open", "stage": "tasreeh", "ready": [], "alerts": [{ "code": "stalled", "days": 21, "severity": "warning" }],
+        "reasons": { "excavation": ["no_tasreeh_dates"] } }
+    },
+    {
+      "name": "Waiting for a tasreeh that starts later: no stalled alert",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441700613", "receivedDate": "2026-09-09",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 9, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-90013", "appliedDate": "2026-09-12", "startDate": "2026-10-20", "endDate": "2026-11-20" }],
+        "steps": { "kashfeya": { "done": "2026-09-10" }, "tasreeh_applied": { "done": "2026-09-12" } }, "lastChangeDate": "2026-09-12" },
+      "expect": { "status": "open", "stage": "starting", "ready": [], "alerts": [], "reasons": { "excavation": ["tasreeh_starts"] } }
+    }
+  ],
+  "clearImpact": [
+    {
+      "name": "Clearing excavation also clears the steps after it",
+      "order": { "type": "402", "category": "extension", "woNumber": "441782015", "receivedDate": "2026-10-02",
+        "segments": [{ "id": "s1", "base": "asphalt", "width": 40, "lengthM": 18, "tiled": false }], "meters": [{ "id": "m1" }],
+        "steps": { "kashfeya": { "done": "2026-10-03" }, "tasreeh_applied": { "done": "2026-10-04" }, "excavation": { "done": "2026-10-06" },
+          "cable_installed": { "done": "2026-10-07" }, "warning_tape": { "na": true, "reason": "duct" }, "concrete@s1": { "done": "2026-10-08" } } },
+      "step": "excavation",
+      "expect": ["cable_installed", "warning_tape", "concrete@s1"]
+    },
+    {
+      "name": "Clearing an open step affects nothing",
+      "order": { "type": "801", "category": "extension", "woNumber": "441782016", "receivedDate": "2026-10-02", "meters": [{ "id": "m1" }], "steps": {} },
+      "step": "meter_installed@m1",
+      "expect": []
+    }
+  ],
+  "validateOrder": [
+    { "name": "Extension number must be 9 digits", "order": { "type": "402", "category": "extension", "woNumber": "4417820" }, "errors": ["bad_wo_number"] },
+    { "name": "Emergency number can be any length", "order": { "type": "402", "category": "emergency", "woNumber": "T-55" }, "errors": [] },
+    { "name": "Tasreeh end before start and duplicate number",
+      "order": { "type": "802", "category": "extension", "woNumber": "441700708",
+        "permits": [{ "number": "P-1", "appliedDate": "2026-10-01", "startDate": "2026-10-10", "endDate": "2026-10-05" }, { "number": "P-1", "appliedDate": "2026-10-11", "startDate": "2026-10-09", "endDate": "2026-10-20" }] },
+      "errors": ["permit_end_before_start", "permit_start_before_applied", "duplicate_permit"] },
+    { "name": "Segment width must be 40 or 80", "order": { "type": "802", "category": "extension", "woNumber": "441700709", "segments": [{ "id": "s1", "base": "asphalt", "width": 60, "lengthM": 5 }] }, "errors": ["bad_segment_width"] }
+  ]
+}
