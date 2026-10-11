@@ -40,6 +40,11 @@ begin
      and new.received_date > public.riyadh_today() then
     raise exception 'The received date cannot be in the future.' using errcode = 'check_violation';
   end if;
+  if new.state_date is not null
+     and (tg_op = 'INSERT' or new.state_date is distinct from old.state_date)
+     and new.state_date > public.riyadh_today() then
+    raise exception 'The cancel or merge date cannot be in the future.' using errcode = 'check_violation';
+  end if;
   return new;
 end $$;
 
@@ -171,6 +176,7 @@ create table public.work_orders (
   needs_excavation  boolean not null default false,
   state             text not null default 'open' check (state in ('open', 'on_hold', 'cancelled', 'merged')),
   state_reason      text,
+  state_date        date,  -- the day it was cancelled or merged
   merged_into       uuid references public.work_orders (id) on delete restrict,
   notes             text,
   rules_version     integer not null default 1,
@@ -185,6 +191,8 @@ create table public.work_orders (
   deleted_at        timestamptz,
   constraint wo_extension_9_digits check (category <> 'extension' or wo_number ~ '^[0-9]{9}$'),
   constraint wo_merged_needs_target check (state <> 'merged' or merged_into is not null),
+  constraint wo_state_date check ((state in ('cancelled', 'merged')) = (state_date is not null)),
+  constraint wo_state_date_after_received check (state_date is null or state_date >= received_date),
   constraint wo_not_merged_into_self check (merged_into is null or merged_into <> id),
   constraint wo_excavation_switch check (not needs_excavation or type_code = '409')
 );

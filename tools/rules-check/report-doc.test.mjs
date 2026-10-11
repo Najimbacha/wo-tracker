@@ -83,8 +83,12 @@ test('a report for a past period shows the situation on its last day', async () 
   const asOf = '2026-09-30';
   const r = report(rules, big, '2026-09-01', asOf, asOf);
   const docsBy = (o) => o.steps.documents_submitted && o.steps.documents_submitted.done && o.steps.documents_submitted.done <= asOf;
-  const expectedOpen = big.filter((o) => !o.deleted && o.receivedDate <= asOf && !['cancelled', 'merged'].includes(o.status.state) && !docsBy(o)).length;
+  // Cancelled or merged only counts from its own date; before that the order was still active.
+  const goneBy = (o) => ['cancelled', 'merged'].includes(o.status.state) && o.status.date <= asOf;
+  const expectedOpen = big.filter((o) => !o.deleted && o.receivedDate <= asOf && !goneBy(o) && !docsBy(o)).length;
   assert.equal(r.open, expectedOpen);
+  const goneLater = big.filter((o) => !o.deleted && o.receivedDate <= asOf && ['cancelled', 'merged'].includes(o.status.state) && o.status.date > asOf && !docsBy(o));
+  assert.ok(goneLater.length > 0, 'the test data has orders cancelled or merged after the period');
   const later = big.filter((o) => o.receivedDate > asOf).length;
   assert.ok(later > 100, 'the test data has orders received after the period');
   // Today's report is unchanged by the rule: nothing is dated after today.
@@ -116,6 +120,25 @@ test('snapshot: hand-made case', async () => {
 // Hand-computed report behaviour (added after the post-mortem).
 const meterOnly = (id, receivedDate) => ({ id, type: '801', category: 'extension', woNumber: `4417${id}`, receivedDate, meters: [{ id: 'm1' }], steps: {}, status: { state: 'open', holdPeriods: [] } });
 const enOpts = { lang: 'en', text: en, english: en, hijri: null, preparedBy: 'x' };
+
+test('snapshot: cancelled and merged count only from their own date', async () => {
+  const { snapshot } = await import('./insights.mjs');
+  const base = { id: 'C', type: '802', category: 'extension', woNumber: '441799002', receivedDate: '2026-09-10', steps: { kashfeya: { done: '2026-09-11' } }, lastChangeDate: '2026-09-11' };
+  const cancelled = { ...base, status: { state: 'cancelled', reason: 'Customer withdrew', date: '2026-09-20', holdPeriods: [] } };
+  assert.equal(snapshot(cancelled, '2026-09-19').status.state, 'open');
+  assert.equal(snapshot(cancelled, '2026-09-19').status.reason, undefined);
+  assert.equal(snapshot(cancelled, '2026-09-20').status.state, 'cancelled');
+  // Put on hold on the 15th, cancelled on the 20th: the hold was still running on the 18th.
+  const held = { ...base, status: { state: 'cancelled', reason: 'Customer withdrew', date: '2026-09-20', holdPeriods: [{ from: '2026-09-15', to: '2026-09-20', reason: 'Objection' }] } };
+  assert.equal(snapshot(held, '2026-09-18').status.state, 'on_hold');
+  const merged = { ...base, status: { state: 'merged', reason: 'New WO', mergedInto: 'X', date: '2026-09-25', holdPeriods: [] } };
+  assert.equal(snapshot(merged, '2026-09-24').status.state, 'open');
+  assert.equal(snapshot(merged, '2026-09-24').status.mergedInto, undefined);
+  assert.equal(snapshot(merged, '2026-09-25').status.mergedInto, 'X');
+  // Saved before the date was stored: cancelled throughout, as before.
+  const old = { ...base, status: { state: 'cancelled', reason: 'Old', holdPeriods: [] } };
+  assert.equal(snapshot(old, '2026-09-12').status.state, 'cancelled');
+});
 
 test('running week: only the days so far, compared with the same days last week', () => {
   // Sunday 11 Oct: the week is Sat 10 – Fri 16. Two received this Sat/Sun; last week Sat/Sun had two, Monday one more.

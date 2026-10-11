@@ -128,7 +128,7 @@ const DATA = {
     col('id', 'Order id', 'text', 12), col('woNumber', 'Work order number', 'text', 14), col('category', 'Category', 'text', 11), col('type', 'Type', 'text', 6),
     col('receivedDate', 'Received', 'date', 12), col('district', 'District', 'text', 16), col('street', 'Street', 'text', 16), col('networkRef', 'Network reference', 'text', 22),
     col('contractor', 'Contractor', 'text', 20), col('needsExcavation', 'Needs excavation', 'bool', 9), col('state', 'State', 'text', 10), col('stateReason', 'Reason', 'text', 24),
-    col('mergedInto', 'Merged into (order id)', 'text', 12), col('notes', 'Notes', 'text', 30), col('lastChangeDate', 'Last change', 'date', 12), col('deleted', 'Deleted', 'bool', 8),
+    col('stateDate', 'Cancelled / merged on', 'date', 12), col('mergedInto', 'Merged into (order id)', 'text', 12), col('notes', 'Notes', 'text', 30), col('lastChangeDate', 'Last change', 'date', 12), col('deleted', 'Deleted', 'bool', 8),
     { ...col('status', 'Status now (calculated)', 'text', 12), computed: true }, { ...col('stage', 'Stage now (calculated)', 'text', 12), computed: true },
   ],
   steps: [col('orderId', 'Order id', 'text', 12), col('woNumber', 'Work order number', 'text', 14), col('stepId', 'Step id', 'text', 28), { ...col('step', 'Step', 'text', 22), computed: true }, col('done', 'Done on', 'date', 12), col('na', 'Not applicable', 'bool', 9), col('reason', 'Reason', 'text', 30), col('note', 'Note', 'text', 30)],
@@ -148,7 +148,7 @@ export function dataWorkbook(rules, orders, today, generatedAt) {
     rows.orders.push({
       id: o.id, woNumber: o.woNumber, category: o.category, type: o.type, receivedDate: o.receivedDate ?? null,
       district: o.district ?? null, street: o.street ?? null, networkRef: o.networkRef ?? null, contractor: o.contractor ?? null,
-      needsExcavation: !!o.needsExcavation, state: st.state || 'open', stateReason: st.reason ?? null, mergedInto: st.mergedInto ?? null,
+      needsExcavation: !!o.needsExcavation, state: st.state || 'open', stateReason: st.reason ?? null, stateDate: st.date ?? null, mergedInto: st.mergedInto ?? null,
       notes: o.notes ?? null, lastChangeDate: o.lastChangeDate ?? null, deleted: !!o.deleted, status: ev.status, stage: ev.stage ?? null,
     });
     const order = new Map(stepPositions(rules, o));
@@ -165,7 +165,7 @@ export function dataWorkbook(rules, orders, today, generatedAt) {
     fileName: `wo-tracker-data-${today}.xlsx`,
     dir: 'ltr',
     about: {
-      generatedAt: generatedAt || today, orders: orders.length, format: 2,
+      generatedAt: generatedAt || today, orders: orders.length, format: 3,
       notIncluded: 'Photos and SEC PDFs (kept in Google Drive), contractor phone numbers, follow-up notes, saved views and settings are not in this file. They are in the nightly database backup.',
     },
     sheets: Object.keys(DATA).map((k) => ({ name: SHEET_NAMES[k], key: k, kind: 'table', columns: DATA[k], rows: rows[k] })),
@@ -191,6 +191,7 @@ export function ordersFromDataWorkbook(wb) {
     const status = { state: r.state, holdPeriods: (holds.get(r.id) || []).sort(seq).map((h) => clean({ from: h.from, to: h.to ?? null, reason: h.reason, review: h.review }, ['to'])) };
     if (r.stateReason) status.reason = r.stateReason;
     if (r.mergedInto) status.mergedInto = r.mergedInto;
+    if (r.stateDate) status.date = r.stateDate;
     return clean({
       id: r.id, type: r.type, category: r.category, woNumber: r.woNumber, receivedDate: r.receivedDate, needsExcavation: r.needsExcavation,
       contractor: r.contractor, district: r.district, street: r.street, networkRef: r.networkRef, notes: r.notes,

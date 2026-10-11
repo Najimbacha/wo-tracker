@@ -130,14 +130,14 @@
       "expect": { "ok": false, "errors": ["not_on_hold"] } },
 
     { "name": "cancel while on hold ends the hold today", "action": "cancel", "order": "A", "patch": { "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-09", "to": null, "reason": "No material" }] } }, "args": { "reason": " SEC cancelled " },
-      "expect": { "ok": true, "state": "cancelled", "reason": "SEC cancelled", "holdPeriods": [{ "from": "2026-10-09", "to": "2026-10-11", "reason": "No material" }] } },
+      "expect": { "ok": true, "state": "cancelled", "reason": "SEC cancelled", "stateDate": "2026-10-11", "holdPeriods": [{ "from": "2026-10-09", "to": "2026-10-11", "reason": "No material" }] } },
     { "name": "a completed order cannot be cancelled", "action": "cancel", "order": "Z", "patch": { "steps": { "documents_submitted": { "done": "2026-10-10" } } }, "args": { "reason": "x" },
       "expect": { "ok": false, "errors": ["not_active"] } },
     { "name": "cancel needs a reason", "action": "cancel", "order": "A", "args": { "reason": " " },
       "expect": { "ok": false, "errors": ["reason_required"] } },
 
     { "name": "merge and carry finished steps", "action": "merge", "order": "C", "patch": { "steps": { "compaction@s1": { "done": "2026-10-08" } } }, "target": "T", "args": { "reason": "Replaced by new order", "carry": true },
-      "expect": { "ok": true, "state": "merged", "mergedInto": "T", "carried": ["tasreeh_applied", "excavation", "cable_installed", "warning_tape"], "notCarried": ["kashfeya", "compaction@s1"],
+      "expect": { "ok": true, "state": "merged", "mergedInto": "T", "stateDate": "2026-10-11", "carried": ["tasreeh_applied", "excavation", "cable_installed", "warning_tape"], "notCarried": ["kashfeya", "compaction@s1"],
         "targetSteps": { "kashfeya": { "done": "2026-10-10" }, "tasreeh_applied": { "done": "2026-10-03" }, "excavation": { "done": "2026-10-05" }, "cable_installed": { "done": "2026-10-06" }, "warning_tape": { "done": "2026-10-07" } },
         "targetLastChangeDate": "2026-10-10" } },
     { "name": "merge never copies meter steps or close-out paperwork", "action": "merge", "order": "Z", "target": "Y", "args": { "reason": "Replaced", "carry": true },
@@ -151,7 +151,7 @@
     { "name": "merge into a cancelled order", "action": "merge", "order": "A", "target": "T", "targetPatch": { "status": { "state": "cancelled", "reason": "x" } }, "args": { "reason": "x", "carry": true },
       "expect": { "ok": false, "errors": ["merge_target_inactive"] } },
 
-    { "name": "reopen a cancelled order", "action": "reopen", "order": "A", "patch": { "status": { "state": "cancelled", "reason": "By mistake", "holdPeriods": [] } }, "args": {},
+    { "name": "reopen a cancelled order", "action": "reopen", "order": "A", "patch": { "status": { "state": "cancelled", "reason": "By mistake", "date": "2026-10-05", "holdPeriods": [] } }, "args": {},
       "expect": { "ok": true, "status": { "state": "open", "holdPeriods": [] } } },
     { "name": "reopen an open order", "action": "reopen", "order": "A", "args": {},
       "expect": { "ok": false, "errors": ["not_cancelled"] } },

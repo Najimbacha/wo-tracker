@@ -144,7 +144,7 @@ export function cancel(rules, order, reason, today) {
   if (!['open', 'on_hold'].includes(st)) errors.push({ code: 'not_active', state: st });
   if (blank(reason)) errors.push({ code: 'reason_required' });
   if (errors.length) return fail(...errors);
-  return { ok: true, order: withStatus(order, { state: 'cancelled', reason: reason.trim(), holdPeriods: closeOpenHold(order, today) }) };
+  return { ok: true, order: withStatus(order, { state: 'cancelled', reason: reason.trim(), date: today, holdPeriods: closeOpenHold(order, today) }) };
 }
 
 /**
@@ -163,7 +163,7 @@ export function merge(rules, order, target, reason, carry, today) {
   if (blank(reason)) errors.push({ code: 'reason_required' });
   if (errors.length) return fail(...errors);
 
-  const from = withStatus(order, { state: 'merged', reason: reason.trim(), mergedInto: target.id, holdPeriods: closeOpenHold(order, today) });
+  const from = withStatus(order, { state: 'merged', reason: reason.trim(), mergedInto: target.id, date: today, holdPeriods: closeOpenHold(order, today) });
   let to = clone(target);
   const carried = [];
   const notCarried = [];
@@ -190,6 +190,7 @@ export function reopen(rules, order) {
   const o = withStatus(order, { state: 'open' });
   delete o.status.reason;
   delete o.status.mergedInto;
+  delete o.status.date;
   return { ok: true, order: o };
 }
 

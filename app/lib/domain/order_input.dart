@@ -100,6 +100,7 @@ class OrderInput {
   final Map<String, StepRecord> steps;
   final String state; // 'open' | 'on_hold' | 'cancelled' | 'merged'
   final String? stateReason; // why cancelled / merged
+  final String? stateDate; // the day it was cancelled / merged
   final String? mergedInto; // id of the order that replaced this one
   final List<HoldPeriod> holdPeriods;
   final String? lastChangeDate;
@@ -124,6 +125,7 @@ class OrderInput {
     this.steps = const {},
     this.state = 'open',
     this.stateReason,
+    this.stateDate,
     this.mergedInto,
     this.holdPeriods = const [],
     this.lastChangeDate,
@@ -154,6 +156,7 @@ class OrderInput {
           .map((k, v) => MapEntry(k as String, StepRecord.fromJson(Map<String, dynamic>.from(v as Map)))),
       state: status?['state'] as String? ?? 'open',
       stateReason: status?['reason'] as String?,
+      stateDate: status?['date'] as String?,
       mergedInto: status?['mergedInto'] as String?,
       holdPeriods: ((status?['holdPeriods'] as List?) ?? const [])
           .map((e) => HoldPeriod.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -178,6 +181,7 @@ class OrderInput {
     Map<String, StepRecord>? steps,
     String? state,
     Object? stateReason = _keep,
+    Object? stateDate = _keep,
     Object? mergedInto = _keep,
     List<HoldPeriod>? holdPeriods,
     Object? lastChangeDate = _keep,
@@ -199,6 +203,7 @@ class OrderInput {
         steps: steps ?? this.steps,
         state: state ?? this.state,
         stateReason: identical(stateReason, _keep) ? this.stateReason : stateReason as String?,
+        stateDate: identical(stateDate, _keep) ? this.stateDate : stateDate as String?,
         mergedInto: identical(mergedInto, _keep) ? this.mergedInto : mergedInto as String?,
         holdPeriods: holdPeriods ?? this.holdPeriods,
         lastChangeDate: identical(lastChangeDate, _keep) ? this.lastChangeDate : lastChangeDate as String?,

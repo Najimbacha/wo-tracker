@@ -104,12 +104,14 @@ void main() {
       if (e.containsKey('state')) expect(out!.state, e['state']);
       if (e.containsKey('reason')) expect(out!.stateReason, e['reason']);
       if (e.containsKey('mergedInto')) expect(out!.mergedInto, e['mergedInto']);
+      if (e.containsKey('stateDate')) expect(out!.stateDate, e['stateDate']);
       if (e.containsKey('holdPeriods')) expect(out!.holdPeriods.map((h) => h.toJson()).toList(), e['holdPeriods']);
       if (e.containsKey('status')) {
         final s = m(e['status']);
         expect(out!.state, s['state']);
         expect(out.stateReason, isNull);
         expect(out.mergedInto, isNull);
+        expect(out.stateDate, isNull);
         expect(out.holdPeriods.map((h) => h.toJson()).toList(), s['holdPeriods']);
       }
       if (e.containsKey('cleared')) expect(res.cleared, e['cleared']);

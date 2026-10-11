@@ -164,7 +164,7 @@ export function buildDemo(rules, today = DEMO_TODAY, seed = 1448, { volume = 14,
   //   ['run', until, fromAgo, toAgo]      mark steps (see run)
   //   ['permit', appliedAgo, startAgo, endAgo]   negative = days from now
   //   ['na', stepId suffix, reason, ago]  ['hold', fromAgo, reason, toAgo|null, reviewInDays]
-  //   ['cancel', reason]  ['merge', ref, carry]  ['delete']
+  //   ['cancel', reason, daysAgo]  ['merge', ref, carry, daysAgo]  ['delete']
   const S = [
     // Kashfeya and tasreeh
     { type: '402', recv: 0 },
@@ -216,9 +216,9 @@ export function buildDemo(rules, today = DEMO_TODAY, seed = 1448, { volume = 14,
     // Hold, cancel, merge, delete
     { type: '402', recv: 16, ops: [['run', 'tasreeh_applied', 15, 12], ['permit', 12, 9, -21], ['hold', 6, 'Customer objection', null, 4]] },
     { type: '804', recv: 48, ops: [['run', 'tasreeh_applied', 47, 44], ['permit', 44, 42, 2], ['permit', 3, 1, -29], ['run', 'excavation', 40, 40], ['hold', 38, 'No material', 28], ['run', 'warning_tape', 27, 20], ['run', 2, 10, 4]] },
-    { type: '802', recv: 11, ops: [['run', 'kashfeya', 10, 10], ['cancel', 'SEC cancelled: customer withdrew the request']] },
+    { type: '802', recv: 11, ops: [['run', 'kashfeya', 10, 10], ['cancel', 'SEC cancelled: customer withdrew the request', 9]] },
     { ref: 'replacement', type: '402', recv: 8, ops: [['run', 'kashfeya', 7, 7]] },
-    { type: '402', recv: 21, ops: [['run', 'tasreeh_applied', 20, 18], ['permit', 18, 16, -14], ['run', 'excavation', 14, 14], ['merge', 'replacement', true]] },
+    { type: '402', recv: 21, ops: [['run', 'tasreeh_applied', 20, 18], ['permit', 18, 16, -14], ['run', 'excavation', 14, 14], ['merge', 'replacement', true, 7]] },
     { type: '803', recv: 2, note: 'Entered twice by mistake', ops: [['delete']] },
     // Not applicable steps, no contractor
     { type: '402', recv: 28, segments: ['soil', 'soil'], ops: [['run', 'tasreeh_applied', 27, 25], ['permit', 25, 23, -7], ['run', 'cable_installed', 21, 18], ['na', 'warning_tape', 'Cable laid in an existing duct', 17], ['run', 1, 12, 12], ['na', 'compaction@2', 'Segment inside customer yard, customer restores', 11]] },
@@ -283,10 +283,10 @@ export function buildDemo(rules, today = DEMO_TODAY, seed = 1448, { volume = 14,
       } else if (kind === 'hold') {
         o = must(A.putOnHold(rules, o, ago(a[0]), a[1], today, a[3] ? fromDay(toDay(today) + a[3]) : null), `${o.id} hold`).order;
         if (a[2] !== null) o = must(A.resume(rules, o, ago(a[2]), today), `${o.id} resume`).order;
-      } else if (kind === 'cancel') o = must(A.cancel(rules, o, a[0], today), `${o.id} cancel`).order;
+      } else if (kind === 'cancel') o = must(A.cancel(rules, o, a[0], ago(a[1] ?? 0)), `${o.id} cancel`).order;
       else if (kind === 'merge') {
         const target = byRef[a[0]];
-        const r = must(A.merge(rules, o, orders[target], 'Replaced by a new work order from SEC', a[1], today), `${o.id} merge`);
+        const r = must(A.merge(rules, o, orders[target], 'Replaced by a new work order from SEC', a[1], ago(a[2] ?? 0)), `${o.id} merge`);
         o = r.order;
         orders[target] = r.target;
       } else if (kind === 'delete') o = { ...o, deleted: true };
@@ -306,7 +306,7 @@ export function shiftDates(order, days) {
   o.lastChangeDate = sh(o.lastChangeDate);
   o.permits = (o.permits || []).map((p) => ({ ...p, appliedDate: sh(p.appliedDate), startDate: sh(p.startDate), endDate: sh(p.endDate) }));
   o.steps = Object.fromEntries(Object.entries(o.steps || {}).map(([k, r]) => [k, r.done ? { ...r, done: sh(r.done) } : { ...r }]));
-  if (o.status) o.status = { ...o.status, holdPeriods: (o.status.holdPeriods || []).map((h) => ({ ...h, from: sh(h.from), to: sh(h.to), ...(h.review ? { review: sh(h.review) } : {}) })) };
+  if (o.status) o.status = { ...o.status, ...(o.status.date ? { date: sh(o.status.date) } : {}), holdPeriods: (o.status.holdPeriods || []).map((h) => ({ ...h, from: sh(h.from), to: sh(h.to), ...(h.review ? { review: sh(h.review) } : {}) })) };
   return o;
 }
 

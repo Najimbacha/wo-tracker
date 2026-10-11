@@ -58,6 +58,7 @@ function check(c, r) {
   if (e.state) assert.equal(o.status.state, e.state);
   if ('reason' in e) assert.equal(o.status.reason, e.reason);
   if (e.mergedInto) assert.equal(o.status.mergedInto, e.mergedInto);
+  if ('stateDate' in e) assert.equal(o.status.date, e.stateDate);
   if (e.holdPeriods) assert.deepEqual(o.status.holdPeriods, e.holdPeriods);
   if (e.status) assert.deepEqual(o.status, e.status);
   for (const k of ['cleared', 'alsoClears', 'carried', 'notCarried', 'impact']) if (e[k]) assert.deepEqual(r[k], e[k], k);

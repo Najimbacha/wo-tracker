@@ -54,6 +54,18 @@ select pg_temp.expect_error($$insert into work_orders (wo_number, category, type
   'excavation switch only on 409');
 select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date, needs_excavation) values ('441782096', 'extension', '401', date '2026-10-02', true)$$,
   '401 never has a trench');
+select pg_temp.expect_error($$update work_orders set state = 'cancelled', state_reason = 'x' where wo_number = 'T-55'$$,
+  'cancel needs its date');
+select pg_temp.expect_error($$update work_orders set state = 'cancelled', state_reason = 'x', state_date = public.riyadh_today() + 2 where wo_number = 'T-55'$$,
+  'cancel date in the future');
+select pg_temp.expect_error($$update work_orders set state = 'cancelled', state_reason = 'x', state_date = date '2026-10-01' where wo_number = 'T-55'$$,
+  'cancel date before the order was received');
+update work_orders set state = 'cancelled', state_reason = 'Customer withdrew', state_date = date '2026-10-03' where wo_number = 'T-55';
+select pg_temp.ok((select state_date = date '2026-10-03' from work_orders where wo_number = 'T-55'), 'cancel saved with its date');
+select pg_temp.expect_error($$update work_orders set state = 'open', state_reason = null where wo_number = 'T-55'$$,
+  'reopen must clear the cancel date');
+update work_orders set state = 'open', state_reason = null, state_date = null where wo_number = 'T-55';
+select pg_temp.ok((select state = 'open' and state_date is null from work_orders where wo_number = 'T-55'), 'reopened');
 select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date) values ('441782097', 'extension', '402', public.riyadh_today() + 3)$$,
   'received date in the future');
 select pg_temp.expect_error($$insert into permits (work_order_id, permit_number, applied_date, start_date, end_date) values ('aaaaaaaa-0000-0000-0000-000000000010', 'P-1', date '2026-10-01', date '2026-10-10', date '2026-10-05')$$,

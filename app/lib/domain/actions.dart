@@ -218,7 +218,7 @@ class Actions {
     if (errors.isNotEmpty) return ActionResult.fail(errors);
     return ActionResult._(
       ok: true,
-      order: o.copyWith(state: 'cancelled', stateReason: reason!.trim(), holdPeriods: _closeOpenHold(o, today)),
+      order: o.copyWith(state: 'cancelled', stateReason: reason!.trim(), stateDate: today, holdPeriods: _closeOpenHold(o, today)),
     );
   }
 
@@ -236,7 +236,7 @@ class Actions {
     ];
     if (errors.isNotEmpty || target == null) return ActionResult.fail(errors);
 
-    final from = o.copyWith(state: 'merged', stateReason: reason!.trim(), mergedInto: target.id, holdPeriods: _closeOpenHold(o, today));
+    final from = o.copyWith(state: 'merged', stateReason: reason!.trim(), mergedInto: target.id, stateDate: today, holdPeriods: _closeOpenHold(o, today));
     var to = target;
     final carried = <String>[];
     final notCarried = <String>[];
@@ -262,7 +262,7 @@ class Actions {
 
   ActionResult reopen(OrderInput o) {
     if (o.state != 'cancelled' && o.state != 'merged') return ActionResult.fail(const [Reason('not_cancelled')]);
-    return ActionResult._(ok: true, order: o.copyWith(state: 'open', stateReason: null, mergedInto: null));
+    return ActionResult._(ok: true, order: o.copyWith(state: 'open', stateReason: null, mergedInto: null, stateDate: null));
   }
 
   // ---------------- Editing ----------------

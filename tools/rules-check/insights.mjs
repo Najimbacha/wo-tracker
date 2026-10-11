@@ -11,7 +11,8 @@ const SEVERITY_RANK = { critical: 2, warning: 1 };
  * The order as it stood at the end of `asOf`: null if not yet received; steps done
  * later, tasreeh applied for later and holds that started later are left out.
  * Reports for past periods use this so they show the situation as it was then.
- * (Cancel and merge have no date, so a cancelled order counts as cancelled throughout.)
+ * A cancelled or merged order counts as active before the day it was cancelled or merged
+ * (orders saved before that date was stored count as cancelled throughout).
  */
 export function snapshot(order, asOf) {
   const t = toDay(asOf);
@@ -21,13 +22,18 @@ export function snapshot(order, asOf) {
   const st = order.status || { state: 'open', holdPeriods: [] };
   const holdPeriods = (st.holdPeriods || []).filter((h) => toDay(h.from) <= t).map((h) => (h.to && toDay(h.to) > t ? { ...h, to: null } : h));
   let state = st.state || 'open';
+  let status = { ...st };
+  if ((state === 'cancelled' || state === 'merged') && st.date && toDay(st.date) > t) {
+    state = 'open';
+    delete status.reason; delete status.mergedInto; delete status.date;
+  }
   if (state === 'open' || state === 'on_hold') state = holdPeriods.some((h) => !h.to) ? 'on_hold' : 'open';
   let lastChangeDate = order.lastChangeDate;
   if (lastChangeDate && toDay(lastChangeDate) > t) {
     const dates = [order.receivedDate, ...Object.values(steps).map((r) => r.done), ...permits.map((p) => p.appliedDate)].filter(Boolean).map(toDay);
     lastChangeDate = dates.length ? fromDay(Math.max(...dates)) : null;
   }
-  return { ...order, steps, permits, status: { ...st, state, holdPeriods }, lastChangeDate };
+  return { ...order, steps, permits, status: { ...status, state, holdPeriods }, lastChangeDate };
 }
 
 export function evaluateAll(rules, orders, today, settings) {

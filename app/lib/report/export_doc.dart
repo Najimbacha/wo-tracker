@@ -176,7 +176,7 @@ class ExportDoc {
       _col('id', 'Order id', 'text', 12), _col('woNumber', 'Work order number', 'text', 14), _col('category', 'Category', 'text', 11), _col('type', 'Type', 'text', 6),
       _col('receivedDate', 'Received', 'date', 12), _col('district', 'District', 'text', 16), _col('street', 'Street', 'text', 16), _col('networkRef', 'Network reference', 'text', 22),
       _col('contractor', 'Contractor', 'text', 20), _col('needsExcavation', 'Needs excavation', 'bool', 9), _col('state', 'State', 'text', 10), _col('stateReason', 'Reason', 'text', 24),
-      _col('mergedInto', 'Merged into (order id)', 'text', 12), _col('notes', 'Notes', 'text', 30), _col('lastChangeDate', 'Last change', 'date', 12), _col('deleted', 'Deleted', 'bool', 8),
+      _col('stateDate', 'Cancelled / merged on', 'date', 12), _col('mergedInto', 'Merged into (order id)', 'text', 12), _col('notes', 'Notes', 'text', 30), _col('lastChangeDate', 'Last change', 'date', 12), _col('deleted', 'Deleted', 'bool', 8),
       _col('status', 'Status now (calculated)', 'text', 12, true), _col('stage', 'Stage now (calculated)', 'text', 12, true),
     ],
     'steps': [
@@ -217,7 +217,7 @@ class ExportDoc {
       rows['orders']!.add({
         'id': o.id, 'woNumber': o.woNumber, 'category': o.category, 'type': o.type, 'receivedDate': o.receivedDate,
         'district': o.district, 'street': o.street, 'networkRef': o.networkRef, 'contractor': o.contractor,
-        'needsExcavation': o.needsExcavation, 'state': o.state, 'stateReason': o.stateReason, 'mergedInto': o.mergedInto,
+        'needsExcavation': o.needsExcavation, 'state': o.state, 'stateReason': o.stateReason, 'stateDate': o.stateDate, 'mergedInto': o.mergedInto,
         'notes': o.notes, 'lastChangeDate': o.lastChangeDate, 'deleted': o.deleted, 'status': ev.status, 'stage': ev.stage,
       });
       final pos = <String, int>{};
@@ -265,7 +265,7 @@ class ExportDoc {
       'about': {
         'generatedAt': generatedAt ?? today,
         'orders': orders.length,
-        'format': 2,
+        'format': 3,
         'notIncluded': 'Photos and SEC PDFs (kept in Google Drive), contractor phone numbers, follow-up notes, saved views and settings are not in this file. They are in the nightly database backup.',
       },
       'sheets': [
@@ -332,6 +332,7 @@ class ExportDoc {
           },
           state: r['state'] as String? ?? 'open',
           stateReason: r['stateReason'] as String?,
+          stateDate: r['stateDate'] as String?,
           mergedInto: r['mergedInto'] as String?,
           holdPeriods: [
             for (final h in holds[r['id']] ?? const <Map<String, Object?>>[])

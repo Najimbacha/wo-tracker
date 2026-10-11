@@ -29,6 +29,7 @@ class DemoData {
     if (status != null) {
       out['status'] = {
         ...status,
+        if (status['date'] != null) 'date': sh(status['date']),
         'holdPeriods': [
           for (final h in (status['holdPeriods'] as List? ?? const []))
             {...(h as Map), 'from': sh(h['from']), 'to': sh(h['to']), if (h['review'] != null) 'review': sh(h['review'])},

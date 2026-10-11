@@ -481,13 +481,19 @@ class Insights {
         .map((h) => h.to != null && toDay(h.to!) > t ? HoldPeriod(from: h.from, reason: h.reason, review: h.review) : h)
         .toList();
     var state = o.state;
+    var base = o;
+    // Cancelled or merged only from its own date (orders saved without a date: throughout).
+    if ((state == 'cancelled' || state == 'merged') && o.stateDate != null && toDay(o.stateDate!) > t) {
+      state = 'open';
+      base = o.copyWith(stateReason: null, mergedInto: null, stateDate: null);
+    }
     if (state == 'open' || state == 'on_hold') state = holds.any((h) => h.to == null) ? 'on_hold' : 'open';
     var last = o.lastChangeDate;
     if (last != null && toDay(last) > t) {
       final dates = [o.receivedDate, ...steps.values.map((r) => r.done), ...permits.map((p) => p.appliedDate)].whereType<String>().map(toDay).toList();
       last = dates.isEmpty ? null : fromDay(dates.reduce((a, b) => a > b ? a : b));
     }
-    return o.copyWith(steps: steps, permits: permits, holdPeriods: holds, state: state, lastChangeDate: last);
+    return base.copyWith(steps: steps, permits: permits, holdPeriods: holds, state: state, lastChangeDate: last);
   }
 
   ReportResult report(List<OrderInput> orders, String from, String to, {String? today, Map<String, int>? alertSettings}) {

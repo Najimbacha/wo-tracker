@@ -2920,12 +2920,12 @@
      "summary": "المتوسط اليومي: 0.9 مستلمة، 0.3 مكتملة."
     },
     "stages": {
-     "title": "الأوامر المفتوحة حسب المرحلة · 26",
+     "title": "الأوامر المفتوحة حسب المرحلة · 28",
      "rows": [
       {
        "key": "kashfeya",
        "label": "الكشفية",
-       "value": 0
+       "value": 1
       },
       {
        "key": "tasreeh",
@@ -2940,7 +2940,7 @@
       {
        "key": "civil",
        "label": "العمل الميداني",
-       "value": 6
+       "value": 7
       },
       {
        "key": "restoration",
@@ -3234,6 +3234,13 @@
        "avgDays": 26
       },
       {
+       "contractor": "Tamkeen Works",
+       "open": 3,
+       "completed": 0,
+       "lateStarts": 0,
+       "avgDays": null
+      },
+      {
        "contractor": "Afaq Engineering",
        "open": 2,
        "completed": 2,
@@ -3248,23 +3255,16 @@
        "avgDays": 9
       },
       {
-       "contractor": "Rawabi Electric",
-       "open": 2,
-       "completed": 0,
-       "lateStarts": 0,
-       "avgDays": 39
-      },
-      {
        "contractor": "آخرون (6)",
-       "open": 7,
+       "open": 8,
        "completed": 3,
        "lateStarts": 0,
-       "avgDays": 29
+       "avgDays": 32
       }
      ],
      "total": {
       "contractor": "الإجمالي",
-      "open": 26,
+      "open": 28,
       "completed": 10,
       "lateStarts": 1,
       "avgDays": 31

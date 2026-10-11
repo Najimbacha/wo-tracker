@@ -145,7 +145,7 @@ test('the data copy covers every column of the order tables in the database', ()
     steps: { work_order_id: 'the row is under its order', step_key: 'part of Step id', segment_id: 'part of Step id', meter_id: 'part of Step id' },
   };
   const DB_TO_COPY = {
-    work_orders: { wo_number: 'woNumber', category: 'category', type_code: 'type', received_date: 'receivedDate', district_id: 'district', street: 'street', network_ref: 'networkRef', contractor_id: 'contractor', needs_excavation: 'needsExcavation', state: 'state', state_reason: 'stateReason', merged_into: 'mergedInto', notes: 'notes', last_change_date: 'lastChangeDate', deleted_at: 'deleted' },
+    work_orders: { wo_number: 'woNumber', category: 'category', type_code: 'type', received_date: 'receivedDate', district_id: 'district', street: 'street', network_ref: 'networkRef', contractor_id: 'contractor', needs_excavation: 'needsExcavation', state: 'state', state_reason: 'stateReason', state_date: 'stateDate', merged_into: 'mergedInto', notes: 'notes', last_change_date: 'lastChangeDate', deleted_at: 'deleted' },
     permits: { work_order_id: 'orderId', permit_number: 'number', applied_date: 'appliedDate', start_date: 'startDate', end_date: 'endDate' },
     segments: { work_order_id: 'orderId', base: 'base', width_cm: 'width', length_m: 'lengthM', tiled: 'tiled' },
     meters: { work_order_id: 'orderId', meter_number: 'number', meter_type: 'meterType', breaker_amps: 'breakerAmps', old_meter_number: 'oldNumber' },

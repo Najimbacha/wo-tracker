@@ -2629,7 +2629,8 @@
    "status": {
     "state": "cancelled",
     "holdPeriods": [],
-    "reason": "SEC cancelled: customer withdrew the request"
+    "reason": "SEC cancelled: customer withdrew the request",
+    "date": "2026-10-02"
    },
    "lastChangeDate": "2026-10-01"
   },
@@ -2756,7 +2757,8 @@
     "state": "merged",
     "holdPeriods": [],
     "reason": "Replaced by a new work order from SEC",
-    "mergedInto": "demo-045"
+    "mergedInto": "demo-045",
+    "date": "2026-10-04"
    },
    "lastChangeDate": "2026-09-27"
   },

@@ -192,6 +192,26 @@ void main() {
     expect(s2.lastChangeDate, '2026-10-02');
   });
 
+  test('snapshot: cancelled and merged count only from their own date', () {
+    OrderInput o(Map<String, dynamic> status) => OrderInput.fromJson({
+          'id': 'C', 'type': '802', 'category': 'extension', 'woNumber': '441799002', 'receivedDate': '2026-09-10',
+          'steps': {'kashfeya': {'done': '2026-09-11'}}, 'lastChangeDate': '2026-09-11', 'status': status,
+        });
+    final cancelled = o({'state': 'cancelled', 'reason': 'Customer withdrew', 'date': '2026-09-20', 'holdPeriods': []});
+    expect(Insights.snapshot(cancelled, '2026-09-19')!.state, 'open');
+    expect(Insights.snapshot(cancelled, '2026-09-19')!.stateReason, isNull);
+    expect(Insights.snapshot(cancelled, '2026-09-20')!.state, 'cancelled');
+    final held = o({'state': 'cancelled', 'reason': 'Customer withdrew', 'date': '2026-09-20',
+      'holdPeriods': [{'from': '2026-09-15', 'to': '2026-09-20', 'reason': 'Objection'}]});
+    expect(Insights.snapshot(held, '2026-09-18')!.state, 'on_hold');
+    final merged = o({'state': 'merged', 'reason': 'New WO', 'mergedInto': 'X', 'date': '2026-09-25', 'holdPeriods': []});
+    expect(Insights.snapshot(merged, '2026-09-24')!.state, 'open');
+    expect(Insights.snapshot(merged, '2026-09-24')!.mergedInto, isNull);
+    expect(Insights.snapshot(merged, '2026-09-25')!.mergedInto, 'X');
+    final old = o({'state': 'cancelled', 'reason': 'Old', 'holdPeriods': []});
+    expect(Insights.snapshot(old, '2026-09-12')!.state, 'cancelled');
+  });
+
   group('small cases', () {
     for (final c in (fx['extraCases'] as List).map(m)) {
       test(c['name'] as String, () {

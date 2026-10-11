@@ -108,6 +108,12 @@ test('reports have something to show today, this week and last month', () => {
   assert.ok(sep.received >= 15 && sep.completed >= 5, JSON.stringify({ r: sep.received, c: sep.completed }));
 });
 
+test('demo has a cancelled and a merged order, each with its date', () => {
+  const gone = orders.filter((o) => ['cancelled', 'merged'].includes(o.status && o.status.state));
+  assert.deepEqual(gone.map((o) => o.status.state).sort(), ['cancelled', 'merged']);
+  for (const o of gone) assert.ok(o.status.date && o.status.date >= o.receivedDate && o.status.date < T, o.id);
+});
+
 test('Demo mode can move all dates to any day without changing what the screens show', () => {
   for (const days of [1, 37, 400]) {
     const later = fromDay(toDay(T) + days);
@@ -117,6 +123,7 @@ test('Demo mode can move all dates to any day without changing what the screens 
       assert.equal(b.status, a.status, o.id);
       assert.equal(b.stage, a.stage, o.id);
       assert.deepEqual(b.alerts.map((x) => [x.code, x.days ?? x.daysLeft ?? null]), a.alerts.map((x) => [x.code, x.days ?? x.daysLeft ?? null]), o.id);
+      if (o.status && o.status.date) assert.equal(shiftDates(o, days).status.date, fromDay(toDay(o.status.date) + days), `${o.id} cancel/merge date`);
     }
   }
 });
