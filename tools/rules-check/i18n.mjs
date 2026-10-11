@@ -3,7 +3,8 @@
 //
 //   {name}       → the value
 //   {name#unit}  → the number with the right word: "1 day", "9 days",
-//                  "2 يومين", "9 أيام", "11 يوماً" (texts under unit.<unit>.<form>)
+//                  "يومين", "9 أيام", "11 يوماً" (texts under unit.<unit>.<form>;
+//                  Arabic 1 and 2 are the word alone)
 
 export const PLURAL_FORMS = { en: ['one', 'other'], ar: ['one', 'two', 'few', 'many', 'other'] };
 
@@ -30,7 +31,10 @@ export function format(lang, text, fallback, key, params = {}) {
     if (v === undefined || v === null) return whole;
     if (!unit) return Array.isArray(v) ? listJoin(lang, v.map(String)) : String(v);
     const form = pluralForm(lang, Number(v));
-    const word = text[`unit.${unit}.${form}`] ?? text[`unit.${unit}.other`] ?? fallback[`unit.${unit}.${pluralForm('en', Number(v))}`] ?? unit;
+    const own = text[`unit.${unit}.${form}`];
+    const word = own ?? text[`unit.${unit}.other`] ?? fallback[`unit.${unit}.${pluralForm('en', Number(v))}`] ?? unit;
+    // Arabic singular and dual carry the number in the word: "منذ يومين", "منذ يوم".
+    if (lang === 'ar' && own !== undefined && (form === 'one' || form === 'two')) return word;
     return `${v} ${word}`;
   });
 }

@@ -18,7 +18,8 @@ class Strings {
   /// Looks up [key] and fills placeholders. Falls back to English, then to the key
   /// itself, so a missing text never crashes a screen.
   ///   {name}       → the value
-  ///   {name#unit}  → number + correctly pluralised word ("9 days", "11 يوماً")
+  ///   {name#unit}  → number + correctly pluralised word ("9 days", "11 يوماً");
+  ///                  Arabic 1 and 2 are the word alone ("يوم", "يومين")
   String t(String key, [Map<String, Object?> params = const {}]) {
     final raw = _text[key] ?? _fallback[key] ?? key;
     return raw.replaceAllMapped(_placeholder, (m) {
@@ -27,10 +28,12 @@ class Strings {
       final unit = m.group(2);
       if (unit != null && v is num) {
         final n = v.toInt();
-        final word = _text['unit.$unit.${pluralForm(lang, n)}'] ??
-            _text['unit.$unit.other'] ??
-            _fallback['unit.$unit.${pluralForm('en', n)}'] ??
-            unit;
+        final form = pluralForm(lang, n);
+        final own = _text['unit.$unit.$form'];
+        final word = own ?? _text['unit.$unit.other'] ?? _fallback['unit.$unit.${pluralForm('en', n)}'] ?? unit;
+        // Arabic singular and dual carry the number in the word itself:
+        // "منذ يومين", not "منذ 2 يومين"; "منذ يوم", not "منذ 1 يوم".
+        if (lang == 'ar' && own != null && (form == 'one' || form == 'two')) return word;
         return '$v $word';
       }
       if (v is List) return list(v.map((e) => '$e').toList());

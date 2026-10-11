@@ -38,7 +38,7 @@
   "common.showAll": "عرض الكل ({count})",
   "common.more": "{count} أخرى",
   "common.days": "{count#day}",
-  "common.daysShort": "{count} ي",
+  "common.daysShort": "{count#day}",
   "common.today": "اليوم",
   "common.yesterday": "أمس",
   "common.metres": "{value} م",
@@ -448,7 +448,7 @@
   "data.syncedAgo": "آخر مزامنة {when}",
   "data.backupKept": "{when} · محفوظ {count}",
   "data.restoreTestPassed": "نجح {when}",
-  "data.notSynced": "لم تتم مزامنة {device} منذ {hours#hour}. {count#change} بانتظاره.",
+  "data.notSynced": "لم تتم مزامنة {device} منذ {hours#hour}. التغييرات المنتظرة عليه: {count}.",
 
   "date.month.1": "يناير",
   "date.month.2": "فبراير",
