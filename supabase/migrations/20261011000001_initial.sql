@@ -189,6 +189,7 @@ create table public.work_orders (
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now(),
   deleted_at        timestamptz,
+  deleted_reason    text,  -- why it was moved to Deleted orders
   constraint wo_extension_9_digits check (category <> 'extension' or wo_number ~ '^[0-9]{9}$'),
   constraint wo_merged_needs_target check (state <> 'merged' or merged_into is not null),
   constraint wo_state_date check ((state in ('cancelled', 'merged')) = (state_date is not null)),
@@ -248,7 +249,8 @@ create table public.meters (
   updated_at        timestamptz not null default now(),
   deleted_at        timestamptz
 );
-create unique index meters_seq_uq on public.meters (work_order_id, seq) where deleted_at is null;
+-- Not unique: two devices adding a meter offline may pick the same number; seq only orders the list.
+create index meters_seq_idx on public.meters (work_order_id, seq) where deleted_at is null;
 create index meters_number_idx on public.meters (owner_id, meter_number);
 
 create table public.cable_runs (

@@ -478,7 +478,7 @@ class Insights {
     final permits = o.permits.where((p) => !(p.appliedDate != null && toDay(p.appliedDate!) > t)).toList();
     final holds = o.holdPeriods
         .where((h) => toDay(h.from) <= t)
-        .map((h) => h.to != null && toDay(h.to!) > t ? HoldPeriod(from: h.from, reason: h.reason, review: h.review) : h)
+        .map((h) => h.to != null && toDay(h.to!) > t ? h.reopened() : h)
         .toList();
     var state = o.state;
     var base = o;

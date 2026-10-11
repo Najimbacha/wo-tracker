@@ -98,7 +98,7 @@ class Strings {
 
   String alert(Alert a) => a.code == 'next_tasreeh_needed' && a.data['daysLeft'] == 0
       ? t('alert.next_tasreeh_needed_today')
-      : t('alert.${a.code}', a.data);
+      : t('alert.${a.code}', {...a.data, if (a.data['date'] is String) 'date': date(a.data['date'] as String)});
 
   String reason(Reason r) => t('lock.${r.code}', {
         if (r.steps.isNotEmpty) 'steps': _uniqueNames(r.steps),

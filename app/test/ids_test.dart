@@ -41,4 +41,9 @@ void main() {
     expect(StepIds.stepRowId('w1', 'meter_on', meterId: 'm2'), isNot(a));
     expect(RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$').hasMatch(a), isTrue);
   });
+
+  test('settings row id is the same on every device', () {
+    final st = fx['settings'] as Map<String, dynamic>;
+    expect(StepIds.settingsRowId(st['userId'] as String), st['id']);
+  });
 }

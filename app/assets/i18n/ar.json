@@ -131,6 +131,7 @@
   "alert.meter_not_on": "تم تركيب العداد منذ {days#day} ولم يتم تشغيله",
   "alert.tawari_tasreeh_missing": "بدأ عمل الطوارئ منذ {days#day} ولا يوجد تصريح بعد",
   "alert.stalled": "لا تغيير منذ {days#day}",
+  "alert.hold_review_due": "متوقف: موعد المراجعة كان {date}",
 
   "alertShort.late_start": "تأخر البدء",
   "alertShort.open_trench": "حفرة مفتوحة",
@@ -140,6 +141,7 @@
   "alertShort.meter_not_on": "العداد لم يُشغَّل",
   "alertShort.tawari_tasreeh_missing": "طوارئ بدون تصريح",
   "alertShort.stalled": "لا تقدم",
+  "alertShort.hold_review_due": "مراجعة الإيقاف مستحقة",
 
   "lock.waiting_for": "بانتظار {steps}",
   "lock.tasreeh_starts": "يبدأ التصريح {date}",
@@ -183,6 +185,10 @@
   "error.duplicate_wo_deleted": "هذا الرقم لأمر عمل محذوف استُلم في {date}. هل تريد استعادته بدلاً من ذلك؟",
   "error.duplicate_permit_other": "رقم التصريح {permit} مستخدم في أمر العمل {wo}.",
   "error.duplicate_permit_deleted": "رقم التصريح {permit} يخص أمر العمل المحذوف {wo}. هل تريد استعادة ذلك الأمر بدلاً من ذلك؟",
+  "error.permit_empty": "أدخل تاريخ التقديم أو رقم التصريح.",
+  "error.unknown_permit": "هذا التصريح لم يعد في أمر العمل. افتح الأمر مرة أخرى وحاول.",
+  "error.already_deleted": "أمر العمل هذا موجود مسبقًا في الأوامر المحذوفة.",
+  "error.not_deleted": "أمر العمل هذا غير محذوف.",
   "error.meter_required": "أضف عداداً واحداً على الأقل. يمكن إدخال رقمه لاحقاً.",
 
   "toast.stepDone": "تم تسجيل {step}",

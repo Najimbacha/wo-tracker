@@ -146,7 +146,7 @@ test('every alert has a short name for chips and reports', () => {
 });
 
 test('alert codes in the app match the ones in the design', () => {
-  const expected = ['late_start', 'open_trench', 'restoration_overdue', 'no_active_tasreeh', 'next_tasreeh_needed', 'meter_not_on', 'tawari_tasreeh_missing', 'stalled'];
+  const expected = ['late_start', 'open_trench', 'restoration_overdue', 'no_active_tasreeh', 'next_tasreeh_needed', 'meter_not_on', 'tawari_tasreeh_missing', 'stalled', 'hold_review_due'];
   assert.deepEqual([...engineCodes('alert').keys()].sort(), [...expected].sort());
 });
 

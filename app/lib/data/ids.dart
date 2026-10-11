@@ -21,6 +21,9 @@ class StepIds {
   static String stepRowId(String workOrderId, String stepKey, {String? segmentId, String? meterId}) =>
       uuidV5(namespace, '$workOrderId|$stepKey|${segmentId ?? ''}|${meterId ?? ''}');
 
+  /// The account's one settings row: the same id on every device.
+  static String settingsRowId(String userId) => uuidV5(namespace, 'settings|$userId');
+
   /// RFC 4122 version 5 UUID (SHA-1 of namespace bytes + UTF-8 name).
   static String uuidV5(String ns, String name) {
     final hex = ns.replaceAll('-', '');

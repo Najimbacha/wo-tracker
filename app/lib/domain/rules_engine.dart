@@ -320,8 +320,26 @@ class RulesEngine {
       }
     }
 
-    final alerts = status == 'open' ? _alerts(o, today, th, ev, pkgs, stage) : <Alert>[];
+    final alerts = status == 'open'
+        ? _alerts(o, today, th, ev, pkgs, stage)
+        : status == 'on_hold'
+            ? _holdAlerts(o, today)
+            : <Alert>[];
     return Evaluation(ev, closed, total, status, stage, ev.where((e) => e.state == 'ready').map((e) => e.id).toList(), alerts);
+  }
+
+  // On hold: the only alert is the review date the user set when pausing the order.
+  List<Alert> _holdAlerts(OrderInput o, String today) {
+    final alerts = <Alert>[];
+    HoldPeriod? open;
+    for (final h in o.holdPeriods) {
+      if (h.to == null) open = h;
+    }
+    final review = open?.review;
+    if (review != null && toDay(review) <= toDay(today)) {
+      alerts.add(Alert('hold_review_due', 'warning', {'date': review, 'days': toDay(today) - toDay(review)}));
+    }
+    return alerts;
   }
 
   List<Alert> _alerts(OrderInput o, String today, Map<String, int> th, List<StepState> ev, List<String> pkgs, String? stage) {

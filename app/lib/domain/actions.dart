@@ -15,6 +15,8 @@ class ActionResult {
   final OrderInput? target; // merge: the order that replaces this one
   final List<String> carried; // merge: steps copied to the target
   final List<String> notCarried; // merge: finished steps that were not copied
+  final bool markedApplied; // savePermit: the Tasreeh applied step was marked too
+  final Permit? removed; // removePermit: the tasreeh taken off (its row is soft-deleted)
 
   const ActionResult._({
     required this.ok,
@@ -26,6 +28,8 @@ class ActionResult {
     this.target,
     this.carried = const [],
     this.notCarried = const [],
+    this.markedApplied = false,
+    this.removed,
   });
 
   factory ActionResult.fail(List<Reason> errors) => ActionResult._(ok: false, errors: errors);
@@ -265,6 +269,87 @@ class Actions {
     return ActionResult._(ok: true, order: o.copyWith(state: 'open', stateReason: null, mergedInto: null, stateDate: null));
   }
 
+  // ---------------- Tasreeh ----------------
+
+  /// Add ([index] null) or change one tasreeh. An applied date also marks the
+  /// "Tasreeh applied" step when it is still open and the steps before it allow.
+  /// [orders] is every other order, to catch a number already used elsewhere.
+  ActionResult savePermit(OrderInput o, int? index, Permit input, List<OrderInput> orders, String today) {
+    final na = _notActive(o);
+    if (!na.ok) return na;
+    String? val(String? v) => v == null || v.isEmpty ? null : v;
+    final number = val(_cleanNumber(input.number));
+    final p = Permit(number: number, appliedDate: val(input.appliedDate), startDate: val(input.startDate), endDate: val(input.endDate));
+    final errors = <Reason>[];
+    if (p.number == null && p.appliedDate == null && p.startDate == null) errors.add(const Reason('permit_empty'));
+    if (p.appliedDate != null && toDay(p.appliedDate!) > toDay(today)) errors.add(const Reason('future_date'));
+    if (p.appliedDate != null && o.receivedDate != null && toDay(p.appliedDate!) < toDay(o.receivedDate!)) {
+      errors.add(const Reason('before_received'));
+    }
+    if (index != null && (index < 0 || index >= o.permits.length)) return ActionResult.fail(const [Reason('unknown_permit')]);
+    final permits = [...o.permits];
+    if (index == null) {
+      permits.add(p);
+    } else {
+      final old = permits[index];
+      permits[index] = Permit(id: old.id, number: p.number, appliedDate: p.appliedDate, startDate: p.startDate, endDate: p.endDate);
+    }
+    final draft = o.copyWith(permits: permits);
+    for (final e in engine.validateOrder(draft)) {
+      if (e.code.startsWith('permit_') || e.code == 'duplicate_permit') errors.add(e);
+    }
+    if (p.number != null) {
+      final other = findPermitOwner(orders, p.number, exceptId: o.id);
+      if (other != null) {
+        errors.add(Reason(other.deleted ? 'duplicate_permit_deleted' : 'duplicate_permit_other', permit: p.number, extra: {'wo': other.woNumber}));
+      }
+    }
+    if (errors.isNotEmpty) return ActionResult.fail(errors);
+    var next = p.appliedDate == null ? draft : draft.copyWith(lastChangeDate: _maxDate(draft.lastChangeDate, p.appliedDate));
+    var marked = false;
+    if (p.appliedDate != null && _known(next, 'tasreeh_applied') && !_isClosed(next, 'tasreeh_applied')) {
+      final r = markDone(next, 'tasreeh_applied', p.appliedDate!, today);
+      if (r.ok) {
+        next = r.order!;
+        marked = true;
+      }
+    }
+    return ActionResult._(ok: true, order: next, markedApplied: marked);
+  }
+
+  /// Remove one tasreeh (typed on the wrong order). Step dates stay as they are.
+  ActionResult removePermit(OrderInput o, int index) {
+    if (index < 0 || index >= o.permits.length) return ActionResult.fail(const [Reason('unknown_permit')]);
+    final permits = [...o.permits]..removeAt(index);
+    return ActionResult._(ok: true, order: o.copyWith(permits: permits), removed: o.permits[index]);
+  }
+
+  // ---------------- Delete and restore ----------------
+
+  /// Move an order to Deleted orders. Nothing is erased; it can be restored any time.
+  ActionResult deleteOrder(OrderInput o, String? reason) {
+    if (o.deleted) return ActionResult.fail(const [Reason('already_deleted')]);
+    if (_blank(reason)) return ActionResult.fail(const [Reason('reason_required')]);
+    return ActionResult._(ok: true, order: o.copyWith(deleted: true, deletedReason: reason!.trim()));
+  }
+
+  /// Bring a deleted order back, unless another active order now uses its numbers.
+  ActionResult restoreOrder(OrderInput o, List<OrderInput> orders) {
+    if (!o.deleted) return ActionResult.fail(const [Reason('not_deleted')]);
+    final active = orders.where((x) => !x.deleted && x.id != o.id).toList();
+    final errors = <Reason>[];
+    final dup = o.woNumber == null ? null : findDuplicate(active, o.woNumber!, exceptId: o.id);
+    if (dup != null) {
+      errors.add(Reason('duplicate_wo', date: dup.receivedDate, extra: {'id': dup.id, 'district': dup.district ?? ''}));
+    }
+    for (final p in o.permits) {
+      final other = findPermitOwner(active, p.number, exceptId: o.id);
+      if (other != null) errors.add(Reason('duplicate_permit_other', permit: p.number, extra: {'wo': other.woNumber}));
+    }
+    if (errors.isNotEmpty) return ActionResult.fail(errors);
+    return ActionResult._(ok: true, order: o.copyWith(deleted: false, deletedReason: null));
+  }
+
   // ---------------- Editing ----------------
 
   List<String> editImpact(OrderInput before, OrderInput after) {
@@ -309,7 +394,7 @@ class Actions {
   static OrderInput _normalizeNumbers(OrderInput d) => d.copyWith(
         woNumber: _cleanNumber(d.woNumber),
         permits: d.permits
-            .map((p) => Permit(number: _cleanNumber(p.number), appliedDate: p.appliedDate, startDate: p.startDate, endDate: p.endDate))
+            .map((p) => Permit(id: p.id, number: _cleanNumber(p.number), appliedDate: p.appliedDate, startDate: p.startDate, endDate: p.endDate))
             .toList(),
         meters: d.meters
             .map((m) => Meter(m.id,

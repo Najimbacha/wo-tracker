@@ -21,6 +21,14 @@ export function uuidV5(namespace, name) {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
+/**
+ * The id of the account's one settings row. Two devices that start offline would
+ * otherwise each create a settings row and the second upload would be refused.
+ */
+export function settingsRowId(userId) {
+  return uuidV5(STEP_ID_NAMESPACE, `settings|${userId}`);
+}
+
 /** The id of the steps row for one step of one work order (segment / meter ids or null). */
 export function stepRowId(workOrderId, stepKey, segmentId = null, meterId = null) {
   return uuidV5(STEP_ID_NAMESPACE, `${workOrderId}|${stepKey}|${segmentId || ''}|${meterId || ''}`);

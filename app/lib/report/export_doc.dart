@@ -176,7 +176,7 @@ class ExportDoc {
       _col('id', 'Order id', 'text', 12), _col('woNumber', 'Work order number', 'text', 14), _col('category', 'Category', 'text', 11), _col('type', 'Type', 'text', 6),
       _col('receivedDate', 'Received', 'date', 12), _col('district', 'District', 'text', 16), _col('street', 'Street', 'text', 16), _col('networkRef', 'Network reference', 'text', 22),
       _col('contractor', 'Contractor', 'text', 20), _col('needsExcavation', 'Needs excavation', 'bool', 9), _col('state', 'State', 'text', 10), _col('stateReason', 'Reason', 'text', 24),
-      _col('stateDate', 'Cancelled / merged on', 'date', 12), _col('mergedInto', 'Merged into (order id)', 'text', 12), _col('notes', 'Notes', 'text', 30), _col('lastChangeDate', 'Last change', 'date', 12), _col('deleted', 'Deleted', 'bool', 8),
+      _col('stateDate', 'Cancelled / merged on', 'date', 12), _col('mergedInto', 'Merged into (order id)', 'text', 12), _col('notes', 'Notes', 'text', 30), _col('lastChangeDate', 'Last change', 'date', 12), _col('deleted', 'Deleted', 'bool', 8), _col('deletedReason', 'Why deleted', 'text', 20),
       _col('status', 'Status now (calculated)', 'text', 12, true), _col('stage', 'Stage now (calculated)', 'text', 12, true),
     ],
     'steps': [
@@ -218,7 +218,7 @@ class ExportDoc {
         'id': o.id, 'woNumber': o.woNumber, 'category': o.category, 'type': o.type, 'receivedDate': o.receivedDate,
         'district': o.district, 'street': o.street, 'networkRef': o.networkRef, 'contractor': o.contractor,
         'needsExcavation': o.needsExcavation, 'state': o.state, 'stateReason': o.stateReason, 'stateDate': o.stateDate, 'mergedInto': o.mergedInto,
-        'notes': o.notes, 'lastChangeDate': o.lastChangeDate, 'deleted': o.deleted, 'status': ev.status, 'stage': ev.stage,
+        'notes': o.notes, 'lastChangeDate': o.lastChangeDate, 'deleted': o.deleted, 'deletedReason': o.deletedReason, 'status': ev.status, 'stage': ev.stage,
       });
       final pos = <String, int>{};
       final all = _engine.evaluate(o, '2100-01-01').steps;
@@ -340,6 +340,7 @@ class ExportDoc {
           ],
           lastChangeDate: r['lastChangeDate'] as String?,
           deleted: r['deleted'] == true,
+          deletedReason: r['deletedReason'] as String?,
         ),
     ];
   }

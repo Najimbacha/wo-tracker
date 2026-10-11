@@ -194,6 +194,86 @@ export function reopen(rules, order) {
   return { ok: true, order: o };
 }
 
+// ---------------- Tasreeh ----------------
+
+/**
+ * Add (index = null) or change one tasreeh. Fields can arrive one at a time: applied
+ * first, then the number and dates once Baladiya approves. When an applied date is
+ * entered and the "Tasreeh applied" step is still open, that step is marked done on
+ * that date (if the steps before it allow), so the two never disagree.
+ * `orders` is every other order, to catch a number already used elsewhere.
+ */
+export function savePermit(rules, order, index, input, orders, today) {
+  if (['cancelled', 'merged'].includes(state(order))) return fail({ code: 'not_active', state: state(order) });
+  const p = {};
+  for (const k of ['number', 'appliedDate', 'startDate', 'endDate']) {
+    const v = k === 'number' ? cleanNumber(input[k]) : input[k];
+    if (v !== undefined && v !== null && v !== '') p[k] = v;
+  }
+  const errors = [];
+  if (!p.number && !p.appliedDate && !p.startDate) errors.push({ code: 'permit_empty' });
+  if (p.appliedDate && toDay(p.appliedDate) > toDay(today)) errors.push({ code: 'future_date' });
+  if (p.appliedDate && order.receivedDate && toDay(p.appliedDate) < toDay(order.receivedDate)) errors.push({ code: 'before_received' });
+  const permits = (order.permits || []).map((x) => ({ ...x }));
+  if (index !== null && (index < 0 || index >= permits.length)) return fail({ code: 'unknown_permit' });
+  if (index === null) permits.push(p); else permits[index] = { ...(permits[index].id ? { id: permits[index].id } : {}), ...p };
+  const draft = { ...order, permits };
+  for (const e of validateOrder(rules, draft)) if (e.code.startsWith('permit_') || e.code === 'duplicate_permit') errors.push(e);
+  if (p.number) {
+    const other = findPermitOwner(orders, p.number, order.id);
+    if (other) errors.push({ code: other.deleted ? 'duplicate_permit_deleted' : 'duplicate_permit_other', permit: p.number, wo: other.woNumber });
+  }
+  if (errors.length) return fail(...errors);
+  let o = clone(draft);
+  if (p.appliedDate) o.lastChangeDate = maxDate(o.lastChangeDate, p.appliedDate);
+  let markedApplied = false;
+  const hasStep = generate(rules, o).some((s) => s.id === 'tasreeh_applied');
+  if (p.appliedDate && hasStep && !isClosed(o, 'tasreeh_applied')) {
+    const r = markDone(rules, o, 'tasreeh_applied', p.appliedDate, today);
+    if (r.ok) { o = r.order; markedApplied = true; }
+  }
+  return { ok: true, order: o, markedApplied };
+}
+
+/** Remove one tasreeh (e.g. typed on the wrong order). The step dates stay as they are. */
+export function removePermit(rules, order, index) {
+  const permits = order.permits || [];
+  if (index < 0 || index >= permits.length) return fail({ code: 'unknown_permit' });
+  const o = clone(order);
+  o.permits = permits.filter((_, i) => i !== index).map((x) => ({ ...x }));
+  return { ok: true, order: o, removed: permits[index] };
+}
+
+// ---------------- Delete and restore ----------------
+
+/** Move an order to Deleted orders. Nothing is erased; it can be restored any time. */
+export function deleteOrder(order, reason) {
+  if (order.deleted) return fail({ code: 'already_deleted' });
+  if (blank(reason)) return fail({ code: 'reason_required' });
+  return { ok: true, order: { ...clone(order), deleted: true, deletedReason: reason.trim() } };
+}
+
+/**
+ * Bring a deleted order back. Refused while another active order uses its work order
+ * number or one of its tasreeh numbers (that order would have to be dealt with first).
+ */
+export function restoreOrder(order, orders) {
+  if (!order.deleted) return fail({ code: 'not_deleted' });
+  const errors = [];
+  const active = orders.filter((o) => !o.deleted && o.id !== order.id);
+  const dup = findDuplicate(active, order.woNumber, order.id);
+  if (dup) errors.push({ code: 'duplicate_wo', id: dup.id, date: dup.date, district: dup.district });
+  for (const p of order.permits || []) {
+    const other = findPermitOwner(active, p.number, order.id);
+    if (other) errors.push({ code: 'duplicate_permit_other', permit: p.number, wo: other.woNumber });
+  }
+  if (errors.length) return fail(...errors);
+  const o = clone(order);
+  delete o.deleted;
+  delete o.deletedReason;
+  return { ok: true, order: o };
+}
+
 // ---------------- Editing ----------------
 
 /**

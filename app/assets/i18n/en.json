@@ -131,6 +131,7 @@
   "alert.meter_not_on": "Meter installed {days#day} ago, not switched on",
   "alert.tawari_tasreeh_missing": "Emergency work started {days#day} ago, no tasreeh yet",
   "alert.stalled": "No change for {days#day}",
+  "alert.hold_review_due": "On hold: review was due {date}",
 
   "alertShort.late_start": "Late start",
   "alertShort.open_trench": "Open trench",
@@ -140,6 +141,7 @@
   "alertShort.meter_not_on": "Meter not on",
   "alertShort.tawari_tasreeh_missing": "Emergency, no tasreeh",
   "alertShort.stalled": "No progress",
+  "alertShort.hold_review_due": "Hold review due",
 
   "lock.waiting_for": "Waiting for {steps}",
   "lock.tasreeh_starts": "Tasreeh starts {date}",
@@ -183,6 +185,10 @@
   "error.duplicate_wo_deleted": "This number belongs to a deleted work order received on {date}. Restore it instead?",
   "error.duplicate_permit_other": "Tasreeh number {permit} is already used on work order {wo}.",
   "error.duplicate_permit_deleted": "Tasreeh number {permit} belongs to deleted work order {wo}. Restore that order instead?",
+  "error.permit_empty": "Enter the applied date or the tasreeh number.",
+  "error.unknown_permit": "This tasreeh is no longer on the order. Reopen the order and try again.",
+  "error.already_deleted": "This work order is already in Deleted orders.",
+  "error.not_deleted": "This work order isn't deleted.",
   "error.meter_required": "Add at least one meter. Its number can be filled in later.",
 
   "toast.stepDone": "{step} marked done",

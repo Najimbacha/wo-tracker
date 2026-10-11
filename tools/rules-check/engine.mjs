@@ -198,7 +198,8 @@ export function evaluate(rules, order, today, settings = {}) {
     }
   }
 
-  const alerts = status === 'open' ? computeAlerts(rules, order, today, th, evaluated, pkgs, holds, stage) : [];
+  const alerts = status === 'open' ? computeAlerts(rules, order, today, th, evaluated, pkgs, holds, stage)
+    : status === 'on_hold' ? holdAlerts(order, today, holds) : [];
   return {
     steps: evaluated,
     progress: { closed, total },
@@ -207,6 +208,16 @@ export function evaluate(rules, order, today, settings = {}) {
     next: evaluated.filter((e) => e.state === 'ready').map((e) => e.id),
     alerts,
   };
+}
+
+// On hold: the only alert is the review date the user set when pausing the order.
+function holdAlerts(order, today, holds) {
+  const alerts = [];
+  const open = holds.find((h) => !h.to);
+  if (open && open.review && toDay(open.review) <= toDay(today)) {
+    alerts.push({ code: 'hold_review_due', date: open.review, days: toDay(today) - toDay(open.review), severity: 'warning' });
+  }
+  return alerts;
 }
 
 function computeAlerts(rules, order, today, th, ev, pkgs, holds, stage) {

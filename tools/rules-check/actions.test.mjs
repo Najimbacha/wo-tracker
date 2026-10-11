@@ -38,6 +38,10 @@ function run(c) {
     case 'merge': return A.merge(rules, o, build(c.target, c.targetPatch), a.reason, a.carry, today);
     case 'reopen': return A.reopen(rules, o);
     case 'editImpact': return { impact: A.editImpact(rules, o, { ...o, ...a.after }) };
+    case 'savePermit': return A.savePermit(rules, o, a.index ?? null, a.permit, allOrders(), today);
+    case 'removePermit': return A.removePermit(rules, o, a.index);
+    case 'deleteOrder': return A.deleteOrder(o, a.reason);
+    case 'restoreOrder': return A.restoreOrder(o, allOrders());
     case 'formSpec': return { spec: A.formSpec(rules, a.draft) };
     case 'normalizeDraft': return { draft: A.normalizeDraft(a.draft, rules) };
     case 'validateDraft': return { errors: A.validateDraft(rules, a.draft, allOrders(), today) };
@@ -53,6 +57,10 @@ function check(c, r) {
   if (e.errorData) e.errorData.forEach((d, i) => { for (const [k, v] of Object.entries(d)) assert.deepEqual(r.errors[i][k], v, `error[${i}].${k}`); });
   const o = r.order;
   if (e.steps) assert.deepEqual(o.steps, e.steps);
+  if (e.permits) assert.deepEqual(o.permits, e.permits);
+  if ('deleted' in e) assert.equal(!!o.deleted, e.deleted);
+  if ('deletedReason' in e) assert.equal(o.deletedReason, e.deletedReason);
+  if ('markedApplied' in e) assert.equal(r.markedApplied, e.markedApplied);
   if ('lastChangeDate' in e) assert.equal(o.lastChangeDate, e.lastChangeDate);
   if ('completed' in e) assert.equal(r.completed, e.completed);
   if (e.state) assert.equal(o.status.state, e.state);

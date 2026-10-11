@@ -47,6 +47,14 @@ void main() {
           r = actions.clearStep(o!, a['step'] as String);
         case 'clearPreview':
           r = actions.clearPreview(o!, a['step'] as String);
+        case 'savePermit':
+          r = actions.savePermit(o!, a['index'] as int?, Permit.fromJson(m(a['permit'])), all(), today);
+        case 'removePermit':
+          r = actions.removePermit(o!, a['index'] as int);
+        case 'deleteOrder':
+          r = actions.deleteOrder(o!, a['reason'] as String?);
+        case 'restoreOrder':
+          r = actions.restoreOrder(o!, all());
         case 'putOnHold':
           r = actions.putOnHold(o!, a['from'] as String, a['reason'] as String?, today, reviewDate: a['review'] as String?);
         case 'resume':
@@ -99,6 +107,10 @@ void main() {
       }
       final out = res.order;
       if (e.containsKey('steps')) expect(stepsJson(out!), e['steps']);
+      if (e.containsKey('permits')) expect(out!.permits.map((p) => p.toJson()).toList(), e['permits']);
+      if (e.containsKey('markedApplied')) expect(res.markedApplied, e['markedApplied']);
+      if (e.containsKey('deleted')) expect(out!.deleted, e['deleted']);
+      if (e.containsKey('deletedReason')) expect(out!.deletedReason, e['deletedReason']);
       if (e.containsKey('lastChangeDate')) expect(out!.lastChangeDate, e['lastChangeDate']);
       if (e.containsKey('completed')) expect(res.completed, e['completed']);
       if (e.containsKey('state')) expect(out!.state, e['state']);

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
-import { uuidV5, stepRowId, STEP_ID_NAMESPACE, sha1Plain, uuidV5Plain } from './ids.mjs';
+import { uuidV5, stepRowId, settingsRowId, STEP_ID_NAMESPACE, sha1Plain, uuidV5Plain } from './ids.mjs';
 
 const fx = JSON.parse(readFileSync(new URL('../../app/test/fixtures/ids.json', import.meta.url), 'utf8'));
 
@@ -47,3 +47,5 @@ test('the plain version 5 ids match, including the fixture values', () => {
 test('the plain SHA-1 matches the Python vectors the Dart test uses', () => {
   for (const v of fx.sha1) assert.equal(Buffer.from(sha1Plain(new TextEncoder().encode(v.text))).toString('hex'), v.sha1, `length ${v.text.length}`);
 });
+
+test('settings row id is the same on every device', () => assert.equal(settingsRowId(fx.settings.userId), fx.settings.id));

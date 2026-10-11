@@ -1,5 +1,5 @@
 {
- "note": "Expected step row ids, computed with Python's uuid.uuid5 (an independent implementation). Name = work_order_id|step_key|segment_id|meter_id. sha1: hashlib.sha1 of the UTF-8 text, lengths around the 64-byte block edges.",
+ "note": "Expected step row ids, computed with Python's uuid.uuid5 (an independent implementation). Name = work_order_id|step_key|segment_id|meter_id. sha1: hashlib.sha1 of the UTF-8 text, lengths around the 64-byte block edges. settings: uuid5(namespace, 'settings|' + user id), one settings row per account on every device.",
  "namespace": "b9d2a3e4-5f61-4c7a-8e9b-0a1b2c3d4e5f",
  "rfcCheck": {
   "namespace": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
@@ -97,5 +97,9 @@
    "text": "كشفية تصريح ٤٤١",
    "sha1": "f9d43e147312884b7127f04565cb55449e90a791"
   }
- ]
+ ],
+ "settings": {
+  "userId": "11111111-1111-1111-1111-111111111111",
+  "id": "fdf05e9f-58b3-5510-bb8d-8113d84d8147"
+ }
 }

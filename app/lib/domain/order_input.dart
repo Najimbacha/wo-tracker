@@ -1,5 +1,10 @@
-// Plain input model for the rules engine. The database layer maps rows into
-// these objects; the golden test fixtures use the same JSON shape.
+// Plain model of one work order, used by the rules engine, the actions, the reports
+// and the screens. The data layer maps database rows into these objects; the test
+// fixtures use the same JSON shape (toJson / fromJson round-trip).
+//
+// Row ids: segments and meters always have ids (step records point at them).
+// Permits, cable runs and hold periods carry the id of their database row when
+// they came from the database; a new one has none until the data layer saves it.
 
 class Segment {
   final String id;
@@ -17,6 +22,7 @@ class Segment {
         lengthM: (j['lengthM'] as num? ?? 0).toDouble(),
         tiled: j['tiled'] as bool? ?? false,
       );
+  Map<String, Object?> toJson() => {'id': id, 'base': base, 'width': width, 'lengthM': lengthM, 'tiled': tiled};
 }
 
 class Meter {
@@ -31,29 +37,50 @@ class Meter {
       oldNumber: j['oldNumber'] as String?,
       meterType: j['meterType'] as String?,
       breakerAmps: (j['breakerAmps'] as num?)?.toInt());
+  Map<String, Object?> toJson() => {
+        'id': id,
+        if (number != null) 'number': number,
+        if (oldNumber != null) 'oldNumber': oldNumber,
+        if (meterType != null) 'meterType': meterType,
+        if (breakerAmps != null) 'breakerAmps': breakerAmps,
+      };
 }
 
 class CableRun {
+  final String? id;
   final int sizeMm2;
   final String voltage; // 'LV' | 'MV'
   final double lengthM;
-  const CableRun({required this.sizeMm2, required this.voltage, required this.lengthM});
-  factory CableRun.fromJson(Map<String, dynamic> j) =>
-      CableRun(sizeMm2: (j['sizeMm2'] as num).toInt(), voltage: j['voltage'] as String, lengthM: (j['lengthM'] as num).toDouble());
+  const CableRun({this.id, required this.sizeMm2, required this.voltage, required this.lengthM});
+  factory CableRun.fromJson(Map<String, dynamic> j) => CableRun(
+      id: j['id'] as String?,
+      sizeMm2: (j['sizeMm2'] as num).toInt(),
+      voltage: j['voltage'] as String,
+      lengthM: (j['lengthM'] as num).toDouble());
+  Map<String, Object?> toJson() => {if (id != null) 'id': id, 'sizeMm2': sizeMm2, 'voltage': voltage, 'lengthM': lengthM};
 }
 
 class Permit {
+  final String? id;
   final String? number;
   final String? appliedDate;
   final String? startDate;
   final String? endDate;
-  const Permit({this.number, this.appliedDate, this.startDate, this.endDate});
+  const Permit({this.id, this.number, this.appliedDate, this.startDate, this.endDate});
   factory Permit.fromJson(Map<String, dynamic> j) => Permit(
+        id: j['id'] as String?,
         number: j['number'] as String?,
         appliedDate: j['appliedDate'] as String?,
         startDate: j['startDate'] as String?,
         endDate: j['endDate'] as String?,
       );
+  Map<String, Object?> toJson() => {
+        if (id != null) 'id': id,
+        if (number != null) 'number': number,
+        if (appliedDate != null) 'appliedDate': appliedDate,
+        if (startDate != null) 'startDate': startDate,
+        if (endDate != null) 'endDate': endDate,
+      };
 }
 
 class StepRecord {
@@ -72,15 +99,21 @@ class StepRecord {
 }
 
 class HoldPeriod {
+  final String? id;
   final String from;
   final String? to;
   final String? reason;
   final String? review; // date to look at it again
-  const HoldPeriod({required this.from, this.to, this.reason, this.review});
+  const HoldPeriod({this.id, required this.from, this.to, this.reason, this.review});
   factory HoldPeriod.fromJson(Map<String, dynamic> j) => HoldPeriod(
-      from: j['from'] as String, to: j['to'] as String?, reason: j['reason'] as String?, review: j['review'] as String?);
-  HoldPeriod endedOn(String date) => HoldPeriod(from: from, to: date, reason: reason, review: review);
-  Map<String, Object?> toJson() => {'from': from, 'to': to, 'reason': reason, if (review != null) 'review': review};
+      id: j['id'] as String?,
+      from: j['from'] as String,
+      to: j['to'] as String?,
+      reason: j['reason'] as String?,
+      review: j['review'] as String?);
+  HoldPeriod endedOn(String date) => HoldPeriod(id: id, from: from, to: date, reason: reason, review: review);
+  HoldPeriod reopened() => HoldPeriod(id: id, from: from, reason: reason, review: review);
+  Map<String, Object?> toJson() => {if (id != null) 'id': id, 'from': from, 'to': to, 'reason': reason, if (review != null) 'review': review};
 }
 
 // Lets copyWith tell "leave as is" apart from "set to null".
@@ -110,6 +143,7 @@ class OrderInput {
   final String? networkRef;
   final String? notes;
   final bool deleted;
+  final String? deletedReason;
 
   const OrderInput({
     this.id,
@@ -135,6 +169,7 @@ class OrderInput {
     this.networkRef,
     this.notes,
     this.deleted = false,
+    this.deletedReason,
   });
 
   factory OrderInput.fromJson(Map<String, dynamic> j) {
@@ -168,11 +203,44 @@ class OrderInput {
       networkRef: j['networkRef'] as String?,
       notes: j['notes'] as String?,
       deleted: j['deleted'] as bool? ?? false,
+      deletedReason: j['deletedReason'] as String?,
     );
   }
 
+  /// Same shape as fromJson reads (used for undo snapshots and tests).
+  Map<String, Object?> toJson() => {
+        if (id != null) 'id': id,
+        'type': type,
+        'category': category,
+        if (woNumber != null) 'woNumber': woNumber,
+        if (receivedDate != null) 'receivedDate': receivedDate,
+        if (needsExcavation) 'needsExcavation': true,
+        'segments': segments.map((s) => s.toJson()).toList(),
+        'meters': meters.map((m) => m.toJson()).toList(),
+        'cableRuns': cableRuns.map((c) => c.toJson()).toList(),
+        'permits': permits.map((p) => p.toJson()).toList(),
+        'steps': steps.map((k, v) => MapEntry(k, v.toJson())),
+        'status': {
+          'state': state,
+          if (stateReason != null) 'reason': stateReason,
+          if (stateDate != null) 'date': stateDate,
+          if (mergedInto != null) 'mergedInto': mergedInto,
+          'holdPeriods': holdPeriods.map((h) => h.toJson()).toList(),
+        },
+        if (lastChangeDate != null) 'lastChangeDate': lastChangeDate,
+        if (contractor != null) 'contractor': contractor,
+        if (district != null) 'district': district,
+        if (street != null) 'street': street,
+        if (networkRef != null) 'networkRef': networkRef,
+        if (notes != null) 'notes': notes,
+        if (deleted) 'deleted': true,
+        if (deletedReason != null) 'deletedReason': deletedReason,
+      };
+
   OrderInput copyWith({
+    String? id,
     String? type,
+    String? category,
     bool? needsExcavation,
     List<Segment>? segments,
     List<Meter>? meters,
@@ -186,15 +254,21 @@ class OrderInput {
     List<HoldPeriod>? holdPeriods,
     Object? lastChangeDate = _keep,
     String? woNumber,
+    String? receivedDate,
     Object? networkRef = _keep,
     Object? street = _keep,
+    Object? contractor = _keep,
+    Object? district = _keep,
+    Object? notes = _keep,
+    bool? deleted,
+    Object? deletedReason = _keep,
   }) =>
       OrderInput(
-        id: id,
+        id: id ?? this.id,
         type: type ?? this.type,
-        category: category,
+        category: category ?? this.category,
         woNumber: woNumber ?? this.woNumber,
-        receivedDate: receivedDate,
+        receivedDate: receivedDate ?? this.receivedDate,
         needsExcavation: needsExcavation ?? this.needsExcavation,
         segments: segments ?? this.segments,
         meters: meters ?? this.meters,
@@ -207,11 +281,12 @@ class OrderInput {
         mergedInto: identical(mergedInto, _keep) ? this.mergedInto : mergedInto as String?,
         holdPeriods: holdPeriods ?? this.holdPeriods,
         lastChangeDate: identical(lastChangeDate, _keep) ? this.lastChangeDate : lastChangeDate as String?,
-        contractor: contractor,
-        district: district,
+        contractor: identical(contractor, _keep) ? this.contractor : contractor as String?,
+        district: identical(district, _keep) ? this.district : district as String?,
         street: identical(street, _keep) ? this.street : street as String?,
         networkRef: identical(networkRef, _keep) ? this.networkRef : networkRef as String?,
-        notes: notes,
-        deleted: deleted,
+        notes: identical(notes, _keep) ? this.notes : notes as String?,
+        deleted: deleted ?? this.deleted,
+        deletedReason: identical(deletedReason, _keep) ? this.deletedReason : deletedReason as String?,
       );
 }

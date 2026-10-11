@@ -40,6 +40,25 @@
       "expect": { "status": "on_hold", "stage": "civil", "ready": ["excavation"], "alerts": [] }
     },
     {
+      "name": "On hold with a review date that has passed: one reminder",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441745504", "receivedDate": "2026-09-28",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+        "permits": [{ "number": "P-88161", "appliedDate": "2026-10-01", "startDate": "2026-10-06", "endDate": "2026-10-25" }],
+        "steps": { "kashfeya": { "done": "2026-09-29" }, "tasreeh_applied": { "done": "2026-10-01" } },
+        "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-08", "to": null, "reason": "Customer objection", "review": "2026-10-09" }] } },
+      "expect": { "status": "on_hold", "alerts": [{ "code": "hold_review_due", "date": "2026-10-09", "days": 2, "severity": "warning" }] }
+    },
+    {
+      "name": "On hold, review date not reached yet: quiet",
+      "today": "2026-10-11",
+      "order": { "type": "402", "category": "extension", "woNumber": "441745505", "receivedDate": "2026-09-28",
+        "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 30, "tiled": false }], "meters": [{ "id": "m1" }],
+        "steps": { "kashfeya": { "done": "2026-09-29" } },
+        "status": { "state": "on_hold", "holdPeriods": [{ "from": "2026-10-08", "to": null, "reason": "Customer objection", "review": "2026-10-12" }] } },
+      "expect": { "status": "on_hold", "alerts": [] }
+    },
+    {
       "name": "Hold days are not counted after the hold ends",
       "today": "2026-10-11",
       "order": { "type": "402", "category": "extension", "woNumber": "441745503", "receivedDate": "2026-09-28",
