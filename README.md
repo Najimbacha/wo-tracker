@@ -61,7 +61,7 @@ Each step takes about 5 minutes. Claude walks through them one at a time.
 
 The database and sync were reviewed for two devices editing while offline. The Flutter data layer must follow these rules:
 
-1. **Step rows have the same id on every device:** `stepRowId(work order, step, segment, meter)` in `tools/rules-check/ids.mjs` (a version 5 UUID; in Dart, `package:uuid` v5 with the same namespace, checked against `app/test/fixtures/ids.json`). Steps are uploaded with insert-or-update, and clearing a step updates the same row (`done_date` and `not_applicable` cleared, the note kept). Two devices marking the same step then end up with one row instead of a refused upload that blocks the sync queue.
+1. **Step rows have the same id on every device:** `stepRowId(work order, step, segment, meter)` in `tools/rules-check/ids.mjs` (a version 5 UUID; in Dart, `StepIds.stepRowId` in `app/lib/data/ids.dart`, plain Dart with no package, checked against `app/test/fixtures/ids.json`). Steps are uploaded with insert-or-update, and clearing a step updates the same row (`done_date` and `not_applicable` cleared, the note kept). Two devices marking the same step then end up with one row instead of a refused upload that blocks the sync queue.
 2. **The device never sends `owner_id`, `created_at` or `updated_at`;** the server sets them. That keeps ownership safe and the weekly restore check exact.
 3. **Nothing is ever deleted;** "delete" sets `deleted_at` (the database refuses real deletes).
 4. **Every order of a meter type has at least one meter row from the start** (its number can come later), and segment and meter ids never change when an order is edited. Step records are tied to those ids.
