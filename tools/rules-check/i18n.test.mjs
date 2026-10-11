@@ -132,6 +132,15 @@ test('every action error has a message that only uses fields the action provides
   }
 });
 
+test('every refused-upload code has a message that only uses fields it provides', async () => {
+  const { UPLOAD_CODES } = await import('./upload-errors.mjs');
+  for (const [code, fields] of Object.entries(UPLOAD_CODES)) {
+    const key = `refused.${code}`;
+    has(key);
+    for (const p of placeholders(en[key])) assert.ok(fields.includes(p), `${key} uses {${p}}`);
+  }
+});
+
 test('every alert has a short name for chips and reports', () => {
   for (const code of engineCodes('alert').keys()) has(`alertShort.${code}`);
 });

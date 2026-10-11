@@ -65,7 +65,7 @@ The database and sync were reviewed for two devices editing while offline. The F
 2. **The device never sends `owner_id`, `created_at` or `updated_at`;** the server sets them. That keeps ownership safe and the weekly restore check exact.
 3. **Nothing is ever deleted;** "delete" sets `deleted_at` (the database refuses real deletes).
 4. **Every order of a meter type has at least one meter row from the start** (its number can come later), and segment and meter ids never change when an order is edited. Step records are tied to those ids.
-5. **An upload the server refuses** (for example the same work order number typed on two devices while offline) goes to a "Needs your decision" list in the app instead of retrying forever.
+5. **An upload the server refuses** (for example the same work order number typed on two devices while offline) goes to a "Needs your decision" list in the app instead of retrying forever. `classifyUploadError` (`tools/rules-check/upload-errors.mjs`, Dart: `UploadErrors.classify` in `app/lib/data/upload_errors.dart`) decides: retry later (offline, server busy or waking up, order not uploaded yet), sign in again, or needs your decision. The refused change stays on the device until it is edited and saved again or undone.
 6. **Data health shows the database size** against the free plan's 500 MB, with a warning at 80%. Measured growth is about 60 MB a year at 14 orders a day.
 
 ## If you ever need to restore a backup
