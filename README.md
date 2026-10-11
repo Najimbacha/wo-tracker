@@ -52,7 +52,7 @@ cd app && flutter test
 Each step takes about 5 minutes. Claude walks through them one at a time.
 
 1. **GitHub:** create a private repository named `wo-tracker`, then push this code to it.
-2. **Supabase:** create a free project (region closest to Riyadh), open the SQL editor and run both files in `supabase/migrations/`, in name order. The second one creates the `powersync` publication PowerSync needs.
+2. **Supabase:** create a free project (region closest to Riyadh), open the SQL editor and run the three files in `supabase/migrations/`, in name order. The second creates the `powersync` publication PowerSync needs; the third adds the database-size check used by Data health and the nightly backup.
 3. **PowerSync:** create a free account, connect it to the Supabase project, and paste `powersync/sync-rules.yaml`. Free PowerSync projects are switched off after a week without use; if you are away longer, switch it back on in the PowerSync dashboard (no data is lost, the devices catch up).
 4. **Flutter app:** in `app/`, run `flutter create --platforms=windows,android .` once (this adds the Windows and Android folders without touching our code), then `flutter test`.
 5. **Backups:** add the three secrets listed at the top of `.github/workflows/nightly-backup.yml`, then run the "Nightly backup" workflow once by hand to check it. When making the rclone config for Google Drive, leave "client_id" empty (rclone's own Google client). A Google Cloud app of your own left in testing mode would stop working after 7 days.
@@ -66,7 +66,7 @@ The database and sync were reviewed for two devices editing while offline. The F
 3. **Nothing is ever deleted;** "delete" sets `deleted_at` (the database refuses real deletes).
 4. **Every order of a meter type has at least one meter row from the start** (its number can come later), and segment and meter ids never change when an order is edited. Step records are tied to those ids.
 5. **An upload the server refuses** (for example the same work order number typed on two devices while offline) goes to a "Needs your decision" list in the app instead of retrying forever. `classifyUploadError` (`tools/rules-check/upload-errors.mjs`, Dart: `UploadErrors.classify` in `app/lib/data/upload_errors.dart`) decides: retry later (offline, server busy or waking up, order not uploaded yet), sign in again, or needs your decision. The refused change stays on the device until it is edited and saved again or undone.
-6. **Data health shows the database size** against the free plan's 500 MB, with a warning at 80%. Measured growth is about 60 MB a year at 14 orders a day.
+6. **Data health shows the database size** against the free plan's 500 MB, with a warning at 80% (`select public.data_health()`). The nightly backup runs the same check (`scripts/check-db-size.sh`) and fails, so GitHub emails you, once it passes 80%. Measured growth is about 60 MB a year at 14 orders a day.
 
 ## If you ever need to restore a backup
 

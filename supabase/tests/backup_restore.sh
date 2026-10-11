@@ -78,4 +78,8 @@ echo "ok   - restore into a new project: rows move to the new account, protectio
 P -d restored -f "$here/../migrations/20261011000002_powersync_publication.sql" >/dev/null 2>&1
 [ "$(P -d restored -c "select count(*) from pg_publication_tables where pubname = 'powersync'")" = "14" ] || { echo "FAIL: powersync publication"; exit 1; }
 echo "ok   - PowerSync publication present after restore"
+# Data health works after a restore (function grants come back with reapply_grants.sql).
+got=$(as_new $NEW "select public.data_health()->>'orders'" 2>&1); live_orders=$(as_new $NEW "select count(*) from work_orders where deleted_at is null"); [ "$got" = "$live_orders" ] || { echo "FAIL: data health after restore ($got)"; exit 1; }
+if P -d restored -c "set role anon; select public.data_health()" 2>/dev/null; then echo "FAIL: anon can read data health after restore"; exit 1; fi
+echo "ok   - data health works after restore, still hidden from signed-out visitors"
 echo "BACKUP AND RESTORE REHEARSAL PASSED"

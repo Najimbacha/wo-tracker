@@ -181,5 +181,16 @@ reset role;
 select pg_temp.ok((select count(*) = 14 from pg_publication_tables where pubname = 'powersync'), 'PowerSync publication lists the 14 synced tables');
 select pg_temp.ok(not exists (select 1 from pg_publication_tables where pubname = 'powersync' and tablename = 'activity_log'), 'history is not published to devices');
 
+-- Data health: database size against the free plan's 500 MB.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false) \g /dev/null
+select pg_temp.ok((select (h->>'db_bytes')::bigint > 0 and (h->>'limit_bytes')::bigint = 524288000 and (h->>'warn_percent')::int = 80
+  and (h->>'percent')::numeric between 0 and 100 and (h->>'orders')::int >= 1 and jsonb_typeof(h->'largest_tables') = 'object'
+  from (select public.data_health() h) x), 'data health reports size, limit and orders');
+reset role;
+set role anon;
+select pg_temp.expect_error($$select public.data_health()$$, 'signed-out visitors cannot read data health');
+reset role;
+
 \o
 \echo ALL DATABASE TESTS PASSED

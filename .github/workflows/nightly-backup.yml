@@ -4,6 +4,9 @@
 #   SUPABASE_DB_URL    Postgres connection string (Supabase > Connect > Session pooler)
 #   BACKUP_PASSPHRASE  Long random passphrase used to encrypt backups. Keep a copy somewhere safe.
 #   RCLONE_CONFIG      rclone config text with a Google Drive remote named "gdrive"
+# Optional (keeps the free project's API counted as active even in weeks the app isn't opened):
+#   SUPABASE_URL       https://<project>.supabase.co
+#   SUPABASE_ANON_KEY  the project's public "anon" key (Settings > API)
 name: Nightly backup
 
 on:
@@ -77,3 +80,25 @@ jobs:
             wo-${{ env.STAMP }}.dump.gpg
             wo-${{ env.STAMP }}.counts.json
           retention-days: 14
+
+      - name: Get the size-check script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+          path: repo
+
+      - name: Check database size (fails at 80% of the free 500 MB, so GitHub emails you)
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash repo/scripts/check-db-size.sh "$DB_URL"
+
+      - name: Keep the free project active
+        if: ${{ always() }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then echo "Optional secrets not set; the database connection above still counts as activity."; exit 0; fi
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$SUPABASE_URL/rest/v1/" -H "apikey: $SUPABASE_ANON_KEY")
+          echo "API answered $code"
+

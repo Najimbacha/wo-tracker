@@ -16,3 +16,7 @@ psql_ -c "create database wo_test" >/dev/null
 psql_ -d wo_test -f "$here/supabase_stub.sql" >/dev/null
 for m in "$here"/../migrations/*.sql; do psql_ -d wo_test -f "$m" >/dev/null; done
 psql_ -d wo_test -f "$here/tests.sql" 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+# The nightly size check: passes now, and fails (so GitHub emails) once the warning level is reached.
+conn="host=$work port=54329 user=postgres dbname=wo_test"
+if "$here/../../scripts/check-db-size.sh" "$conn" >/dev/null; then echo "ok   - nightly size check passes on a small database"; else echo "FAIL - nightly size check"; exit 1; fi
+if "$here/../../scripts/check-db-size.sh" "$conn" 0 >/dev/null 2>&1; then echo "FAIL - size check did not warn at its limit"; exit 1; else echo "ok   - nightly size check fails once the warning level is reached"; fi

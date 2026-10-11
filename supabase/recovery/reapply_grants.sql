@@ -15,3 +15,7 @@ revoke all on public.activity_log from anon;
 revoke insert, update, delete, truncate on public.activity_log from authenticated;
 grant select on public.activity_log to authenticated;
 revoke usage on sequence public.activity_log_id_seq from authenticated, anon;
+
+-- Data health (migration 3).
+revoke all on function public.data_health() from public, anon;
+grant execute on function public.data_health() to authenticated;
