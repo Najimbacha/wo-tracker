@@ -85,7 +85,7 @@
   },
 
   "types": {
-    "401": { "en": "Change breaker, meter or both",        "ar": "تغيير القاطع أو العداد أو كليهما",  "packages": ["meter_change", "closeout"], "optionalExcavation": true },
+    "401": { "en": "Change breaker, meter or both",        "ar": "تغيير القاطع أو العداد أو كليهما",  "packages": ["meter_change", "closeout"] },
     "402": { "en": "Excavation and meter",                 "ar": "حفر وعداد",                         "packages": ["kashfeya", "tasreeh", "civil", "restoration", "meter_new", "closeout"] },
     "403": { "en": "Overhead line and meter",              "ar": "خط هوائي وعداد",                    "packages": ["kashfeya", "tasreeh", "overhead", "meter_new", "closeout"] },
     "404": { "en": "Underground, ground transformer and meter", "ar": "أرضي ومحول أرضي وعداد",        "packages": ["kashfeya", "tasreeh", "civil", "restoration", "transformer", "meter_new", "closeout"] },

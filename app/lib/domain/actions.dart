@@ -298,7 +298,15 @@ class Actions {
   static String? _cleanNumber(String? s) => s == null ? null : _westernDigits(s).trim();
 
   /// Arabic digits → 0-9 and spaces trimmed, in the work order, tasreeh and meter numbers.
-  static OrderInput normalizeDraft(OrderInput d) => d.copyWith(
+  /// With [rules], an excavation flag left over from another type is switched off
+  /// (only 409 has the switch; the database refuses it on any other type).
+  static OrderInput normalizeDraft(OrderInput d, {Map<String, dynamic>? rules}) {
+    final type = rules == null ? null : (rules['types'] as Map)[d.type] as Map?;
+    final dropExcavation = type != null && d.needsExcavation && type['optionalExcavation'] != true;
+    return _normalizeNumbers(dropExcavation ? d.copyWith(needsExcavation: false) : d);
+  }
+
+  static OrderInput _normalizeNumbers(OrderInput d) => d.copyWith(
         woNumber: _cleanNumber(d.woNumber),
         permits: d.permits
             .map((p) => Permit(number: _cleanNumber(p.number), appliedDate: p.appliedDate, startDate: p.startDate, endDate: p.endDate))
@@ -311,7 +319,7 @@ class Actions {
       );
 
   List<Reason> validateDraft(OrderInput input, List<OrderInput> orders, String today) {
-    final draft = normalizeDraft(input);
+    final draft = normalizeDraft(input, rules: _rules);
     final errors = <Reason>[];
     if (_blank(draft.woNumber)) errors.add(const Reason('wo_number_required'));
     if (draft.receivedDate == null) {

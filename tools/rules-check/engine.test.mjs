@@ -172,7 +172,7 @@ test('exhaustive: structure of every generated order', () => {
     // Transformer.
     if (byId.foundation) assert.deepEqual(byId.foundation.deps, [pkgs.includes('civil') ? 'cable_installed' : 'stringing'], `${label}: transformer entry`);
   }
-  assert.ok(combos > 400, `checked ${combos} combinations`);
+  assert.ok(combos > 350, `checked ${combos} combinations`);
 });
 
 // Walk every order from new to finished by marking whatever is ready, checking each
@@ -208,7 +208,7 @@ test('exhaustive: every order can be completed step by step, in valid order only
     }
     walked++;
   }
-  assert.ok(walked > 400);
+  assert.ok(walked > 350);
 });
 
 test('exhaustive: a step is never ready while any dependency is open', () => {

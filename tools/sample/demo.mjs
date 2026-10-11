@@ -174,7 +174,7 @@ export function buildDemo(rules, today = DEMO_TODAY, seed = 1448, { volume = 14,
     { type: '402', recv: 7, ops: [['run', 'tasreeh_applied', 6, 4], ['permit', 4, -3, -33]] },
     { type: '403', recv: 9, ops: [['run', 'tasreeh_applied', 8, 6], ['permit', 6, -1, -30]] },
     { type: '802', recv: 5, ops: [['run', 'tasreeh_applied', 4, 3], ['permit', 3, -5, -35]] },
-    { type: '401', recv: 9, excavation: true, ops: [['run', 'tasreeh_applied', 8, 6], ['permit', 6, -2, -20]] },
+    { type: '409', recv: 9, excavation: true, ops: [['run', 'tasreeh_applied', 8, 6], ['permit', 6, -2, -20]] },
     { type: '403', recv: 40, ops: [['run', 'tasreeh_applied', 22, 20]] }, // stalled, no tasreeh dates
     // Late starts
     { type: '402', recv: 12, ops: [['run', 'tasreeh_applied', 11, 7], ['permit', 7, 2, -28]] },

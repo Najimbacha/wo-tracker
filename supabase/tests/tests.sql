@@ -51,7 +51,9 @@ select pg_temp.expect_error($$insert into work_orders (wo_number, category, type
 select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date) values ('441782099', 'extension', '999', date '2026-10-02')$$,
   'unknown type');
 select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date, needs_excavation) values ('441782098', 'extension', '402', date '2026-10-02', true)$$,
-  'excavation switch only on 401 / 409');
+  'excavation switch only on 409');
+select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date, needs_excavation) values ('441782096', 'extension', '401', date '2026-10-02', true)$$,
+  '401 never has a trench');
 select pg_temp.expect_error($$insert into work_orders (wo_number, category, type_code, received_date) values ('441782097', 'extension', '402', public.riyadh_today() + 3)$$,
   'received date in the future');
 select pg_temp.expect_error($$insert into permits (work_order_id, permit_number, applied_date, start_date, end_date) values ('aaaaaaaa-0000-0000-0000-000000000010', 'P-1', date '2026-10-01', date '2026-10-10', date '2026-10-05')$$,

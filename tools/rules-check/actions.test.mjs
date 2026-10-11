@@ -39,7 +39,7 @@ function run(c) {
     case 'reopen': return A.reopen(rules, o);
     case 'editImpact': return { impact: A.editImpact(rules, o, { ...o, ...a.after }) };
     case 'formSpec': return { spec: A.formSpec(rules, a.draft) };
-    case 'normalizeDraft': return { draft: A.normalizeDraft(a.draft) };
+    case 'normalizeDraft': return { draft: A.normalizeDraft(a.draft, rules) };
     case 'validateDraft': return { errors: A.validateDraft(rules, a.draft, allOrders(), today) };
     default: throw new Error(`unknown action ${c.action}`);
   }

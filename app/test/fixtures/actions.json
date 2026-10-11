@@ -44,7 +44,7 @@
       "lastChangeDate": "2026-10-10"
     },
     "E": {
-      "id": "E", "type": "401", "category": "extension", "woNumber": "441700106", "receivedDate": "2026-10-01", "needsExcavation": true,
+      "id": "E", "type": "409", "category": "extension", "woNumber": "441700106", "receivedDate": "2026-10-01", "needsExcavation": true,
       "meters": [{ "id": "m1", "number": "MTR-6", "oldNumber": "OLD-6" }],
       "steps": { "kashfeya": { "done": "2026-10-02" } },
       "lastChangeDate": "2026-10-02"
@@ -165,15 +165,23 @@
     { "name": "editing the street changes nothing", "action": "editImpact", "order": "C", "args": { "after": { "street": "King Fahd Rd" } },
       "expect": { "impact": [] } },
 
-    { "name": "form for 401", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension" } },
-      "expect": { "spec": { "excavationSwitch": true, "tasreeh": false, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": true, "workBeforeTasreeh": false } } },
-    { "name": "form for 401 with excavation", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension", "needsExcavation": true } },
+    { "name": "form for 401: meter or breaker change only, no trench", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension" } },
+      "expect": { "spec": { "excavationSwitch": false, "tasreeh": false, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": true, "workBeforeTasreeh": false } } },
+    { "name": "form for 401 ignores a leftover excavation flag", "action": "formSpec", "args": { "draft": { "type": "401", "category": "extension", "needsExcavation": true } },
+      "expect": { "spec": { "excavationSwitch": false, "tasreeh": false, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": true } } },
+    { "name": "form for 409", "action": "formSpec", "args": { "draft": { "type": "409", "category": "extension" } },
+      "expect": { "spec": { "excavationSwitch": true, "tasreeh": false, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": true } } },
+    { "name": "form for 409 with excavation", "action": "formSpec", "args": { "draft": { "type": "409", "category": "extension", "needsExcavation": true } },
       "expect": { "spec": { "excavationSwitch": true, "tasreeh": true, "segments": true, "cableRuns": true, "meters": true, "oldMeterNumber": true } } },
     { "name": "form for 403", "action": "formSpec", "args": { "draft": { "type": "403", "category": "extension" } },
       "expect": { "spec": { "excavationSwitch": false, "tasreeh": true, "segments": false, "cableRuns": false, "meters": true, "oldMeterNumber": false } } },
     { "name": "form for 805 emergency", "action": "formSpec", "args": { "draft": { "type": "805", "category": "emergency" } },
       "expect": { "spec": { "tasreeh": true, "segments": false, "meters": false, "workBeforeTasreeh": true } } },
 
+    { "name": "changing a 409 with excavation to 401 clears the excavation flag", "action": "normalizeDraft", "args": { "draft": { "type": "401", "category": "extension", "woNumber": "441700120", "needsExcavation": true } },
+      "expect": { "draft": { "type": "401", "category": "extension", "woNumber": "441700120", "needsExcavation": false, "permits": [], "meters": [] } } },
+    { "name": "409 keeps its excavation flag", "action": "normalizeDraft", "args": { "draft": { "type": "409", "category": "extension", "woNumber": "441700121", "needsExcavation": true } },
+      "expect": { "draft": { "type": "409", "category": "extension", "woNumber": "441700121", "needsExcavation": true, "permits": [], "meters": [] } } },
     { "name": "typed numbers are cleaned before saving", "action": "normalizeDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": " ٤٤١٧٠٠١٠١ ", "permits": [{ "number": "ت-۱۲۳ " }], "meters": [{ "id": "m1", "number": "٠٥٦٧", "oldNumber": " 88" }] } },
       "expect": { "draft": { "type": "402", "category": "extension", "woNumber": "441700101", "permits": [{ "number": "ت-123" }], "meters": [{ "id": "m1", "number": "0567", "oldNumber": "88" }] } } },
     { "name": "same number typed with Arabic digits", "action": "validateDraft", "args": { "draft": { "type": "402", "category": "extension", "woNumber": "٤٤١٧٠٠١٠١", "receivedDate": "2026-10-11", "meters": [{ "id": "m1" }] } },

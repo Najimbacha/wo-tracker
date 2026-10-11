@@ -186,7 +186,7 @@ create table public.work_orders (
   constraint wo_extension_9_digits check (category <> 'extension' or wo_number ~ '^[0-9]{9}$'),
   constraint wo_merged_needs_target check (state <> 'merged' or merged_into is not null),
   constraint wo_not_merged_into_self check (merged_into is null or merged_into <> id),
-  constraint wo_excavation_switch check (not needs_excavation or type_code in ('401', '409'))
+  constraint wo_excavation_switch check (not needs_excavation or type_code = '409')
 );
 create unique index work_orders_number_uq on public.work_orders (owner_id, wo_number) where deleted_at is null;
 create index work_orders_owner_state_idx on public.work_orders (owner_id, state) where deleted_at is null;

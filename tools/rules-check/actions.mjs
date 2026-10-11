@@ -232,9 +232,15 @@ const cleanNumber = (s) => (s === null || s === undefined ? s : westernDigits(St
 /**
  * Cleans what was typed before checking and saving: Arabic digits become 0-9 and
  * spaces around numbers are removed, in the work order, tasreeh and meter numbers.
+ * With the rules, an excavation flag left over from another type is switched off.
  */
-export function normalizeDraft(draft) {
+export function normalizeDraft(draft, rules = null) {
   const d = clone(draft);
+  // The excavation switch only exists on some types (409). If the type was changed
+  // to one without it, a leftover "on" would add steps the form no longer shows,
+  // and the database would refuse the order.
+  const type = rules && rules.types[d.type];
+  if (type && d.needsExcavation && !type.optionalExcavation) d.needsExcavation = false;
   d.woNumber = cleanNumber(d.woNumber);
   d.permits = (d.permits || []).map((p) => ({ ...p, number: cleanNumber(p.number) }));
   d.meters = (d.meters || []).map((m) => {
@@ -249,7 +255,7 @@ export function normalizeDraft(draft) {
 
 /** Checks before saving a new or edited order (on top of validateOrder). Run normalizeDraft first. */
 export function validateDraft(rules, input, orders, today) {
-  const draft = normalizeDraft(input);
+  const draft = normalizeDraft(input, rules);
   const errors = [];
   if (blank(draft.woNumber)) errors.push({ code: 'wo_number_required' });
   if (!draft.receivedDate) errors.push({ code: 'received_required' });

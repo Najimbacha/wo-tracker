@@ -71,11 +71,12 @@ void main() {
           m(e['spec']).forEach((k, v) => expect(spec[k], v, reason: 'spec.$k'));
           return;
         case 'normalizeDraft':
-          final d = Actions.normalizeDraft(OrderInput.fromJson(m(a['draft'])));
+          final d = Actions.normalizeDraft(OrderInput.fromJson(m(a['draft'])), rules: rules);
           final ed = m(e['draft']);
           expect(d.woNumber, ed['woNumber']);
-          expect(d.permits.map((p) => p.number).toList(), (ed['permits'] as List).map((p) => (p as Map)['number']).toList());
-          expect(d.meters.map((x) => [x.number, x.oldNumber]).toList(), (ed['meters'] as List).map((x) => [(x as Map)['number'], x['oldNumber']]).toList());
+          expect(d.permits.map((p) => p.number).toList(), ((ed['permits'] as List?) ?? const []).map((p) => (p as Map)['number']).toList());
+          expect(d.meters.map((x) => [x.number, x.oldNumber]).toList(), ((ed['meters'] as List?) ?? const []).map((x) => [(x as Map)['number'], x['oldNumber']]).toList());
+          expect(d.needsExcavation, ed['needsExcavation'] ?? false);
           return;
         case 'validateDraft':
           final errs = actions.validateDraft(OrderInput.fromJson(m(a['draft'])), all(), today);

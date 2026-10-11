@@ -175,14 +175,14 @@
       ]
     },
     {
-      "name": "401 with the excavation switch on",
+      "name": "409 with the excavation switch on",
       "today": "2026-10-11",
-      "order": { "type": "401", "category": "extension", "woNumber": "441700303", "receivedDate": "2026-10-10", "needsExcavation": true,
+      "order": { "type": "409", "category": "extension", "woNumber": "441700303", "receivedDate": "2026-10-10", "needsExcavation": true,
         "segments": [{ "id": "s1", "base": "soil", "width": 40, "lengthM": 6, "tiled": true }], "meters": [{ "id": "m1" }], "steps": {} },
       "expect": { "total": 13, "ready": ["kashfeya"], "stage": "kashfeya" }
     },
     {
-      "name": "401 without excavation: change the meter straight away",
+      "name": "401 never has a trench: change the meter or breaker straight away",
       "today": "2026-10-11",
       "order": { "type": "401", "category": "extension", "woNumber": "441700304", "receivedDate": "2026-10-10", "meters": [{ "id": "m1" }], "steps": {} },
       "expect": { "total": 6, "ready": ["breaker_meter_changed@m1"], "stage": "meter", "alerts": [] }

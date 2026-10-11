@@ -91,7 +91,7 @@ test('the special cases are all present', () => {
   assert.ok(live.some((o) => o.segments.some((s) => s.tiled)), 'tiles');
   assert.ok(live.some((o) => Object.values(o.steps).some((r) => r.na)), 'not applicable steps');
   assert.ok(live.some((o) => o.status.holdPeriods.some((h) => h.to)), 'a finished hold');
-  assert.ok(live.some((o) => o.needsExcavation), '401/409 with excavation');
+  assert.ok(live.some((o) => o.needsExcavation), '409 with excavation');
   assert.ok(orders.some((o) => o.deleted), 'a deleted order');
   assert.ok(live.some((o) => !o.contractor), 'no contractor');
   assert.ok(new Set(live.map((o) => o.contractor).filter(Boolean)).size > 10, 'more than 10 contractors');
