@@ -798,5 +798,7 @@
   "history.table.settings": "Settings",
   "history.table.saved_views": "Saved view",
   "history.table.followups": "Follow-up",
-  "history.table.attachments": "File"
+  "history.table.attachments": "File",
+  "error.received_after_state": "The received date can't be after the day this order was cancelled or merged ({date}).",
+  "sync.confirmEmail": "Account created. Open the email sent to {email}, confirm it, then sign in here."
 }

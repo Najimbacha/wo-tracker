@@ -94,7 +94,8 @@ abstract class Repository {
   Future<Map<String, dynamic>?> dataHealth();
 
   Future<void> signIn(String email, String password);
-  Future<void> signUp(String email, String password);
+  /// True when signed in straight away; false when Supabase first wants the email confirmed.
+  Future<bool> signUp(String email, String password);
   Future<void> signOut();
 
   Future<void> dispose();

@@ -303,22 +303,31 @@ class PowerSyncRepository extends Repository {
 
   // ---------------------------------------------------------------- writes
 
+  /// A new row gets created_at here too (the server sets its own, which is never sent
+  /// up), so new segments and cable runs keep the order they were added in before they
+  /// sync. Rows added in one save get times a microsecond apart.
+  int _stampSeq = 0;
+  String _createdAt() => DateTime.now().toUtc().add(Duration(microseconds: _stampSeq++ % 1000)).toIso8601String();
+
+  Future<void> _insert(SqliteWriteContext tx, RowWrite w) {
+    final values = {...w.values, if (!w.values.containsKey('created_at')) 'created_at': _createdAt()};
+    final cols = values.keys.toList();
+    return tx.execute(
+      'INSERT INTO ${w.table} (id, ${cols.join(', ')}) VALUES (?${', ?' * cols.length})',
+      [w.id, ...cols.map((c) => values[c])],
+    );
+  }
+
   Future<void> _apply(SqliteWriteContext tx, RowWrite w) async {
     final cols = w.values.keys.toList();
     if (w.kind == 'insert') {
-      await tx.execute(
-        'INSERT INTO ${w.table} (id, ${cols.join(', ')}) VALUES (?${', ?' * cols.length})',
-        [w.id, ...cols.map((c) => w.values[c])],
-      );
+      await _insert(tx, w);
       return;
     }
     if (w.kind == 'upsert') {
       final exists = await tx.getOptional('SELECT id FROM ${w.table} WHERE id = ?', [w.id]);
       if (exists == null) {
-        await tx.execute(
-          'INSERT INTO ${w.table} (id, ${cols.join(', ')}) VALUES (?${', ?' * cols.length})',
-          [w.id, ...cols.map((c) => w.values[c])],
-        );
+        await _insert(tx, w);
         return;
       }
     }
@@ -589,10 +598,11 @@ class PowerSyncRepository extends Repository {
   }
 
   @override
-  Future<void> signUp(String email, String password) async {
+  Future<bool> signUp(String email, String password) async {
     if (!_online) throw const RepoException('sync.notConfigured');
     try {
-      await Supabase.instance.client.auth.signUp(email: email.trim(), password: password);
+      final r = await Supabase.instance.client.auth.signUp(email: email.trim(), password: password);
+      return r.session != null;
     } on AuthException catch (e) {
       throw RepoException('sync.signInFailed', {'message': e.message});
     } catch (_) {

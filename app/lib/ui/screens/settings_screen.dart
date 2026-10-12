@@ -435,7 +435,15 @@ class _SyncCardState extends State<_SyncCard> {
           const SizedBox(height: 8),
           Wrap(spacing: 8, children: [
             FilledButton(onPressed: _busy ? null : () => _do(() => app.repo.signIn(_email.text, _password.text)), child: Text(s.t('sync.signIn'))),
-            OutlinedButton(onPressed: _busy ? null : () => _do(() => app.repo.signUp(_email.text, _password.text)), child: Text(s.t('sync.createAccount'))),
+            OutlinedButton(
+              onPressed: _busy
+                  ? null
+                  : () => _do(() async {
+                        final signedIn = await app.repo.signUp(_email.text, _password.text);
+                        if (!signedIn) app.showToast(s.t('sync.confirmEmail', {'email': _email.text.trim()}));
+                      }),
+              child: Text(s.t('sync.createAccount')),
+            ),
           ]),
         ],
         if (sy.signedIn)

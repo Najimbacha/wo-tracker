@@ -185,7 +185,7 @@ class MemoryRepository extends Repository {
   @override
   Future<void> signIn(String email, String password) async => throw const RepoException('sync.demoNoSignIn');
   @override
-  Future<void> signUp(String email, String password) async => throw const RepoException('sync.demoNoSignIn');
+  Future<bool> signUp(String email, String password) async => throw const RepoException('sync.demoNoSignIn');
   @override
   Future<void> signOut() async {}
 

@@ -78,6 +78,7 @@ class AppState extends ChangeNotifier {
 
   late String today = riyadhToday();
   Timer? _midnight;
+  Timer? _dayCheck;
 
   // ---------------------------------------------------------------- start-up
 
@@ -173,6 +174,17 @@ class AppState extends ChangeNotifier {
   bool get needsRestart => prefs.getBool('needsRestart') ?? false;
 
   void _scheduleMidnight() {
+    // Also checked every minute: a timer can fire late after the computer sleeps, and
+    // "today" must never stay on yesterday (Mark done today would use the wrong date).
+    _dayCheck ??= Timer.periodic(const Duration(minutes: 1), (_) {
+      final now = riyadhToday();
+      if (now != today) {
+        today = now;
+        _evalCache.clear();
+        _memo.clear();
+        notifyListeners();
+      }
+    });
     _midnight?.cancel();
     final now = DateTime.now().toUtc().add(const Duration(hours: 3));
     final next = DateTime.utc(now.year, now.month, now.day + 1).subtract(const Duration(hours: 3));
@@ -188,6 +200,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _midnight?.cancel();
+    _dayCheck?.cancel();
     for (final s in _subs) {
       s.cancel();
     }

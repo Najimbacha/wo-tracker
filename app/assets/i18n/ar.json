@@ -819,5 +819,7 @@
   "history.table.settings": "الإعدادات",
   "history.table.saved_views": "عرض محفوظ",
   "history.table.followups": "المتابعة",
-  "history.table.attachments": "الملف"
+  "history.table.attachments": "الملف",
+  "error.received_after_state": "لا يمكن أن يكون تاريخ الاستلام بعد يوم إلغاء هذا الأمر أو دمجه ({date}).",
+  "sync.confirmEmail": "تم إنشاء الحساب. افتح الرسالة المرسلة إلى {email} وأكّدها، ثم سجّل الدخول هنا."
 }

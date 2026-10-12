@@ -150,6 +150,10 @@ class _OrderFormPageState extends State<OrderFormPage> {
     final draft = _draft();
     final others = app.data.orders.where((o) => o.id != draft.id).toList();
     final errors = _actions.validateDraft(draft, others, app.today);
+    // A cancelled or merged order can't be received after the day it was cancelled/merged.
+    if (draft.stateDate != null && draft.receivedDate != null && toDay(draft.receivedDate!) > toDay(draft.stateDate!)) {
+      errors.add(Reason('received_after_state', date: draft.stateDate));
+    }
     // Segment lengths and cable lengths must be numbers above 0.
     for (final c in _spec.cableRuns ? _cables : const <_CableDraft>[]) {
       if (c.size == null || (double.tryParse(c.length.replaceAll(',', '.')) ?? 0) <= 0) {
@@ -261,7 +265,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               _received = v;
               _dirty = true;
             }),
-            errorText: _fieldError(['received_required', 'future_date']),
+            errorText: _fieldError(['received_required', 'future_date', 'received_after_state']),
           ),
         ),
       ]),
