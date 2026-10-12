@@ -218,7 +218,9 @@ List<RowWrite> orderWrites(
       if (aid == null || !beforeVals.containsKey(aid)) {
         final rid = aid ?? newId();
         seen.add(rid);
-        out.add(RowWrite(table, rid, 'insert', {'work_order_id': id, ...vals}));
+        // Upsert: an id we already know may still have its (soft-deleted) row, e.g.
+        // when Undo puts back a segment or tasreeh that was removed. It comes back live.
+        out.add(RowWrite(table, rid, aid == null ? 'insert' : 'upsert', {'work_order_id': id, ...vals, if (aid != null) 'deleted_at': null}));
       } else {
         seen.add(aid);
         final ch = _changed(beforeVals[aid]!, vals);

@@ -25,6 +25,9 @@ final String settingsId = StepIds.settingsRowId('wo-tracker');
 
 bool _supabaseStarted = false;
 
+/// Supabase has been started in this run (it can't be started again with new addresses).
+bool get supabaseStarted => _supabaseStarted;
+
 class PowerSyncRepository extends Repository {
   PowerSyncRepository._(this.db, this.config, this.segmentStepKeys);
 
@@ -36,6 +39,7 @@ class PowerSyncRepository extends Repository {
   final _sync = StreamController<SyncInfo>.broadcast();
   final _refusedCtl = StreamController<List<RefusedChange>>.broadcast();
   RepoData _current = const RepoData();
+  List<RefusedChange> _refusedNow = const [];
   SyncInfo _syncInfo = const SyncInfo();
   final List<StreamSubscription<Object?>> _subs = [];
   SupabaseConnector? _connector;
@@ -62,7 +66,7 @@ class PowerSyncRepository extends Repository {
   Future<void> _start() async {
     _subs.add(db.watch('SELECT 1', triggerOnTables: _syncedTables, throttle: const Duration(milliseconds: 250)).listen((_) => _scheduleReload()));
     _subs.add(db.watch('SELECT * FROM refused_changes ORDER BY at DESC').listen((rs) {
-      _refusedCtl.add([
+      _refusedCtl.add(_refusedNow = [
         for (final r in rs)
           RefusedChange(
             id: r['id'] as String,
@@ -171,8 +175,16 @@ class PowerSyncRepository extends Repository {
     ]..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     final contractorName = {for (final c in contractors) c.id: c.name};
     final districtName = {for (final d in districts) d.id: d.name};
-    _contractorIds = {for (final c in contractors.where((c) => !c.deleted)) nameKey(c.name): c.id};
-    _districtIds = {for (final d in districts.where((d) => !d.deleted)) nameKey(d.name): d.id};
+    // Name → id. A removed contractor/district still maps to its old row (so an order
+    // that names it keeps pointing at it); a live one with the same name wins.
+    _contractorIds = {
+      for (final c in contractors.where((c) => c.deleted)) nameKey(c.name): c.id,
+      for (final c in contractors.where((c) => !c.deleted)) nameKey(c.name): c.id,
+    };
+    _districtIds = {
+      for (final d in districts.where((d) => d.deleted)) nameKey(d.name): d.id,
+      for (final d in districts.where((d) => !d.deleted)) nameKey(d.name): d.id,
+    };
 
     Map<String, List<Map<String, Object?>>> byOrder(Iterable<Map<String, Object?>> rows) {
       final m = <String, List<Map<String, Object?>>>{};
@@ -284,6 +296,8 @@ class PowerSyncRepository extends Repository {
   SyncInfo get currentSync => _syncInfo;
   @override
   Stream<List<RefusedChange>> get refused => _refusedCtl.stream;
+  @override
+  List<RefusedChange> get currentRefused => _refusedNow;
 
   String get _now => DateTime.now().toUtc().toIso8601String();
 
@@ -360,7 +374,9 @@ class PowerSyncRepository extends Repository {
 
   @override
   Future<Contractor> addContractor(String name, {String? phone}) async {
-    if (_contractorIds.containsKey(nameKey(name))) throw RepoException('settings.contractorExists', {'name': name.trim()});
+    if (_current.contractors.any((x) => !x.deleted && nameKey(x.name) == nameKey(name))) {
+      throw RepoException('settings.contractorExists', {'name': name.trim()});
+    }
     final c = Contractor(id: newId(), name: name.trim(), phone: phone);
     await db.execute('INSERT INTO contractors (id, name, phone, active) VALUES (?, ?, ?, 1)', [c.id, c.name, phone]);
     return c;
@@ -368,16 +384,17 @@ class PowerSyncRepository extends Repository {
 
   @override
   Future<void> updateContractor(Contractor c) async {
-    final clash = _contractorIds[nameKey(c.name)];
-    if (clash != null && clash != c.id) throw RepoException('settings.contractorExists', {'name': c.name.trim()});
+    final clash = _current.contractors.any((x) => !x.deleted && x.id != c.id && nameKey(x.name) == nameKey(c.name));
+    if (clash) throw RepoException('settings.contractorExists', {'name': c.name.trim()});
     await db.execute('UPDATE contractors SET name = ?, phone = ?, active = ?, deleted_at = ? WHERE id = ?',
         [c.name.trim(), c.phone, c.active ? 1 : 0, c.deleted ? _now : null, c.id]);
   }
 
   @override
   Future<District> addDistrict(String name) async {
-    final found = _districtIds[nameKey(name)];
-    if (found != null) return District(id: found, name: name.trim());
+    for (final x in _current.districts) {
+      if (!x.deleted && nameKey(x.name) == nameKey(name)) return x;
+    }
     final d = District(id: newId(), name: name.trim());
     await db.execute('INSERT INTO districts (id, name) VALUES (?, ?)', [d.id, d.name]);
     return d;
@@ -385,8 +402,8 @@ class PowerSyncRepository extends Repository {
 
   @override
   Future<void> renameDistrict(String id, String name) async {
-    final clash = _districtIds[nameKey(name)];
-    if (clash != null && clash != id) throw RepoException('settings.districtExists', {'name': name.trim()});
+    final clash = _current.districts.any((x) => !x.deleted && x.id != id && nameKey(x.name) == nameKey(name));
+    if (clash) throw RepoException('settings.districtExists', {'name': name.trim()});
     await db.execute('UPDATE districts SET name = ? WHERE id = ?', [name.trim(), id]);
   }
 
@@ -443,12 +460,13 @@ class PowerSyncRepository extends Repository {
     if (!_online || Supabase.instance.client.auth.currentSession == null) throw const RepoException('sync.signInFirst');
     final table = r['table_name'] as String;
     final rowId = r['row_id'] as String;
-    final data = SupabaseConnector.toServer(table, _decodeMap(r['data'] as String?))..remove('id');
     try {
-      if (r['op'] == 'PUT') {
+      // Send the row as it is on this device now (including any fix made since), so
+      // the server ends up exactly like this device.
+      final sent = await SupabaseConnector.upsertLocalRow(db, table, rowId).timeout(const Duration(seconds: 20));
+      if (!sent) {
+        final data = SupabaseConnector.toServer(table, _decodeMap(r['data'] as String?))..remove('id');
         await Supabase.instance.client.from(table).upsert({...data, 'id': rowId}).timeout(const Duration(seconds: 20));
-      } else if (data.isNotEmpty) {
-        await Supabase.instance.client.from(table).update(data).eq('id', rowId).timeout(const Duration(seconds: 20));
       }
     } on PostgrestException catch (e) {
       await db.execute('UPDATE refused_changes SET message = ?, at = ? WHERE id = ?', [e.message, _now, id]);
@@ -456,7 +474,7 @@ class PowerSyncRepository extends Repository {
     } catch (_) {
       throw const RepoException('sync.signInOffline');
     }
-    await db.execute('DELETE FROM refused_changes WHERE id = ?', [id]);
+    await SupabaseConnector.clearRefused(db, rowId);
   }
 
   @override

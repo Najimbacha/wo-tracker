@@ -1,7 +1,6 @@
 // Search anything (Ctrl+K): work order, tasreeh, meter and feeder numbers, places,
 // contractors and notes, in English or Arabic, typed with any digits.
-import 'package:flutter/material.dart' hide Actions;
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 
 import '../../app/scope.dart';
 import '../../domain/insights.dart';
@@ -70,13 +69,17 @@ class _SearchState extends State<_Search> {
         elevation: 12,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 640, maxHeight: MediaQuery.sizeOf(context).height * 0.7),
-          child: CallbackShortcuts(
-            bindings: {
-              const SingleActivator(LogicalKeyboardKey.arrowDown): () => setState(() => _cursor = (_cursor + 1).clamp(0, flat.isEmpty ? 0 : flat.length - 1)),
-              const SingleActivator(LogicalKeyboardKey.arrowUp): () => setState(() => _cursor = (_cursor - 1).clamp(0, flat.isEmpty ? 0 : flat.length - 1)),
-              const SingleActivator(LogicalKeyboardKey.enter): () {
-                if (flat.isNotEmpty) _open(flat[_cursor.clamp(0, flat.length - 1)]);
-              },
+          // Up/Down move through the results, Enter opens one. The text field would
+          // otherwise use Up/Down itself, so its arrow action is overridden here.
+          child: Actions(
+            actions: {
+              ExtendSelectionVerticallyToAdjacentLineIntent: CallbackAction<ExtendSelectionVerticallyToAdjacentLineIntent>(
+                onInvoke: (i) {
+                  if (flat.isEmpty) return null;
+                  setState(() => _cursor = (_cursor + (i.forward ? 1 : -1)).clamp(0, flat.length - 1));
+                  return null;
+                },
+              ),
             },
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Padding(
@@ -84,7 +87,11 @@ class _SearchState extends State<_Search> {
                 child: TextField(
                   controller: _ctl,
                   autofocus: true,
+                  textInputAction: TextInputAction.go,
                   onChanged: (_) => _run(),
+                  onSubmitted: (_) {
+                    if (flat.isNotEmpty) _open(flat[_cursor.clamp(0, flat.length - 1)]);
+                  },
                   decoration: InputDecoration(
                     hintText: s.t('search.hint'),
                     prefixIcon: const Icon(Icons.search),

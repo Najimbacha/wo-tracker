@@ -209,8 +209,11 @@ class _DateFieldState extends State<DateField> {
       return;
     }
     final v = parseTypedDate(text, context.appRead.today);
-    setState(() => _typedError = v == null ? context.t('date.typeHint') : null);
-    if (v != null) widget.onChanged(v);
+    // Same limit as the calendar: no future dates unless this field allows them.
+    final last = widget.allowFuture ? widget.last : (widget.last ?? context.appRead.today);
+    final tooLate = v != null && last != null && v.compareTo(last) > 0;
+    setState(() => _typedError = v == null ? context.t('date.typeHint') : (tooLate ? context.t('error.future_date') : null));
+    if (v != null && !tooLate) widget.onChanged(v);
   }
 
   @override

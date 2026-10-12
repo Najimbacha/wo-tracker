@@ -143,6 +143,7 @@ class AppState extends ChangeNotifier {
     selectedOrderId = null;
     data = repo.current;
     sync = repo.currentSync;
+    refused = repo.currentRefused;
     _subs.add(repo.data.listen((d) {
       data = d;
       _evalCache.clear();
@@ -159,6 +160,9 @@ class AppState extends ChangeNotifier {
     }));
     notifyListeners();
   }
+
+  /// Opens the store again (e.g. after the sync addresses were entered for the first time).
+  Future<void> reopen() => _openRepository();
 
   Future<void> setDemoMode(bool on) async {
     await prefs.setBool('demoMode', on);

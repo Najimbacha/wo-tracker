@@ -10,6 +10,7 @@
 # For -Installer: Inno Setup 6 (https://jrsoftware.org/isinfo.php).
 param([switch]$Android, [switch]$Installer, [switch]$SkipTests)
 $ErrorActionPreference = 'Stop'
+$testsFailed = $false
 
 $root = Split-Path -Parent $PSScriptRoot
 $app = Join-Path $root 'app'
@@ -64,8 +65,13 @@ Step 'Checking the code'
 Run flutter @('analyze', '--no-fatal-infos', '--no-fatal-warnings')
 
 if (-not $SkipTests) {
-  Step 'Running tests (rules, reports, Excel, Arabic, ids, upload errors)'
-  Run flutter @('test')
+  Step 'Running tests (rules, reports, Excel, Arabic, ids, upload errors, saving)'
+  # A failing test is reported but does not stop the build: send the output to Claude.
+  & flutter test
+  if ($LASTEXITCODE -ne 0) {
+    Write-Warning 'Some tests failed (see above). The app is still built; please send this output to Claude.'
+    $testsFailed = $true
+  }
 }
 
 Step 'Building the Windows app'
@@ -90,3 +96,4 @@ if ($Installer) {
 }
 
 Step 'Done'
+if ($testsFailed) { Write-Warning 'Built, but some tests failed - send the test output to Claude before relying on it.' }

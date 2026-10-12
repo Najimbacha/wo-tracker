@@ -46,9 +46,7 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
           onTap: () {
             setState(() => _selected = c.contractor);
             if (!wide) {
-              Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (_) => Scaffold(appBar: AppBar(title: Text(_name(s, c.contractor))), body: _Detail(con: c)),
-              ));
+              Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => _DetailPage(contractor: c.contractor)));
             }
           },
         ),
@@ -58,6 +56,22 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
       SizedBox(width: 300, child: DecoratedBox(decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: side)),
       Expanded(child: _Detail(key: ValueKey(cur.contractor), con: cur)),
     ]);
+  }
+}
+
+/// Phone: one contractor as its own page, kept up to date as orders change.
+class _DetailPage extends StatelessWidget {
+  const _DetailPage({required this.contractor});
+  final String contractor;
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final list = app.memo('followUp', () => app.insights.followUp(app.orders, app.today, alertSettings: app.alertSettings));
+    final con = list.where((c) => c.contractor == contractor).firstOrNull;
+    return Scaffold(
+      appBar: AppBar(title: Text(_name(app.s, contractor))),
+      body: con == null ? EmptyState(icon: Icons.done_all, title: app.s.t('followUp.empty')) : _Detail(con: con),
+    );
   }
 }
 

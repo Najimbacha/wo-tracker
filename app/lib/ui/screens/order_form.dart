@@ -10,6 +10,7 @@ import '../../domain/order_input.dart';
 import '../../domain/rules_engine.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../nav.dart';
 import '../widgets/dialogs.dart';
 
 class OrderFormPage extends StatefulWidget {
@@ -88,6 +89,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
   OrderInput _draft() {
     final base = widget.editing;
     double len(String t) => double.tryParse(t.replaceAll(',', '.').trim()) ?? 0;
+    // Only the parts the chosen type uses are kept (switching type hides the others).
+    final spec = _spec;
     final draft = OrderInput(
       id: base?.id,
       type: _type,
@@ -95,10 +98,10 @@ class _OrderFormPageState extends State<OrderFormPage> {
       woNumber: _number.text,
       receivedDate: _received,
       needsExcavation: _excavation,
-      segments: [for (final g in _segs) Segment(id: g.id, base: g.base, width: g.width, lengthM: len(g.length), tiled: g.tiled)],
+      segments: [for (final g in _segs) if (spec.segments) Segment(id: g.id, base: g.base, width: g.width, lengthM: len(g.length), tiled: g.tiled)],
       meters: [
         for (final m in _meters)
-          Meter(m.id,
+          if (spec.meters) Meter(m.id,
               number: m.number.trim().isEmpty ? null : m.number.trim(),
               oldNumber: m.oldNumber.trim().isEmpty ? null : m.oldNumber.trim(),
               meterType: m.type,
@@ -106,7 +109,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       ],
       cableRuns: [
         for (final c in _cables)
-          if (c.size != null) CableRun(id: c.id, sizeMm2: c.size!, voltage: c.voltage, lengthM: len(c.length)),
+          if (spec.cableRuns && c.size != null) CableRun(id: c.id, sizeMm2: c.size!, voltage: c.voltage, lengthM: len(c.length)),
       ],
       permits: base?.permits ?? const [],
       steps: base?.steps ?? const {},
@@ -135,13 +138,14 @@ class _OrderFormPageState extends State<OrderFormPage> {
   }
 
   Future<bool> _save({bool next = false}) async {
+    if (_saving) return false; // Ctrl+S pressed twice
     final app = context.appRead;
     _ensureMeter();
     final draft = _draft();
     final others = app.data.orders.where((o) => o.id != draft.id).toList();
     final errors = _actions.validateDraft(draft, others, app.today);
     // Segment lengths and cable lengths must be numbers above 0.
-    for (final c in _cables) {
+    for (final c in _spec.cableRuns ? _cables : const <_CableDraft>[]) {
       if (c.size == null || (double.tryParse(c.length.replaceAll(',', '.')) ?? 0) <= 0) {
         errors.add(const Reason('bad_cable_run'));
         break;
@@ -159,7 +163,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       if (impact.isNotEmpty) {
         final names = impact.map((id) => app.s.step(id.split('@').first)).toSet().toList();
         final ok = await confirmDialog(context, title: app.s.t('confirm.editImpactTitle'), body: app.s.t('confirm.editImpact', {'steps': names}), confirm: app.s.t('common.save'));
-        if (!ok) return false;
+        if (!ok || !mounted) return false;
       }
     }
     setState(() => _saving = true);
@@ -266,8 +270,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 if (d.deleted) {
                   app.apply(d, app.actions.restoreOrder(d, app.data.orders), toast: 'toast.restored');
                 }
-                app.select(d.id);
                 app.go('today');
+                final nav = app.navigatorKey.currentContext;
+                if (nav != null) openOrder(nav, d.id);
               }
             },
             child: Text(dup.deleted ? s.t('action.restoreInstead') : s.t('order.openExisting')),

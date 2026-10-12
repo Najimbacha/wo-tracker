@@ -65,6 +65,7 @@ abstract class Repository {
   SyncInfo get currentSync;
 
   Stream<List<RefusedChange>> get refused;
+  List<RefusedChange> get currentRefused => const [];
 
   bool get isDemo;
 

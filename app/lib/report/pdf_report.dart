@@ -267,7 +267,9 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
   final delayLimit = (limits['delays'] as num?)?.toInt() ?? 25;
   final delayRows = delayAll.take(delayLimit).toList();
   final delayCols = ((delaysSec['columns'] as List?) ?? const []).map((e) => Map<String, Object?>.from(e as Map)).toList();
-  final delays = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+  // Tables are direct page items (not inside a Column) so a long one continues on the
+  // next page instead of failing to fit.
+  final delays = <pw.Widget>[
     heading(_str(delaysSec['title']), _str(delaysSec['subtitle'])),
     if (delayRows.isEmpty)
       t(empty, color: _P.faint)
@@ -288,7 +290,7 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
         widths: const {0: pw.FixedColumnWidth(62), 1: pw.FixedColumnWidth(30), 2: pw.FlexColumnWidth(1.1), 3: pw.FlexColumnWidth(1.2), 4: pw.FlexColumnWidth(2.2), 5: pw.FixedColumnWidth(32)},
       ),
     more(delayAll.length, delayRows.length),
-  ]);
+  ];
 
   final ct = Map<String, Object?>.from(doc['contractors'] as Map);
   final ctCols = ((ct['columns'] as List?) ?? const []).map((e) => Map<String, Object?>.from(e as Map)).toList();
@@ -300,11 +302,11 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
         n(_num(c['lateStarts']), size: 8.5, strong: strong || ((c['lateStarts'] as num?) ?? 0) > 0, color: ((c['lateStarts'] as num?) ?? 0) > 0 && !strong ? _P.alert : _P.ink, align: pw.TextAlign.right),
         n(_num(c['avgDays']), size: 8.5, strong: strong, align: pw.TextAlign.right),
       ];
-  final contractors = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+  final contractors = <pw.Widget>[
     heading(_str(ct['title']), _str(ct['subtitle'])),
     table(ctCols, [for (final c in _rows(ct)) ctRow(c)], total: ctRow(ctTotal, strong: true),
         widths: const {0: pw.FlexColumnWidth(2.4), 1: pw.FlexColumnWidth(1), 2: pw.FlexColumnWidth(1), 3: pw.FlexColumnWidth(1), 4: pw.FlexColumnWidth(1.2)}),
-  ]);
+  ];
 
   final q = Map<String, Object?>.from(doc['quantities'] as Map);
   final qItems = ((q['items'] as List?) ?? const []).map((e) => Map<String, Object?>.from(e as Map)).toList();
@@ -367,9 +369,9 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
       pw.SizedBox(height: 16),
       steps,
       pw.NewPage(),
-      delays,
+      ...delays,
       pw.SizedBox(height: 18),
-      contractors,
+      ...contractors,
       pw.SizedBox(height: 18),
       quantities,
       pw.SizedBox(height: 18),

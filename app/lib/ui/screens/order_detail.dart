@@ -183,7 +183,7 @@ class _Header extends StatelessWidget {
           ]),
         ),
         Wrap(spacing: 8, runSpacing: 8, children: [
-          OutlinedButton.icon(onPressed: () => editOrder(context, o), icon: const Icon(Icons.edit_outlined, size: 17), label: Text(s.t('common.edit'))),
+          if (!o.deleted) OutlinedButton.icon(onPressed: () => editOrder(context, o), icon: const Icon(Icons.edit_outlined, size: 17), label: Text(s.t('common.edit'))),
           if (o.state == 'on_hold')
             FilledButton.icon(onPressed: () => _resume(context, o), icon: const Icon(Icons.play_arrow, size: 18), label: Text(s.t('action.resume')))
           else if (active && !o.deleted)

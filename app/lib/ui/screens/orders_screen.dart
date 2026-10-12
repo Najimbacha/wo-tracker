@@ -147,6 +147,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     _selected.removeWhere((id) => !rows.any((o) => o.id == id));
     final phone = isPhone(context);
     final wide = isWide(context);
+    // Contractor, date, progress and status beside each order, when there is room.
+    final roomForFacts = MediaQuery.sizeOf(context).width - (wide ? 300 : 0) >= 820;
 
     final header = Padding(
       padding: EdgeInsets.fromLTRB(phone ? 14 : 24, 18, phone ? 14 : 24, 8),
@@ -170,14 +172,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           const SizedBox(width: 8),
           if (!wide)
-            OutlinedButton.icon(
-              onPressed: () => setState(() => _showFilters = !_showFilters),
-              icon: const Icon(Icons.tune, size: 18),
-              label: Text(s.t('filter.title')),
-            ),
+            phone
+                ? IconButton(tooltip: s.t('filter.title'), isSelected: _showFilters, onPressed: () => setState(() => _showFilters = !_showFilters), icon: const Icon(Icons.tune))
+                : OutlinedButton.icon(
+                    onPressed: () => setState(() => _showFilters = !_showFilters),
+                    icon: const Icon(Icons.tune, size: 18),
+                    label: Text(s.t('filter.title')),
+                  ),
           if (rows.isNotEmpty) ...[
             const SizedBox(width: 8),
-            OutlinedButton.icon(onPressed: () => _export(context, rows), icon: const Icon(Icons.download, size: 18), label: Text(s.t('common.export'))),
+            phone
+                ? IconButton(tooltip: s.t('common.export'), onPressed: () => _export(context, rows), icon: const Icon(Icons.download))
+                : OutlinedButton.icon(onPressed: () => _export(context, rows), icon: const Icon(Icons.download, size: 18), label: Text(s.t('common.export'))),
           ],
         ]),
         const SizedBox(height: 8),
@@ -224,7 +230,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     order: o,
                     selected: sel,
                     onTap: () => openOrder(context, o.id),
-                    trailing: phone ? null : _RowFacts(order: o),
+                    trailing: roomForFacts ? _RowFacts(order: o) : null,
                   ),
                 ),
               ]);
@@ -288,7 +294,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
     if (key == null || !context.mounted) return;
     final date = await pickDate(context, help: app.s.step(key));
-    if (date == null) return;
+    if (date == null || !mounted) return;
     final r = app.actions.bulkMarkDone(chosen, key, date, app.today);
     final changes = <OrderChange>[];
     for (var i = 0; i < chosen.length; i++) {
@@ -319,7 +325,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ),
       );
     }
-    setState(_selected.clear);
+    if (mounted) setState(_selected.clear);
   }
 }
 
@@ -355,17 +361,14 @@ class _BulkBar extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(color: C.ink, borderRadius: BorderRadius.circular(8)),
-        child: Row(children: [
+        child: Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
           Text(context.t('common.selected', {'count': count}), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-          const SizedBox(width: 14),
           FilledButton(onPressed: onMark, child: Text(context.t('bulk.markStep'))),
-          const SizedBox(width: 8),
           OutlinedButton(
             style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: C.muted)),
             onPressed: onExport,
             child: Text(context.t('bulk.exportSelected')),
           ),
-          const Spacer(),
           TextButton(onPressed: onClear, child: Text(context.t('common.clearAll'), style: const TextStyle(color: Color(0xFFC4C9C3)))),
         ]),
       );

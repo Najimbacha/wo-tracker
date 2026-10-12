@@ -70,7 +70,11 @@ class _HistoryState extends State<_History> {
       if (n.containsKey('done_date') || n.containsKey('not_applicable')) return s.t('history.stepCleared', {'step': what});
       if (n.containsKey('note')) return s.t('history.noteChanged', {'what': what});
     }
-    final fields = e.newData.keys.map((k) => s.t('history.field.$k')).join(', ');
+    String field(String k) {
+      final label = s.t('history.field.$k');
+      return label == 'history.field.$k' ? k.replaceAll('_', ' ') : label;
+    }
+    final fields = e.newData.keys.map(field).join(', ');
     return s.t('history.changed', {'what': what, 'fields': fields});
   }
 

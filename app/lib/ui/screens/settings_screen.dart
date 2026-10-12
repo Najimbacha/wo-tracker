@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../app/app_state.dart';
 import '../../app/scope.dart';
 import '../../data/models.dart';
+import '../../data/powersync_repository.dart' show supabaseStarted;
 import '../../data/repository.dart';
 import '../../report/files.dart';
 import '../../report/xlsx_writer.dart';
@@ -253,7 +254,7 @@ class _ContractorDialogState extends State<_ContractorDialog> {
       content: SizedBox(
         width: 400,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: _name, decoration: InputDecoration(labelText: s.t('settings.name'))),
+          TextField(controller: _name, onChanged: (_) => setState(() {}), decoration: InputDecoration(labelText: s.t('settings.name'))),
           const SizedBox(height: 12),
           TextField(controller: _phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: s.t('settings.phone'))),
           SwitchListTile(contentPadding: EdgeInsets.zero, value: _active, onChanged: (v) => setState(() => _active = v), title: Text(s.t('settings.activeContractor'))),
@@ -455,7 +456,15 @@ class _SyncCardState extends State<_SyncCard> {
           FilledButton(
             onPressed: () async {
               await app.saveSyncConfig(SyncConfig(supabaseUrl: _url.text, anonKey: _key.text, powersyncUrl: _ps.text));
-              app.showToast(s.t('sync.restartNeeded'));
+              if (supabaseStarted) {
+                // Supabase can only be pointed at a new address on the next start.
+                app.showToast(s.t('sync.restartNeeded'));
+              } else {
+                // First time: connect now, no restart needed.
+                await app.reopen();
+                if (mounted) setState(() => _showSetup = false);
+                app.showToast(s.t('toast.saved'));
+              }
             },
             child: Text(s.t('common.save')),
           ),
