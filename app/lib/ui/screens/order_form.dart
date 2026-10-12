@@ -71,6 +71,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
   bool _saving = false;
   bool _dirty = false;
   bool _showErrors = false;
+  final _numberFocus = FocusNode();
 
   /// Breaker amps: a whole number above 0, otherwise left empty (the database refuses 0).
   static int? _amps(String t) {
@@ -85,6 +86,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
     for (final c in [_number, _district, _street, _network, _notes]) {
       c.dispose();
     }
+    _numberFocus.dispose();
     super.dispose();
   }
 
@@ -198,6 +200,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
         _showErrors = false;
         _dirty = false;
       });
+      // Ready for the next order: the cursor goes back to the work order number.
+      _numberFocus.requestFocus();
     } else {
       _dirty = false;
       Navigator.of(context).pop();
@@ -243,6 +247,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
         Expanded(
           child: TextField(
             controller: _number,
+            focusNode: _numberFocus,
             autofocus: _isNew,
             textDirection: TextDirection.ltr,
             style: monoStyle.copyWith(fontSize: 16),

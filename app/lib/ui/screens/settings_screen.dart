@@ -66,12 +66,16 @@ class SettingsScreen extends StatelessWidget {
 
 Future<void> exportEverything(BuildContext context) async {
   final app = context.appRead;
+  // Building the file can take a moment with thousands of orders: say so first, and let
+  // the message draw before the work starts.
+  app.showToast(app.s.t('toast.preparingFile'));
+  await Future<void>.delayed(const Duration(milliseconds: 60));
   try {
     final wb = app.exportDoc.dataWorkbook(app.data.orders, app.today, riyadhNow());
     final saved = await saveOrShare(workbookXlsx(wb), wb['fileName'] as String);
     if (saved != null && !saved.shared) app.showToast(app.s.t('toast.fileSaved', {'path': saved.path}));
   } catch (e) {
-    app.showToast(app.s.t('toast.exportFailed', {'reason': '$e'}), error: true);
+    app.showToast(app.s.t('toast.exportFailed', {'reason': fileErrorReason(e, app.s.t)}), error: true);
   }
 }
 
@@ -100,11 +104,14 @@ class _LanguageCard extends StatelessWidget {
   }
 }
 
-Future<void> _saveSettings(AppState app, AppSettings next) async {
+/// Returns true when saved; on failure the reason is shown.
+Future<bool> _saveSettings(AppState app, AppSettings next) async {
   try {
     await app.repo.saveSettings(next);
+    return true;
   } catch (e) {
     app.showError(e);
+    return false;
   }
 }
 
@@ -161,15 +168,15 @@ class _AlertsCardState extends State<_AlertsCard> {
     );
   }
 
-  void _save(AppState app) {
+  Future<void> _save(AppState app) async {
     final defaults = (app.rules['alertDefaults'] as Map).cast<String, dynamic>();
     final next = <String, int>{};
     for (final k in _keys) {
       final v = int.tryParse(_ctl[k]?.text ?? '');
       if (v != null && v >= 0 && v <= 365 && v != defaults[k]) next[k] = v;
     }
-    _saveSettings(app, app.data.settings.copyWith(alertOverrides: next));
-    app.showToast(app.s.t('toast.saved'));
+    // Only say "Saved" when it was (a failure shows its own message).
+    if (await _saveSettings(app, app.data.settings.copyWith(alertOverrides: next))) app.showToast(app.s.t('toast.saved'));
   }
 }
 
@@ -364,7 +371,7 @@ class _ReportCard extends StatelessWidget {
         onTap: () async {
           final v = await reasonDialog(context, title: s.t('settings.preparedBy'), confirm: s.t('common.save'), initial: app.data.settings.preparedBy);
           if (v == null) return;
-          await _saveSettings(app, app.data.settings.copyWith(preparedBy: v));
+          if (await _saveSettings(app, app.data.settings.copyWith(preparedBy: v))) app.showToast(s.t('toast.saved'));
         },
       ),
     );

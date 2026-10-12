@@ -800,5 +800,10 @@
   "history.table.followups": "Follow-up",
   "history.table.attachments": "File",
   "error.received_after_state": "The received date can't be after the day this order was cancelled or merged ({date}).",
-  "sync.confirmEmail": "Account created. Open the email sent to {email}, confirm it, then sign in here."
+  "sync.confirmEmail": "Account created. Open the email sent to {email}, confirm it, then sign in here.",
+  "filter.deleteViewTitle": "Delete the saved view \"{name}\"?",
+  "toast.unexpected": "Something went wrong:",
+  "toast.preparingFile": "Preparing the file…",
+  "toast.shareCopied": "Sharing isn't available here, so the message was copied. Paste it into WhatsApp.",
+  "toast.fileBusy": "the file may be open in another program (close it and try again), or that folder can't be written to"
 }

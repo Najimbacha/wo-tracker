@@ -34,6 +34,7 @@ class TodayScreen extends StatelessWidget {
             ? EmptyState(icon: Icons.touch_app_outlined, title: app.s.t('today.pickOrder'), body: app.s.t('today.pickOrderBody'))
             : AnimatedSwitcher(
                 duration: const Duration(milliseconds: 160),
+                layoutBuilder: fillLayout,
                 child: KeyedSubtree(key: ValueKey(sel.id), child: OrderDetail(orderId: sel.id!)),
               ),
       ),

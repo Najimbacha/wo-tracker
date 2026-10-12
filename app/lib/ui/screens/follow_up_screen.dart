@@ -163,7 +163,16 @@ class _DetailState extends State<_Detail> {
           const SizedBox(height: 10),
           Wrap(spacing: 8, runSpacing: 8, children: [
             FilledButton.icon(
-              onPressed: () => shareText(message(app, con, lang)),
+              onPressed: () async {
+                final text = message(app, con, lang);
+                try {
+                  await shareText(text);
+                } catch (_) {
+                  // No share option on this computer: copy instead, and say so.
+                  await Clipboard.setData(ClipboardData(text: text));
+                  app.showToast(s.t('toast.shareCopied'));
+                }
+              },
               icon: const Icon(Icons.share_outlined, size: 18),
               label: Text(s.t('followUp.share')),
             ),

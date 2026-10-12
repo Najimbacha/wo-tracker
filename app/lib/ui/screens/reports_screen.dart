@@ -88,7 +88,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         app.showToast(app.s.t('toast.reportSaved', {'report': app.s.t('report.$_kind'), 'format': saved.path.split('.').last.toUpperCase()}));
       }
     } catch (e) {
-      app.showToast(app.s.t('toast.exportFailed', {'reason': '$e'}), error: true);
+      app.showToast(app.s.t('toast.exportFailed', {'reason': fileErrorReason(e, app.s.t)}), error: true);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -99,7 +99,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final app = context.app;
     final s = app.s;
     if (!app.data.loaded) return const DelayedLoader();
-    final key = '$_kind|$_date|$_lang|$_contractor|${app.data.hashCode}|${app.today}';
+    // Rebuilt only when something in the orders changes (not on every sync reload, which
+    // would make the preview flicker while it is being read).
+    final fingerprint = Object.hashAll([
+      for (final o in app.orders)
+        Object.hash(o.id, o.woNumber, o.lastChangeDate, o.state, o.stateDate, o.contractor, o.district, o.type, o.receivedDate,
+            Object.hashAll(o.steps.entries.map((e) => Object.hash(e.key, e.value.done, e.value.na))),
+            Object.hashAll(o.holdPeriods.map((h) => Object.hash(h.from, h.to))),
+            Object.hashAll(o.permits.map((p) => Object.hash(p.startDate, p.endDate))),
+            Object.hashAll(o.segments.map((g) => Object.hash(g.base, g.width, g.lengthM, g.tiled))), Object.hashAll(o.cableRuns.map((c) => Object.hash(c.voltage, c.lengthM)))),
+    ]);
+    final key = '$_kind|$_date|$_lang|$_contractor|$fingerprint|${app.today}|${app.data.settings.preparedBy}';
     if (key != _pdfKey) {
       _pdfKey = key;
       _pdf = _buildPdf(app);

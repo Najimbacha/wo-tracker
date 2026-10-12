@@ -194,7 +194,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
             _title = v.name;
           }),
           onSave: () => _saveView(context),
-          onDelete: (v) => app.repo.deleteView(v.id),
+          onDelete: (v) async {
+            final ok = await confirmDialog(context,
+                title: s.t('filter.deleteViewTitle', {'name': v.name}), confirm: s.t('common.delete'), danger: true);
+            if (!ok) return;
+            try {
+              await app.repo.deleteView(v.id);
+            } catch (e) {
+              app.showError(e);
+            }
+          },
         ),
       ]),
     );
@@ -264,13 +273,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Future<void> _export(BuildContext context, List<OrderInput> orders) async {
     final app = context.appRead;
+    app.showToast(app.s.t('toast.preparingFile'));
+    await Future<void>.delayed(const Duration(milliseconds: 60));
     try {
       final wb = app.exportDoc.dataWorkbook(orders, app.today, riyadhNowText());
       final bytes = workbookXlsx(wb);
       final saved = await saveOrShare(bytes, wb['fileName'] as String);
       if (saved != null && !saved.shared) app.showToast(app.s.t('toast.fileSaved', {'path': saved.path}));
     } catch (e) {
-      app.showToast(app.s.t('toast.exportFailed', {'reason': '$e'}), error: true);
+      app.showToast(app.s.t('toast.exportFailed', {'reason': fileErrorReason(e, app.s.t)}), error: true);
     }
   }
 

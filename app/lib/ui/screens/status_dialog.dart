@@ -58,15 +58,11 @@ class _StatusDialogState extends State<_StatusDialog> {
     setState(() => _saving = true);
     final ok = await app.apply(o, r,
         toast: switch (_kind) { 'hold' => 'toast.onHold', 'cancel' => 'toast.cancelled', _ => 'toast.merged' },
-        toastParams: {'date': app.dateShort(_from), 'wo': _target?.woNumber ?? ''});
+        toastParams: {'date': app.dateShort(_from), 'wo': _target?.woNumber ?? ''},
+        toastExtra: _kind == 'merge' && r.carried.isNotEmpty ? app.s.t('toast.carried', {'count': r.carried.length, 'wo': _target?.woNumber ?? ''}) : null);
     if (!mounted) return;
     setState(() => _saving = false);
-    if (ok) {
-      if (_kind == 'merge' && r.carried.isNotEmpty) {
-        app.showToast(app.s.t('toast.carried', {'count': r.carried.length, 'wo': _target?.woNumber ?? ''}));
-      }
-      Navigator.pop(context);
-    }
+    if (ok) Navigator.pop(context);
   }
 
   @override

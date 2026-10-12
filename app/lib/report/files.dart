@@ -43,6 +43,11 @@ Future<SavedFile?> saveOrShare(Uint8List bytes, String fileName) async {
   return SavedFile(path);
 }
 
+/// Why saving a file failed, in plain words when it is the usual Windows case: the file
+/// is open in another program (Excel, a PDF viewer) or the folder can't be written to.
+String fileErrorReason(Object e, String Function(String key) t) =>
+    e is FileSystemException ? t('toast.fileBusy') : '$e';
+
 /// Shares plain text (follow-up messages to contractors).
 Future<void> shareText(String text) => SharePlus.instance.share(ShareParams(text: text));
 

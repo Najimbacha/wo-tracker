@@ -1,3 +1,5 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart' hide Actions;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -6,8 +8,49 @@ import 'app/scope.dart';
 import 'ui/shell.dart';
 import 'ui/theme.dart';
 
+/// The running app, once loaded (for reporting unexpected errors).
+AppState? _running;
+DateTime _lastReport = DateTime(2000);
+
+/// Shows an unexpected error as a toast: after the current frame (never while a screen
+/// is being drawn, which would cause a new error) and at most once every 5 seconds.
+void _report(Object error) {
+  final app = _running;
+  if (app == null) return;
+  final now = DateTime.now();
+  if (now.difference(_lastReport) < const Duration(seconds: 5)) return;
+  _lastReport = now;
+  WidgetsBinding.instance.addPostFrameCallback((_) => app.showToast('${app.s.t('toast.unexpected')} $error', error: true));
+  WidgetsBinding.instance.scheduleFrame();
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // A part of a screen that fails to draw shows a short message instead of a grey or
+  // red box; the rest of the screen keeps working.
+  ErrorWidget.builder = (details) => Directionality(
+        // May be drawn above the app's own text direction, so it sets one itself.
+        textDirection: TextDirection.ltr,
+        child: Material(
+          color: const Color(0xFFFBECEA),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text('This part could not be shown: ${details.exceptionAsString()}',
+                style: const TextStyle(color: Color(0xFF8C1D17), fontSize: 12.5)),
+          ),
+        ),
+      );
+  // Errors nobody caught (a failed background step) are shown, not silently lost.
+  final previous = FlutterError.onError;
+  FlutterError.onError = (details) {
+    previous?.call(details);
+    _report(details.exceptionAsString());
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('Uncaught: $error\n$stack');
+    _report(error);
+    return true;
+  };
   runApp(const _Boot());
 }
 
@@ -25,7 +68,12 @@ class _BootState extends State<_Boot> {
   @override
   void initState() {
     super.initState();
+    _start();
+  }
+
+  void _start() {
     AppState.load().then((a) {
+      _running = a;
       if (mounted) setState(() => _app = a);
     }, onError: (Object e) {
       if (mounted) setState(() => _error = e);
@@ -43,7 +91,22 @@ class _BootState extends State<_Boot> {
           body: Center(
             child: _error == null
                 ? const CircularProgressIndicator(strokeWidth: 2.5)
-                : Padding(padding: const EdgeInsets.all(32), child: Text('The app could not start: $_error', textAlign: TextAlign.center)),
+                : Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.error_outline, color: Color(0xFFB3261E), size: 36),
+                      const SizedBox(height: 12),
+                      Text('The app could not start.\n$_error\n\nYour data on this device is safe.', textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: () => setState(() {
+                          _error = null;
+                          _start();
+                        }),
+                        child: const Text('Try again'),
+                      ),
+                    ]),
+                  ),
           ),
         ),
       );

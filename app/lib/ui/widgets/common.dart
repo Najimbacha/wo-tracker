@@ -98,8 +98,10 @@ class ProgressLine extends StatelessWidget {
       Expanded(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(2),
+          // Grows smoothly when progress changes; no animation on first show, so a list
+          // being scrolled doesn't replay every bar from zero.
           child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: f),
+            tween: Tween(begin: f, end: f),
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOutCubic,
             builder: (_, v, __) => LinearProgressIndicator(value: v, minHeight: 4, backgroundColor: C.chip, color: C.accent),
@@ -272,6 +274,10 @@ class Labeled extends StatelessWidget {
         if (sub != null) ...[const SizedBox(height: 2), Text(sub!, style: const TextStyle(fontSize: 12, color: C.muted))],
       ]);
 }
+
+/// Cross-fade between screens that keeps each one at full size (the default layout
+/// centres children, so a screen could show smaller than the space it has).
+Widget fillLayout(Widget? current, List<Widget> previous) => Stack(fit: StackFit.expand, children: [...previous, if (current != null) current]);
 
 bool isWide(BuildContext context) => MediaQuery.sizeOf(context).width >= 900;
 bool isPhone(BuildContext context) => MediaQuery.sizeOf(context).width < 700;

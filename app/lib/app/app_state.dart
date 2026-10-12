@@ -283,16 +283,41 @@ class AppState extends ChangeNotifier {
 
   /// Saves order changes. Shows [toastKey] with Undo when given. Returns false if it
   /// failed (the message is shown).
-  Future<bool> save(List<OrderChange> changes, {String? toast, Map<String, Object?> toastParams = const {}, bool undo = true}) async {
+  Future<bool> save(List<OrderChange> changes, {String? toast, Map<String, Object?> toastParams = const {}, bool undo = true, String? toastExtra}) async {
+    // New parts get their ids here, so what the screen shows straight away and what the
+    // database holds are the same rows (a second quick edit can't add them twice).
+    changes = [for (final c in changes) OrderChange(c.before, _withIds(c.after))];
+    _pending++;
+    notifyListeners();
     try {
       await repo.saveOrders(changes, cacheOf);
     } catch (e) {
       showError(e);
       return false;
+    } finally {
+      _pending--;
+      notifyListeners();
     }
+    // Show the result at once; the database reload a moment later gives the same data.
+    final byId = {for (final c in changes) c.after.id!: c.after};
+    final kept = [for (final o in data.orders) byId.remove(o.id) ?? o];
+    data = RepoData(
+      orders: [...kept, ...byId.values],
+      contractors: data.contractors,
+      districts: data.districts,
+      cableSizes: data.cableSizes,
+      views: data.views,
+      followUps: data.followUps,
+      settings: data.settings,
+      loaded: true,
+    );
+    _evalCache.clear();
+    _memo.clear();
+    notifyListeners();
     if (toast != null) {
       final entry = _UndoEntry(changes);
-      showToast(s.t(toast, toastParams), onUndo: undo ? () => _undo(entry) : null);
+      // One toast, so the Undo button is never pushed away by a second message.
+      showToast([s.t(toast, toastParams), if (toastExtra != null) toastExtra].join(' · '), onUndo: undo ? () => _undo(entry) : null);
     }
     return true;
   }
@@ -310,29 +335,40 @@ class AppState extends ChangeNotifier {
         back.add(OrderChange(now, before));
       }
     }
-    try {
-      await repo.saveOrders(back, cacheOf);
-      showToast(s.t('toast.undone'));
-    } catch (err) {
-      showError(err);
-    }
+    if (await save(back)) showToast(s.t('toast.undone'));
   }
 
+  /// A save is running: buttons that would save again are disabled until it ends.
+  int _pending = 0;
+  bool get saving => _pending > 0;
+
+  OrderInput _withIds(OrderInput o) => o.copyWith(
+        id: o.id ?? repo.newId(),
+        cableRuns: [for (final c in o.cableRuns) c.id != null ? c : CableRun(id: repo.newId(), sizeMm2: c.sizeMm2, voltage: c.voltage, lengthM: c.lengthM)],
+        permits: [
+          for (final p in o.permits)
+            p.id != null ? p : Permit(id: repo.newId(), number: p.number, appliedDate: p.appliedDate, startDate: p.startDate, endDate: p.endDate)
+        ],
+        holdPeriods: [
+          for (final h in o.holdPeriods) h.id != null ? h : HoldPeriod(id: repo.newId(), from: h.from, to: h.to, reason: h.reason, review: h.review)
+        ],
+      );
+
   /// Runs a domain action result: saves it, or shows why it was refused.
-  Future<bool> apply(OrderInput before, ActionResult r, {String? toast, Map<String, Object?> toastParams = const {}}) async {
+  Future<bool> apply(OrderInput before, ActionResult r, {String? toast, Map<String, Object?> toastParams = const {}, String? toastExtra}) async {
     if (!r.ok) {
       showToast(r.errors.map(s.error).join(' '), error: true);
       return false;
     }
     final changes = <OrderChange>[OrderChange(before, r.order!)];
     if (r.target != null) changes.add(OrderChange(orderById(r.target!.id), r.target!));
-    final ok = await save(changes, toast: toast, toastParams: toastParams);
-    if (ok && r.completed) {
+    var extra = toastExtra;
+    if (r.completed) {
       final ev = evaluate(r.order!);
       final days = r.order!.receivedDate == null ? 0 : activeDays(r.order!.receivedDate!, today, r.order!.holdPeriods);
-      showToast('${s.t('toast.orderCompleted')} · ${s.t('toast.orderCompletedBody', {'count': ev.total, 'days': days})}');
+      extra = [if (extra != null) extra, s.t('toast.orderCompleted'), s.t('toast.orderCompletedBody', {'count': ev.total, 'days': days})].join(' · ');
     }
-    return ok;
+    return save(changes, toast: toast, toastParams: toastParams, toastExtra: extra);
   }
 
   // ---------------------------------------------------------------- messages
@@ -341,10 +377,15 @@ class AppState extends ChangeNotifier {
     final m = messengerKey.currentState;
     if (m == null) return;
     m.hideCurrentSnackBar();
+    final w = m.context.mounted ? MediaQuery.maybeSizeOf(m.context)?.width : null;
     m.showSnackBar(SnackBar(
       content: Text(text),
       behavior: SnackBarBehavior.floating,
-      duration: Duration(seconds: error ? 7 : 5),
+      width: w != null && w >= 700 ? 560 : null, // a tidy toast on the PC, full width on a phone
+      // A toast with Undo would otherwise stay until closed by hand (Flutter keeps toasts
+      // that have a button); it goes away by itself, and Undo works while it shows.
+      persist: false,
+      duration: Duration(seconds: error ? 8 : (onUndo != null ? 6 : 4)),
       backgroundColor: error ? const Color(0xFF8C1D17) : null,
       showCloseIcon: error,
       action: onUndo == null ? null : SnackBarAction(label: s.t('common.undo'), onPressed: onUndo),

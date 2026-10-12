@@ -441,11 +441,11 @@ class _StepRow extends StatelessWidget {
         ),
         if (ready) ...[
           if (!isPhone(context))
-            TextButton(onPressed: () => _markOther(context), child: Text(s.t('common.otherDate'))),
+            TextButton(onPressed: app.saving ? null : () => _markOther(context), child: Text(s.t('common.otherDate'))),
           const SizedBox(width: 4),
           FilledButton(
             style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
-            onPressed: () => _mark(context, app.today),
+            onPressed: app.saving ? null : () => _mark(context, app.today),
             child: Text(s.t('common.markDoneToday')),
           ),
         ],

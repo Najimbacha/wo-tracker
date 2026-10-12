@@ -58,6 +58,7 @@ class Shell extends StatelessWidget {
       Expanded(
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
+          layoutBuilder: fillLayout,
           child: KeyedSubtree(key: ValueKey(app.screen), child: _page(app.screen)),
         ),
       ),

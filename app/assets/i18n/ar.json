@@ -821,5 +821,10 @@
   "history.table.followups": "المتابعة",
   "history.table.attachments": "الملف",
   "error.received_after_state": "لا يمكن أن يكون تاريخ الاستلام بعد يوم إلغاء هذا الأمر أو دمجه ({date}).",
-  "sync.confirmEmail": "تم إنشاء الحساب. افتح الرسالة المرسلة إلى {email} وأكّدها، ثم سجّل الدخول هنا."
+  "sync.confirmEmail": "تم إنشاء الحساب. افتح الرسالة المرسلة إلى {email} وأكّدها، ثم سجّل الدخول هنا.",
+  "filter.deleteViewTitle": "حذف العرض المحفوظ \"{name}\"؟",
+  "toast.unexpected": "حدث خطأ:",
+  "toast.preparingFile": "جارٍ تجهيز الملف…",
+  "toast.shareCopied": "المشاركة غير متاحة هنا، لذلك نُسخت الرسالة. الصقها في واتساب.",
+  "toast.fileBusy": "ربما الملف مفتوح في برنامج آخر (أغلقه وحاول مرة أخرى)، أو لا يمكن الكتابة في هذا المجلد"
 }
