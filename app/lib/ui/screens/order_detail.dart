@@ -1,6 +1,6 @@
 // One work order: what it is, what is done, what is next. Every step can be ticked
 // here (today or another date), marked Not applicable with a reason, or cleared.
-import 'package:flutter/material.dart' hide Actions;
+import 'package:flutter/material.dart' hide Actions, StepState;
 
 import '../../data/repository.dart';
 import '../../app/scope.dart';

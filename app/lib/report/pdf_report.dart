@@ -105,7 +105,8 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
             padding: const pw.EdgeInsets.symmetric(horizontal: 11, vertical: 10),
             decoration: pw.BoxDecoration(
               color: kpis[i]['tone'] == 'alert' ? _P.alertBg : null,
-              border: i == kpis.length - 1 ? null : pw.Border(right: pw.BorderSide(color: _P.line)),
+              // The divider sits on the side facing the next tile (rows run right to left in Arabic).
+              border: i == kpis.length - 1 ? null : (rtl ? pw.Border(left: pw.BorderSide(color: _P.line)) : pw.Border(right: pw.BorderSide(color: _P.line))),
             ),
             child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
               t(_str(kpis[i]['label']), size: 8.5, color: kpis[i]['tone'] == 'alert' ? _P.alert : _P.muted),
@@ -177,7 +178,7 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
     ]),
     pw.SizedBox(height: 5),
     pw.Padding(
-      padding: const pw.EdgeInsets.only(left: 24),
+      padding: const pw.EdgeInsetsDirectional.only(start: 24), // under the bars, past the axis labels
       child: pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
         if (days.isNotEmpty) t(_str(days.first['label']), size: 7.5, color: _P.faint),
         if (days.length > 2) t(_str(days[(days.length - 1) ~/ 2]['label']), size: 7.5, color: _P.faint),
@@ -234,17 +235,20 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
   ]);
 
   // Tables
+  // The PDF library's tables don't follow right-to-left text, so for Arabic the column
+  // order is reversed here (the first column then sits on the right, as in the design).
+  List<T> ord<T>(List<T> l) => rtl ? l.reversed.toList() : l;
   pw.Widget table(List<Map<String, Object?>> columns, List<List<pw.Widget>> body, {List<pw.Widget>? total, Map<int, pw.TableColumnWidth>? widths}) => pw.Table(
-        columnWidths: widths,
+        columnWidths: widths == null || !rtl ? widths : {for (final e in widths.entries) columns.length - 1 - e.key: e.value},
         defaultVerticalAlignment: pw.TableCellVerticalAlignment.top,
         children: [
           pw.TableRow(
             decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: _P.ink))),
             repeat: true,
             children: [
-              for (final c in columns)
+              for (final c in ord(columns))
                 pw.Padding(
-                  padding: const pw.EdgeInsets.fromLTRB(0, 5, 6, 5),
+                  padding: const pw.EdgeInsetsDirectional.fromSTEB(0, 5, 6, 5),
                   child: t(_str(c['label']), size: 8, color: _P.muted, strong: true, align: c['numeric'] == true ? pw.TextAlign.right : null),
                 ),
             ],
@@ -252,12 +256,12 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
           for (final r in body)
             pw.TableRow(
               decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: _P.soft))),
-              children: [for (final w in r) pw.Padding(padding: const pw.EdgeInsets.fromLTRB(0, 5, 6, 5), child: w)],
+              children: [for (final w in ord(r)) pw.Padding(padding: const pw.EdgeInsetsDirectional.fromSTEB(0, 5, 6, 5), child: w)],
             ),
           if (total != null)
             pw.TableRow(
               decoration: pw.BoxDecoration(border: pw.Border(top: pw.BorderSide(color: _P.ink))),
-              children: [for (final w in total) pw.Padding(padding: const pw.EdgeInsets.fromLTRB(0, 5, 6, 5), child: w)],
+              children: [for (final w in ord(total)) pw.Padding(padding: const pw.EdgeInsetsDirectional.fromSTEB(0, 5, 6, 5), child: w)],
             ),
         ],
       );

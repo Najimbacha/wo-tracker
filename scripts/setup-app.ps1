@@ -7,7 +7,7 @@
 #
 # Needs (all free): Flutter (stable), Visual Studio 2022 Build Tools with
 # "Desktop development with C++", and for -Android the Android SDK (Android Studio).
-# For -Installer: Inno Setup 6 (https://jrsoftware.org/isinfo.php).
+# For -Installer: Inno Setup 6.3 or newer (https://jrsoftware.org/isinfo.php).
 param([switch]$Android, [switch]$Installer, [switch]$SkipTests)
 $ErrorActionPreference = 'Stop'
 $testsFailed = $false
@@ -27,6 +27,16 @@ if (-not (Get-Command flutter -ErrorAction SilentlyContinue)) {
   throw 'Flutter is not installed or not on PATH. Install it from https://docs.flutter.dev/get-started/install/windows and open a new PowerShell window.'
 }
 Run flutter @('--version')
+# The app uses features of Flutter 3.47 (October 2026). An older Flutter fails to build
+# with confusing errors, so it is updated first.
+try {
+  $machine = (& flutter --version --machine 2>$null | Out-String)
+  $fv = [version](($machine | ConvertFrom-Json).frameworkVersion -replace '[^0-9.].*$', '')
+} catch { $fv = $null }
+if ($fv -and $fv -lt [version]'3.47.0') {
+  Write-Warning "Flutter $fv is older than 3.47. Updating Flutter (flutter upgrade)..."
+  Run flutter @('upgrade')
+}
 
 # Platform folders (windows/, android/) are generated, not kept in the project.
 # flutter create never overwrites files that already exist (lib/, pubspec.yaml, tests).
@@ -49,13 +59,14 @@ if (Test-Path (Join-Path $app 'android')) {
     $xml = $xml -replace '(<manifest[^>]*>)', "`$1`n    <uses-permission android:name=`"android.permission.INTERNET`"/>"
   }
   $xml = $xml -replace 'android:label="[^"]*"', 'android:label="WO Tracker"'
-  Set-Content -Path $manifest -Value $xml -Encoding UTF8
+  [IO.File]::WriteAllText($manifest, $xml, (New-Object Text.UTF8Encoding $false))
 }
 
 if (Test-Path (Join-Path $app 'windows')) {
   Step 'Windows: window title'
   $main = Join-Path $app 'windows\runner\main.cpp'
-  (Get-Content $main -Raw) -replace 'L"wo_tracker"', 'L"WO Tracker"' | Set-Content -Path $main -Encoding UTF8
+  $cpp = (Get-Content $main -Raw) -replace 'L"wo_tracker"', 'L"WO Tracker"'
+  [IO.File]::WriteAllText($main, $cpp, (New-Object Text.UTF8Encoding $false))
 }
 
 Step 'Getting packages'

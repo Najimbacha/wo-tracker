@@ -103,7 +103,7 @@ class _DataHealthScreenState extends State<DataHealthScreen> {
                   for (final o in deleted)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Row(children: [Mono(o.woNumber ?? ''), const SizedBox(width: 8), TypeTag(o.type), const SizedBox(width: 8), Text(o.district ?? '', style: const TextStyle(color: C.muted))]),
+                      title: Row(children: [Mono(o.woNumber ?? ''), const SizedBox(width: 8), TypeTag(o.type), const SizedBox(width: 8), Flexible(child: Text(o.district ?? '', overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted)))]),
                       subtitle: Text(o.deletedReason ?? ''),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => OrderPage(orderId: o.id!))),
                       trailing: OutlinedButton(
@@ -130,7 +130,9 @@ class _Line extends StatelessWidget {
           Icon(ok ? Icons.check_circle : Icons.error_outline, size: 18, color: ok ? C.success : C.warning),
           const SizedBox(width: 10),
           Expanded(child: Text(label)),
-          Text(meta, style: const TextStyle(color: C.faint, fontSize: 12.5)),
+          const SizedBox(width: 8),
+          // Long descriptions wrap instead of running off a phone screen.
+          Flexible(child: Text(meta, textAlign: TextAlign.end, style: const TextStyle(color: C.faint, fontSize: 12.5))),
         ]),
       );
 }

@@ -120,9 +120,11 @@ class _PermitDialogState extends State<_PermitDialog> {
                       child: Row(children: [
                         Mono(o.permits[i].number ?? '—', size: 12.5),
                         const SizedBox(width: 10),
-                        Text(
-                          [o.permits[i].startDate, o.permits[i].endDate].whereType<String>().map(app.dateShort).join(' – '),
-                          style: const TextStyle(color: C.muted, fontSize: 12.5),
+                        Flexible(
+                          child: Text(
+                            [o.permits[i].startDate, o.permits[i].endDate].whereType<String>().map(app.dateShort).join(' – '),
+                            style: const TextStyle(color: C.muted, fontSize: 12.5),
+                          ),
                         ),
                       ]),
                     ),
