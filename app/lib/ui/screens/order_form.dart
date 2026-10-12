@@ -72,6 +72,12 @@ class _OrderFormPageState extends State<OrderFormPage> {
   bool _dirty = false;
   bool _showErrors = false;
 
+  /// Breaker amps: a whole number above 0, otherwise left empty (the database refuses 0).
+  static int? _amps(String t) {
+    final v = int.tryParse(t.trim());
+    return v == null || v <= 0 ? null : v;
+  }
+
   static String _numText(double v) => v == v.truncateToDouble() ? '${v.toInt()}' : '$v';
 
   @override
@@ -105,7 +111,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               number: m.number.trim().isEmpty ? null : m.number.trim(),
               oldNumber: m.oldNumber.trim().isEmpty ? null : m.oldNumber.trim(),
               meterType: m.type,
-              breakerAmps: int.tryParse(m.amps.trim())),
+              breakerAmps: _amps(m.amps)),
       ],
       cableRuns: [
         for (final c in _cables)
@@ -331,7 +337,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
               DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
               for (final c in app.data.contractors)
                 if (!c.deleted && (c.active || c.name == _contractor)) DropdownMenuItem<String?>(value: c.name, child: Text(c.name)),
-              if (_contractor != null && !app.data.contractors.any((c) => c.name == _contractor))
+              // The order's contractor may have been removed since: keep it selectable,
+              // or the list would have no item for the current value.
+              if (_contractor != null && !app.data.contractors.any((c) => !c.deleted && c.name == _contractor))
                 DropdownMenuItem<String?>(value: _contractor, child: Text(_contractor!)),
             ],
             onChanged: (v) => setState(() {
@@ -537,7 +545,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               SizedBox(
                 width: 140,
                 child: DropdownButtonFormField<int>(
-                  initialValue: c.size != null && sizes.contains(c.size) ? c.size : null,
+                  initialValue: c.size,
                   decoration: InputDecoration(labelText: s.t('order.cableSize')),
                   items: [for (final z in {...sizes, if (c.size != null) c.size!}) DropdownMenuItem(value: z, child: Text('$z mm²'))],
                   onChanged: (v) => setState(() {

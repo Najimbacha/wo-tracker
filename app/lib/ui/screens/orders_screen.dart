@@ -469,6 +469,9 @@ class _Filters extends StatelessWidget {
             DropdownMenuItem<String?>(value: null, child: Text(s.t('filter.all'))),
             DropdownMenuItem<String?>(value: unassignedContractor, child: Text(s.t('common.unassigned'))),
             for (final c in contractors) DropdownMenuItem<String?>(value: c, child: Text(c)),
+            // A saved view may name a contractor renamed or removed since.
+            if (st._contractor != null && st._contractor != unassignedContractor && !contractors.contains(st._contractor))
+              DropdownMenuItem<String?>(value: st._contractor, child: Text(st._contractor!)),
           ],
           onChanged: (v) => upd(() => st._contractor = v),
         ),

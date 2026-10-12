@@ -24,6 +24,15 @@ class StepIds {
   /// The account's one settings row: the same id on every device.
   static String settingsRowId(String userId) => uuidV5(namespace, 'settings|$userId');
 
+  /// Contractor / district row id from its name (trimmed, any case, single spaces), so two
+  /// devices adding the same name offline make the same row instead of a duplicate the
+  /// server would refuse. [table] keeps contractors and districts apart.
+  static String nameRowId(String table, String name) =>
+      uuidV5(namespace, '$table|${name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ')}');
+
+  /// Cable size row id, the same on every device for the same size.
+  static String cableSizeRowId(int sizeMm2) => uuidV5(namespace, 'cable_sizes|$sizeMm2');
+
   /// RFC 4122 version 5 UUID (SHA-1 of namespace bytes + UTF-8 name).
   static String uuidV5(String ns, String name) {
     final hex = ns.replaceAll('-', '');

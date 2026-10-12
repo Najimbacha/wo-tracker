@@ -395,11 +395,12 @@ class _SyncCardState extends State<_SyncCard> {
   }
 
   Future<void> _do(Future<void> Function() f) async {
+    final app = context.appRead; // read before waiting: the card may be gone after
     setState(() => _busy = true);
     try {
       await f();
     } catch (e) {
-      context.appRead.showError(e);
+      app.showError(e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }

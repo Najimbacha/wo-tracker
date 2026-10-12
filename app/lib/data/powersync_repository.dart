@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:powersync/powersync.dart';
-import 'package:powersync/sqlite_async.dart' show SqliteWriteContext;
+import 'package:powersync/sqlite_async.dart' show SqliteReadContext, SqliteWriteContext;
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../domain/order_input.dart';
@@ -335,10 +335,18 @@ class PowerSyncRepository extends Repository {
     final k = nameKey(name);
     final found = ids[k];
     if (found != null) return found;
-    final id = newId();
+    final id = await _nameId(tx, table, name);
     await tx.execute('INSERT INTO $table (id, name${table == 'contractors' ? ', active' : ''}) VALUES (?, ?${table == 'contractors' ? ', 1' : ''})', [id, name.trim()]);
     ids[k] = id;
     return id;
+  }
+
+  /// Same id on every device for the same name (see StepIds.nameRowId). If that id is
+  /// already taken (the name was used before and the row renamed since), a new one.
+  Future<String> _nameId(SqliteReadContext tx, String table, String name) async {
+    final id = StepIds.nameRowId(table, name);
+    final taken = await tx.getOptional('SELECT id FROM $table WHERE id = ?', [id]);
+    return taken == null ? id : newId();
   }
 
   @override
@@ -377,7 +385,7 @@ class PowerSyncRepository extends Repository {
     if (_current.contractors.any((x) => !x.deleted && nameKey(x.name) == nameKey(name))) {
       throw RepoException('settings.contractorExists', {'name': name.trim()});
     }
-    final c = Contractor(id: newId(), name: name.trim(), phone: phone);
+    final c = Contractor(id: await _nameId(db, 'contractors', name), name: name.trim(), phone: phone);
     await db.execute('INSERT INTO contractors (id, name, phone, active) VALUES (?, ?, ?, 1)', [c.id, c.name, phone]);
     return c;
   }
@@ -395,7 +403,7 @@ class PowerSyncRepository extends Repository {
     for (final x in _current.districts) {
       if (!x.deleted && nameKey(x.name) == nameKey(name)) return x;
     }
-    final d = District(id: newId(), name: name.trim());
+    final d = District(id: await _nameId(db, 'districts', name), name: name.trim());
     await db.execute('INSERT INTO districts (id, name) VALUES (?, ?)', [d.id, d.name]);
     return d;
   }
@@ -411,7 +419,14 @@ class PowerSyncRepository extends Repository {
   Future<void> addCableSize(int sizeMm2) async {
     final exists = await db.getOptional('SELECT id FROM cable_sizes WHERE size_mm2 = ? AND deleted_at IS NULL', [sizeMm2]);
     if (exists != null) return;
-    await db.execute('INSERT INTO cable_sizes (id, size_mm2) VALUES (?, ?)', [newId(), sizeMm2]);
+    // Same id on every device for the same size; a removed size comes back on its own row.
+    final id = StepIds.cableSizeRowId(sizeMm2);
+    final old = await db.getOptional('SELECT id FROM cable_sizes WHERE id = ?', [id]);
+    if (old != null) {
+      await db.execute('UPDATE cable_sizes SET deleted_at = NULL, size_mm2 = ? WHERE id = ?', [sizeMm2, id]);
+    } else {
+      await db.execute('INSERT INTO cable_sizes (id, size_mm2) VALUES (?, ?)', [id, sizeMm2]);
+    }
   }
 
   @override
@@ -478,7 +493,40 @@ class PowerSyncRepository extends Repository {
   }
 
   @override
-  Future<void> dismissRefused(String id) => db.execute('DELETE FROM refused_changes WHERE id = ?', [id]);
+  Future<void> dismissRefused(String id) async {
+    // "Undo my change": this device goes back to what the server has (needs internet to
+    // know it). If the server never had the row (a new order it refused), the row is
+    // moved to Deleted here; nothing is erased and it can still be restored.
+    final r = await db.getOptional('SELECT * FROM refused_changes WHERE id = ?', [id]);
+    if (r == null) return;
+    if (!_online || Supabase.instance.client.auth.currentSession == null) throw const RepoException('sync.signInFirst');
+    final table = r['table_name'] as String;
+    final rowId = r['row_id'] as String;
+    Map<String, dynamic>? server;
+    try {
+      server = await Supabase.instance.client.from(table).select().eq('id', rowId).maybeSingle().timeout(const Duration(seconds: 20));
+    } catch (_) {
+      throw const RepoException('sync.signInOffline');
+    }
+    final cols = appSchema.tables.firstWhere((t) => t.name == table).columns.map((c) => c.name).toList();
+    await db.writeTransaction((tx) async {
+      if (server == null) {
+        await tx.execute('UPDATE $table SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL', [_now, rowId]);
+      } else {
+        final values = [
+          for (final c in cols)
+            switch (server[c]) {
+              final bool b => b ? 1 : 0,
+              final Map<dynamic, dynamic> m => jsonEncode(m),
+              final List<dynamic> l => jsonEncode(l),
+              final v => v,
+            },
+        ];
+        await tx.execute('UPDATE $table SET ${cols.map((c) => '$c = ?').join(', ')} WHERE id = ?', [...values, rowId]);
+      }
+      await tx.execute('DELETE FROM refused_changes WHERE row_id = ?', [rowId]);
+    });
+  }
 
   // ---------------------------------------------------------------- server-only reads
 

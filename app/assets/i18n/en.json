@@ -655,7 +655,7 @@
   "pipeline.footer": "Click any number to open those orders as a list you can bulk-update or export. An order with several surfaces counts under each.",
   "refused.sentAgain": "Sent again",
   "refused.stillRefused": "The server still refuses it: {message}",
-  "refused.undoBody": "Your change is dropped and the order shows what the server has.",
+  "refused.undoBody": "Your change is dropped and the order shows what the server has. Needs internet. If the server never had it, the order moves to Deleted orders, where it can still be restored.",
   "report.date": "Date",
   "report.periodHint.daily": "Midnight to midnight, Riyadh time.",
   "report.periodHint.weekly": "The week from Saturday to Friday that holds this date.",

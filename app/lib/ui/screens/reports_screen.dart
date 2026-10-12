@@ -126,6 +126,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         items: [
           DropdownMenuItem<String?>(value: null, child: Text(s.t('report.allContractors'))),
           for (final c in contractors) DropdownMenuItem<String?>(value: c, child: Text(c)),
+          if (_contractor != null && !contractors.contains(_contractor)) DropdownMenuItem<String?>(value: _contractor, child: Text(_contractor!)),
         ],
         onChanged: (v) => setState(() => _contractor = v),
       ),
