@@ -54,7 +54,11 @@ Each step takes about 5 minutes. Claude walks through them one at a time.
 1. **GitHub:** create a private repository named `wo-tracker`, then push this code to it.
 2. **Supabase:** create a free project (region closest to Riyadh), open the SQL editor and run the three files in `supabase/migrations/`, in name order. The second creates the `powersync` publication PowerSync needs; the third adds the database-size check used by Data health and the nightly backup.
 3. **PowerSync:** create a free account, connect it to the Supabase project, and paste `powersync/sync-rules.yaml`. Free PowerSync projects are switched off after a week without use; if you are away longer, switch it back on in the PowerSync dashboard (no data is lost, the devices catch up).
-4. **Flutter app:** in `app/`, run `flutter create --platforms=windows,android .` once (this adds the Windows and Android folders without touching our code), then `flutter test`.
+4. **Flutter app:** install Flutter (stable) and Visual Studio 2022 Build Tools with "Desktop development with C++" (both free). Then in PowerShell, from this folder:
+   `powershell -ExecutionPolicy Bypass -File scripts\setup-app.ps1 -Android -Installer`
+   This adds the Windows and Android folders (without touching our code), checks the code, runs every test, and builds the Windows app, the Android APK and the Windows installer (`build\WO-Tracker-Setup-<version>.exe`, needs the free Inno Setup 6). Leave out `-Android` or `-Installer` to skip those.
+   First start: the app opens with no data and works offline straight away. Settings → Sync → enter the Supabase URL, anon key and PowerSync URL, then sign in. Settings → Demo mode shows sample orders without touching real data.
+   To update later: build again and run the new installer over the old one. The data is kept in the Windows app-data folder, which install, update and uninstall never touch.
 5. **Backups:** add the three secrets listed at the top of `.github/workflows/nightly-backup.yml`, then run the "Nightly backup" workflow once by hand to check it. When making the rclone config for Google Drive, leave "client_id" empty (rclone's own Google client). A Google Cloud app of your own left in testing mode would stop working after 7 days.
 
 ## Rules for the app's data layer

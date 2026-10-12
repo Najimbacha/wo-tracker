@@ -1,0 +1,772 @@
+// New work order (typed from the SEC PDF) and Edit work order. Only the parts that
+// apply to the chosen type are shown. Leaving with unsaved changes asks first.
+import 'package:flutter/material.dart' hide Actions;
+import 'package:flutter/services.dart';
+
+import '../../app/scope.dart';
+import '../../data/repository.dart';
+import '../../domain/actions.dart';
+import '../../domain/order_input.dart';
+import '../../domain/rules_engine.dart';
+import '../theme.dart';
+import '../widgets/common.dart';
+import '../widgets/dialogs.dart';
+
+class OrderFormPage extends StatefulWidget {
+  const OrderFormPage({super.key, this.editing});
+  final OrderInput? editing;
+  @override
+  State<OrderFormPage> createState() => _OrderFormPageState();
+}
+
+class _SegDraft {
+  _SegDraft({required this.id, this.base = 'asphalt', this.width = 40, this.length = '', this.tiled = false});
+  final String id;
+  String base;
+  int width;
+  String length;
+  bool tiled;
+}
+
+class _MeterDraft {
+  _MeterDraft({required this.id, this.number = '', this.oldNumber = '', this.type, this.amps = ''});
+  final String id;
+  String number, oldNumber, amps;
+  String? type;
+}
+
+class _CableDraft {
+  _CableDraft({this.id, this.size, this.voltage = 'LV', this.length = ''});
+  final String? id;
+  int? size;
+  String voltage;
+  String length;
+}
+
+class _OrderFormPageState extends State<OrderFormPage> {
+  late final bool _isNew = widget.editing == null;
+  late String _category = widget.editing?.category ?? 'extension';
+  late String _type = widget.editing?.type ?? (context.appRead.prefs.getString('lastType') ?? '402');
+  late final _number = TextEditingController(text: widget.editing?.woNumber ?? '');
+  late String? _received = widget.editing?.receivedDate ?? context.appRead.today;
+  late bool _excavation = widget.editing?.needsExcavation ?? false;
+  late final _district = TextEditingController(text: widget.editing?.district ?? '');
+  late final _street = TextEditingController(text: widget.editing?.street ?? '');
+  late String? _contractor = widget.editing?.contractor ?? (_isNew ? context.appRead.prefs.getString('lastContractor') : null);
+  late final _network = TextEditingController(text: widget.editing?.networkRef ?? '');
+  late final _notes = TextEditingController(text: widget.editing?.notes ?? '');
+  late final List<_SegDraft> _segs = [
+    for (final s in widget.editing?.segments ?? const <Segment>[])
+      _SegDraft(id: s.id, base: s.base, width: s.width, length: _numText(s.lengthM), tiled: s.tiled),
+  ];
+  late final List<_MeterDraft> _meters = [
+    for (final m in widget.editing?.meters ?? const <Meter>[])
+      _MeterDraft(id: m.id, number: m.number ?? '', oldNumber: m.oldNumber ?? '', type: m.meterType, amps: m.breakerAmps?.toString() ?? ''),
+  ];
+  late final List<_CableDraft> _cables = [
+    for (final c in widget.editing?.cableRuns ?? const <CableRun>[]) _CableDraft(id: c.id, size: c.sizeMm2, voltage: c.voltage, length: _numText(c.lengthM)),
+  ];
+  List<Reason> _errors = [];
+  bool _saving = false;
+  bool _dirty = false;
+  bool _showErrors = false;
+
+  static String _numText(double v) => v == v.truncateToDouble() ? '${v.toInt()}' : '$v';
+
+  @override
+  void dispose() {
+    for (final c in [_number, _district, _street, _network, _notes]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  void _touch() => setState(() => _dirty = true);
+
+  Actions get _actions => context.appRead.actions;
+
+  OrderInput _draft() {
+    final base = widget.editing;
+    double len(String t) => double.tryParse(t.replaceAll(',', '.').trim()) ?? 0;
+    final draft = OrderInput(
+      id: base?.id,
+      type: _type,
+      category: _category,
+      woNumber: _number.text,
+      receivedDate: _received,
+      needsExcavation: _excavation,
+      segments: [for (final g in _segs) Segment(id: g.id, base: g.base, width: g.width, lengthM: len(g.length), tiled: g.tiled)],
+      meters: [
+        for (final m in _meters)
+          Meter(m.id,
+              number: m.number.trim().isEmpty ? null : m.number.trim(),
+              oldNumber: m.oldNumber.trim().isEmpty ? null : m.oldNumber.trim(),
+              meterType: m.type,
+              breakerAmps: int.tryParse(m.amps.trim())),
+      ],
+      cableRuns: [
+        for (final c in _cables)
+          if (c.size != null) CableRun(id: c.id, sizeMm2: c.size!, voltage: c.voltage, lengthM: len(c.length)),
+      ],
+      permits: base?.permits ?? const [],
+      steps: base?.steps ?? const {},
+      state: base?.state ?? 'open',
+      stateReason: base?.stateReason,
+      stateDate: base?.stateDate,
+      mergedInto: base?.mergedInto,
+      holdPeriods: base?.holdPeriods ?? const [],
+      lastChangeDate: base?.lastChangeDate ?? _received,
+      contractor: (_contractor == null || _contractor!.trim().isEmpty) ? null : _contractor!.trim(),
+      district: _district.text.trim().isEmpty ? null : _district.text.trim(),
+      street: _street.text.trim().isEmpty ? null : _street.text.trim(),
+      networkRef: _network.text.trim().isEmpty ? null : _network.text.trim(),
+      notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
+      deleted: base?.deleted ?? false,
+      deletedReason: base?.deletedReason,
+    );
+    return Actions.normalizeDraft(draft, rules: context.appRead.rules);
+  }
+
+  FormSpec get _spec => _actions.formSpec(OrderInput(type: _type, category: _category, needsExcavation: _excavation));
+
+  /// Every type with meters starts with one meter row, so its steps have a home.
+  void _ensureMeter() {
+    if (_spec.meters && _meters.isEmpty) _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
+  }
+
+  Future<bool> _save({bool next = false}) async {
+    final app = context.appRead;
+    _ensureMeter();
+    final draft = _draft();
+    final others = app.data.orders.where((o) => o.id != draft.id).toList();
+    final errors = _actions.validateDraft(draft, others, app.today);
+    // Segment lengths and cable lengths must be numbers above 0.
+    for (final c in _cables) {
+      if (c.size == null || (double.tryParse(c.length.replaceAll(',', '.')) ?? 0) <= 0) {
+        errors.add(const Reason('bad_cable_run'));
+        break;
+      }
+    }
+    if (errors.isNotEmpty) {
+      setState(() {
+        _errors = errors;
+        _showErrors = true;
+      });
+      return false;
+    }
+    if (!_isNew) {
+      final impact = _actions.editImpact(widget.editing!, draft);
+      if (impact.isNotEmpty) {
+        final names = impact.map((id) => app.s.step(id.split('@').first)).toSet().toList();
+        final ok = await confirmDialog(context, title: app.s.t('confirm.editImpactTitle'), body: app.s.t('confirm.editImpact', {'steps': names}), confirm: app.s.t('common.save'));
+        if (!ok) return false;
+      }
+    }
+    setState(() => _saving = true);
+    final after = draft.id == null ? draft.copyWith(id: app.repo.newId()) : draft;
+    final ok = await app.save([OrderChange(widget.editing, after)], toast: _isNew ? 'order.created' : 'toast.saved');
+    if (!mounted) return ok;
+    setState(() => _saving = false);
+    if (!ok) return false;
+    await app.prefs.setString('lastType', _type);
+    if (_contractor != null) await app.prefs.setString('lastContractor', _contractor!);
+    if (!mounted) return true;
+    if (next) {
+      setState(() {
+        _number.clear();
+        _street.clear();
+        _network.clear();
+        _notes.clear();
+        _segs.clear();
+        _meters.clear();
+        _cables.clear();
+        _errors = [];
+        _showErrors = false;
+        _dirty = false;
+      });
+    } else {
+      _dirty = false;
+      Navigator.of(context).pop();
+    }
+    return true;
+  }
+
+  String? _fieldError(List<String> codes) {
+    if (!_showErrors) return null;
+    for (final e in _errors) {
+      if (codes.contains(e.code)) return context.s.error(e);
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final s = app.s;
+    final spec = _spec;
+    final phone = isPhone(context);
+    final dup = _number.text.trim().isEmpty ? null : Actions.findDuplicate(app.data.orders, _number.text, exceptId: widget.editing?.id);
+    final pattern = RegExp(spec.woNumberPattern ?? '.*');
+    final numberOk = _number.text.trim().isEmpty || pattern.hasMatch(Actions.normalizeDraft(OrderInput(type: _type, category: _category, woNumber: _number.text)).woNumber ?? '');
+    final todayAdded = app.data.orders.where((o) => o.receivedDate == app.today && !o.deleted).length;
+
+    final form = <Widget>[
+      // Category
+      _Label(s.t('order.category')),
+      SegmentedButton<String>(
+        segments: [
+          ButtonSegment(value: 'extension', label: Text(s.t('category.extensionLong'))),
+          ButtonSegment(value: 'emergency', label: Text(s.t('category.emergencyLong'))),
+        ],
+        selected: {_category},
+        onSelectionChanged: (v) => setState(() {
+          _category = v.first;
+          _dirty = true;
+        }),
+      ),
+      const SizedBox(height: 18),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+          child: TextField(
+            controller: _number,
+            autofocus: _isNew,
+            textDirection: TextDirection.ltr,
+            style: monoStyle.copyWith(fontSize: 16),
+            onChanged: (_) => _touch(),
+            decoration: InputDecoration(
+              labelText: s.t('order.woNumber'),
+              helperText: dup == null && numberOk ? s.t(_category == 'extension' ? 'order.woHintExtension' : 'order.woHintEmergency') : null,
+              errorText: dup != null
+                  ? s.t(dup.deleted ? 'error.duplicate_wo_deleted' : 'error.duplicate_wo', {'date': dup.receivedDate == null ? '' : app.dateShort(dup.receivedDate!), 'district': dup.district ?? ''})
+                  : (!numberOk ? s.t('error.bad_wo_number') : _fieldError(['wo_number_required', 'bad_wo_number'])),
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: DateField(
+            label: s.t('order.received'),
+            value: _received,
+            onChanged: (v) => setState(() {
+              _received = v;
+              _dirty = true;
+            }),
+            errorText: _fieldError(['received_required', 'future_date']),
+          ),
+        ),
+      ]),
+      if (dup != null)
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              final d = app.orderById(dup.id);
+              if (d != null) {
+                if (d.deleted) {
+                  app.apply(d, app.actions.restoreOrder(d, app.data.orders), toast: 'toast.restored');
+                }
+                app.select(d.id);
+                app.go('today');
+              }
+            },
+            child: Text(dup.deleted ? s.t('action.restoreInstead') : s.t('order.openExisting')),
+          ),
+        ),
+      const SizedBox(height: 18),
+      _Label(s.t('order.type')),
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final t in (app.rules['types'] as Map).keys.cast<String>())
+          _TypeButton(
+            code: t,
+            label: s.type(t),
+            selected: _type == t,
+            onTap: () => setState(() {
+              _type = t;
+              _dirty = true;
+              if (!_actions.formSpec(OrderInput(type: t, category: _category)).excavationSwitch) _excavation = false;
+            }),
+          ),
+      ]),
+      if (spec.excavationSwitch)
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: _excavation,
+          onChanged: (v) => setState(() {
+            _excavation = v;
+            _dirty = true;
+          }),
+          title: Text(s.t('order.needsExcavation')),
+          subtitle: Text(s.t('order.needsExcavationHint')),
+        ),
+      const SizedBox(height: 18),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+          child: _Suggest(
+            controller: _district,
+            label: s.t('order.district'),
+            helper: s.t('order.districtHint'),
+            options: [for (final d in app.data.districts) if (!d.deleted) d.name],
+            onChanged: _touch,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: TextField(controller: _street, onChanged: (_) => _touch(), decoration: InputDecoration(labelText: s.t('order.street'))),
+        ),
+      ]),
+      const SizedBox(height: 14),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+          child: DropdownButtonFormField<String?>(
+            initialValue: _contractor,
+            isExpanded: true,
+            decoration: InputDecoration(labelText: s.t('order.contractor')),
+            items: [
+              DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
+              for (final c in app.data.contractors)
+                if (!c.deleted && (c.active || c.name == _contractor)) DropdownMenuItem<String?>(value: c.name, child: Text(c.name)),
+              if (_contractor != null && !app.data.contractors.any((c) => c.name == _contractor))
+                DropdownMenuItem<String?>(value: _contractor, child: Text(_contractor!)),
+            ],
+            onChanged: (v) => setState(() {
+              _contractor = v;
+              _dirty = true;
+            }),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: TextField(
+            controller: _network,
+            onChanged: (_) => _touch(),
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(labelText: s.t('order.network'), hintText: s.t('order.networkHint')),
+          ),
+        ),
+      ]),
+      if (spec.segments) ...[const SizedBox(height: 22), _segmentsEditor(context)],
+      if (spec.cableRuns) ...[const SizedBox(height: 22), _cablesEditor(context)],
+      if (spec.meters) ...[const SizedBox(height: 22), _metersEditor(context, spec)],
+      const SizedBox(height: 18),
+      TextField(controller: _notes, onChanged: (_) => _touch(), minLines: 1, maxLines: 4, decoration: InputDecoration(labelText: s.t('order.notes'))),
+      const SizedBox(height: 16),
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
+        child: Text(
+          s.t('order.stepsFor', {
+            'type': _type,
+            'steps': app.engine.generate(OrderInput(type: _type, category: _category, needsExcavation: _excavation, meters: const [Meter('m')])).map((x) => s.step(x.key)).toSet().join(' · '),
+          }),
+          style: const TextStyle(fontSize: 12.5, color: C.muted, height: 1.45),
+        ),
+      ),
+      if (_showErrors && _errors.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        for (final e in _errors)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(children: [
+              const Icon(Icons.error_outline, size: 16, color: C.critical),
+              const SizedBox(width: 6),
+              Expanded(child: Text(s.error(e), style: const TextStyle(color: C.critical))),
+            ]),
+          ),
+      ],
+    ];
+
+    return UnsavedGuard(
+      dirty: _dirty,
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.enter, control: true): () => _save(next: _isNew),
+          const SingleActivator(LogicalKeyboardKey.keyS, control: true): () => _save(),
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: C.card,
+            surfaceTintColor: C.card,
+            title: Text(_isNew ? s.t('order.newTitle') : s.t('order.editTitle', {'wo': widget.editing!.woNumber ?? ''})),
+            actions: [
+              if (_isNew)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 16),
+                  child: Center(child: Text(s.t('order.addedToday', {'count': todayAdded}), style: const TextStyle(color: C.faint, fontSize: 13))),
+                ),
+            ],
+          ),
+          body: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 820),
+              child: ListView(padding: EdgeInsets.all(phone ? 16 : 28), children: form),
+            ),
+          ),
+          bottomNavigationBar: SafeArea(
+            child: Container(
+              decoration: const BoxDecoration(color: Color(0xFFFBFBFA), border: Border(top: BorderSide(color: C.lineSoft))),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(children: [
+                if (!phone && _isNew) Text(s.t('order.keptForNext'), style: const TextStyle(color: C.faint, fontSize: 12.5)),
+                const Spacer(),
+                TextButton(onPressed: () => Navigator.of(context).maybePop(), child: Text(s.t('common.cancel'))),
+                const SizedBox(width: 8),
+                if (_isNew) ...[
+                  OutlinedButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
+                  const SizedBox(width: 8),
+                  FilledButton(onPressed: _saving ? null : () => _save(next: true), child: Text(s.t('common.saveAndNext'))),
+                ] else
+                  FilledButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _segmentsEditor(BuildContext context) {
+    final s = context.s;
+    return _Group(
+      title: s.t('order.segments'),
+      hint: s.t('order.segmentsHint'),
+      onAdd: () => setState(() {
+        _segs.add(_SegDraft(id: context.appRead.repo.newId()));
+        _dirty = true;
+      }),
+      addLabel: s.t('order.addSegment'),
+      children: [
+        for (final g in _segs)
+          _Line(
+            key: ObjectKey(g),
+            onRemove: () => setState(() {
+              _segs.remove(g);
+              _dirty = true;
+            }),
+            children: [
+              SizedBox(
+                width: 130,
+                child: DropdownButtonFormField<String>(
+                  initialValue: g.base,
+                  decoration: InputDecoration(labelText: s.t('order.base')),
+                  items: [for (final b in const ['soil', 'asphalt']) DropdownMenuItem(value: b, child: Text(s.t('order.base.$b')))],
+                  onChanged: (v) => setState(() {
+                    g.base = v ?? 'soil';
+                    _dirty = true;
+                  }),
+                ),
+              ),
+              SizedBox(
+                width: 150,
+                child: DropdownButtonFormField<int>(
+                  initialValue: g.width,
+                  decoration: InputDecoration(labelText: s.t('order.width')),
+                  items: [
+                    DropdownMenuItem(value: 40, child: Text(s.t('order.width40'))),
+                    DropdownMenuItem(value: 80, child: Text(s.t('order.width80'))),
+                  ],
+                  onChanged: (v) => setState(() {
+                    g.width = v ?? 40;
+                    _dirty = true;
+                  }),
+                ),
+              ),
+              SizedBox(
+                width: 110,
+                child: TextFormField(
+                  initialValue: g.length,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  textDirection: TextDirection.ltr,
+                  onChanged: (v) {
+                    g.length = v;
+                    _touch();
+                  },
+                  decoration: InputDecoration(labelText: s.t('order.lengthM')),
+                ),
+              ),
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                Checkbox(
+                  value: g.tiled,
+                  onChanged: (v) => setState(() {
+                    g.tiled = v ?? false;
+                    _dirty = true;
+                  }),
+                ),
+                Text(s.t('order.tiled')),
+              ]),
+              Text(_recipe(context, g), style: const TextStyle(fontSize: 12, color: C.faint)),
+            ],
+          ),
+      ],
+    );
+  }
+
+  String _recipe(BuildContext context, _SegDraft g) {
+    final app = context.appRead;
+    final steps = app.engine.segmentRecipe(Segment(id: g.id, base: g.base, width: g.width, lengthM: 1, tiled: g.tiled));
+    return steps.map(app.s.step).join(' → ');
+  }
+
+  Widget _cablesEditor(BuildContext context) {
+    final app = context.app;
+    final s = app.s;
+    final sizes = [for (final c in app.data.cableSizes) c.sizeMm2];
+    if (sizes.isEmpty) sizes.addAll(const [70, 185, 300, 500]);
+    return _Group(
+      title: s.t('order.cableRuns'),
+      hint: s.t('order.cableHint'),
+      onAdd: () => setState(() {
+        _cables.add(_CableDraft(size: sizes.first));
+        _dirty = true;
+      }),
+      addLabel: s.t('order.addCable'),
+      children: [
+        for (final c in _cables)
+          _Line(
+            key: ObjectKey(c),
+            onRemove: () => setState(() {
+              _cables.remove(c);
+              _dirty = true;
+            }),
+            children: [
+              SizedBox(
+                width: 140,
+                child: DropdownButtonFormField<int>(
+                  initialValue: c.size != null && sizes.contains(c.size) ? c.size : null,
+                  decoration: InputDecoration(labelText: s.t('order.cableSize')),
+                  items: [for (final z in {...sizes, if (c.size != null) c.size!}) DropdownMenuItem(value: z, child: Text('$z mm²'))],
+                  onChanged: (v) => setState(() {
+                    c.size = v;
+                    _dirty = true;
+                  }),
+                ),
+              ),
+              SegmentedButton<String>(
+                segments: const [ButtonSegment(value: 'LV', label: Text('LV')), ButtonSegment(value: 'MV', label: Text('MV'))],
+                selected: {c.voltage},
+                onSelectionChanged: (v) => setState(() {
+                  c.voltage = v.first;
+                  _dirty = true;
+                }),
+              ),
+              SizedBox(
+                width: 110,
+                child: TextFormField(
+                  initialValue: c.length,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  textDirection: TextDirection.ltr,
+                  onChanged: (v) {
+                    c.length = v;
+                    _touch();
+                  },
+                  decoration: InputDecoration(labelText: s.t('order.lengthM')),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _metersEditor(BuildContext context, FormSpec spec) {
+    final s = context.s;
+    if (_meters.isEmpty) _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
+    return _Group(
+      title: s.t('order.meters'),
+      hint: s.t('order.metersHint'),
+      onAdd: () => setState(() {
+        _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
+        _dirty = true;
+      }),
+      addLabel: s.t('order.addMeter'),
+      children: [
+        for (final m in _meters)
+          _Line(
+            key: ObjectKey(m),
+            onRemove: _meters.length <= 1
+                ? null
+                : () => setState(() {
+                      _meters.remove(m);
+                      _dirty = true;
+                    }),
+            children: [
+              SizedBox(
+                width: 160,
+                child: TextFormField(
+                  initialValue: m.number,
+                  textDirection: TextDirection.ltr,
+                  onChanged: (v) {
+                    m.number = v;
+                    _touch();
+                  },
+                  decoration: InputDecoration(labelText: s.t('order.meterNumber'), helperText: s.t('order.meterNumberLater')),
+                ),
+              ),
+              if (spec.oldMeterNumber)
+                SizedBox(
+                  width: 160,
+                  child: TextFormField(
+                    initialValue: m.oldNumber,
+                    textDirection: TextDirection.ltr,
+                    onChanged: (v) {
+                      m.oldNumber = v;
+                      _touch();
+                    },
+                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber')),
+                  ),
+                ),
+              SizedBox(
+                width: 170,
+                child: DropdownButtonFormField<String?>(
+                  initialValue: m.type,
+                  decoration: InputDecoration(labelText: s.t('order.meterType')),
+                  items: [
+                    const DropdownMenuItem<String?>(value: null, child: Text('—')),
+                    for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'))),
+                  ],
+                  onChanged: (v) => setState(() {
+                    m.type = v;
+                    _dirty = true;
+                  }),
+                ),
+              ),
+              SizedBox(
+                width: 110,
+                child: TextFormField(
+                  initialValue: m.amps,
+                  keyboardType: TextInputType.number,
+                  textDirection: TextDirection.ltr,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (v) {
+                    m.amps = v;
+                    _touch();
+                  },
+                  decoration: InputDecoration(labelText: s.t('order.breakerAmps')),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+  final String text;
+  @override
+  Widget build(BuildContext context) =>
+      Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(text, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: C.muted)));
+}
+
+class _TypeButton extends StatelessWidget {
+  const _TypeButton({required this.code, required this.label, required this.selected, required this.onTap});
+  final String code, label;
+  final bool selected;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: 150,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          decoration: BoxDecoration(
+            color: selected ? C.accentSoft : C.card,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: selected ? C.accent : C.field, width: selected ? 1.5 : 1),
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Mono(code, size: 14, weight: FontWeight.w600, color: selected ? C.accentDark : C.ink),
+            const SizedBox(height: 2),
+            Text(label, maxLines: 2, style: TextStyle(fontSize: 11.5, color: selected ? C.accentDark : C.muted)),
+          ]),
+        ),
+      );
+}
+
+class _Group extends StatelessWidget {
+  const _Group({required this.title, this.hint, required this.children, required this.onAdd, required this.addLabel});
+  final String title;
+  final String? hint;
+  final List<Widget> children;
+  final VoidCallback onAdd;
+  final String addLabel;
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5)),
+        if (hint != null) Text(hint!, style: const TextStyle(fontSize: 12, color: C.faint)),
+        const SizedBox(height: 8),
+        ...children,
+        TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add, size: 18), label: Text(addLabel)),
+      ]);
+}
+
+class _Line extends StatelessWidget {
+  const _Line({super.key, required this.children, this.onRemove});
+  final List<Widget> children;
+  final VoidCallback? onRemove;
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(border: Border.all(color: C.line), borderRadius: BorderRadius.circular(8)),
+        child: Row(children: [
+          Expanded(child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: children)),
+          if (onRemove != null) IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: const Icon(Icons.close, size: 18, color: C.faint)),
+        ]),
+      );
+}
+
+/// A text field with suggestions from a list (districts).
+class _Suggest extends StatefulWidget {
+  const _Suggest({required this.controller, required this.label, this.helper, required this.options, required this.onChanged});
+  final TextEditingController controller;
+  final String label;
+  final String? helper;
+  final List<String> options;
+  final VoidCallback onChanged;
+  @override
+  State<_Suggest> createState() => _SuggestState();
+}
+
+class _SuggestState extends State<_Suggest> {
+  final _focus = FocusNode();
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => RawAutocomplete<String>(
+        textEditingController: widget.controller,
+        focusNode: _focus,
+        optionsBuilder: (v) {
+          final q = v.text.trim().toLowerCase();
+          if (q.isEmpty) return const Iterable<String>.empty();
+          return widget.options.where((o) => o.toLowerCase().contains(q) && o.toLowerCase() != q).take(8);
+        },
+        onSelected: (_) => widget.onChanged(),
+        fieldViewBuilder: (context, ctl, focus, submit) => TextField(
+          controller: ctl,
+          focusNode: focus,
+          onChanged: (_) => widget.onChanged(),
+          decoration: InputDecoration(labelText: widget.label, helperText: widget.helper),
+        ),
+        optionsViewBuilder: (context, select, opts) => Align(
+          alignment: AlignmentDirectional.topStart,
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 240, maxWidth: 320),
+              child: ListView(shrinkWrap: true, padding: EdgeInsets.zero, children: [
+                for (final o in opts) ListTile(dense: true, title: Text(o), onTap: () => select(o)),
+              ]),
+            ),
+          ),
+        ),
+      );
+}
