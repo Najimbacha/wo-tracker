@@ -52,11 +52,23 @@ class SettingsScreen extends StatelessWidget {
     ];
     return LayoutBuilder(builder: (context, c) {
       final per = c.maxWidth >= 1100 ? 3 : (c.maxWidth >= 720 ? 2 : 1);
-      final w = (c.maxWidth - (phone ? 28 : 48) - (per - 1) * 16) / per;
+      // Cards stack in columns (each column as tall as its own cards), so a short card
+      // never leaves a big empty gap beside a tall one.
+      // 0 sync, 1 language, 2 alerts, 3 contractors, 4 districts, 5 cables, 6 report, 7 data health
+      final columns = switch (per) {
+        3 => const [[0, 3], [1, 4, 5, 6], [2, 7]],
+        2 => const [[0, 1, 3, 6], [2, 4, 5, 7]],
+        _ => const [[0, 1, 2, 3, 4, 5, 6, 7]],
+      };
+      Widget column(List<int> ids) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            for (var i = 0; i < ids.length; i++) ...[if (i > 0) const SizedBox(height: 16), cards[ids[i]]],
+          ]);
       return ListView(padding: EdgeInsets.all(phone ? 14 : 24), children: [
         Text(s.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 14),
-        Wrap(spacing: 16, runSpacing: 16, children: [for (final card in cards) SizedBox(width: w, child: card)]),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          for (var i = 0; i < columns.length; i++) ...[if (i > 0) const SizedBox(width: 16), Expanded(child: column(columns[i]))],
+        ]),
         const SizedBox(height: 20),
         Text(s.t('settings.version', {'version': '1.0.0'}), style: const TextStyle(color: C.faint, fontSize: 12)),
       ]);

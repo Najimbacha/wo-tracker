@@ -129,8 +129,9 @@ class SectionCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(children: [
-                  if (title != null) Expanded(child: Text(title!, style: Theme.of(context).textTheme.titleMedium)),
-                  if (trailing != null) Flexible(child: trailing!), // long labels shrink instead of overflowing
+                  if (title != null) Expanded(flex: 3, child: Text(title!, style: Theme.of(context).textTheme.titleMedium)),
+                  // Kept at the far end; a long label shrinks instead of overflowing.
+                  if (trailing != null) Flexible(flex: 2, child: Align(alignment: AlignmentDirectional.centerEnd, child: trailing!)),
                 ]),
               ),
             child,
