@@ -1,6 +1,8 @@
 // Opens every screen, order, form and dialog with the demo orders, in English and
 // Arabic, at PC, small-window and phone sizes, and lists every error and layout
 // overflow it meets (one run shows them all instead of stopping at the first).
+// Dialogs are opened without waiting for them to close (the test closes them itself).
+// ignore_for_file: unawaited_futures, discarded_futures
 import 'package:flutter/material.dart' hide Actions;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -96,20 +98,30 @@ void main() {
         await back();
         final active = orders.where((o) => o.state == 'open').toList();
         if (active.isNotEmpty) {
-          await step('status dialog', () async => showStatusDialog(ctx(), active.first));
+          await step('status dialog', () async {
+            showStatusDialog(ctx(), active.first);
+          });
           await back();
         }
         final withPermit = orders.where((o) => o.permits.isNotEmpty).toList();
         if (withPermit.isNotEmpty) {
-          await step('tasreeh dialog (edit)', () async => showPermitDialog(ctx(), withPermit.first, 0));
+          await step('tasreeh dialog (edit)', () async {
+            showPermitDialog(ctx(), withPermit.first, 0);
+          });
           await back();
-          await step('tasreeh dialog (add)', () async => showPermitDialog(ctx(), withPermit.first, null));
+          await step('tasreeh dialog (add)', () async {
+            showPermitDialog(ctx(), withPermit.first, null);
+          });
           await back();
         }
-        await step('search dialog', () async => showSearchDialog(ctx()));
+        await step('search dialog', () async {
+            showSearchDialog(ctx());
+          });
         await back();
         if (orders.isNotEmpty) {
-          await step('history sheet', () async => showHistorySheet(ctx(), orders.first));
+          await step('history sheet', () async {
+            showHistorySheet(ctx(), orders.first);
+          });
           await back();
         }
         await step('data health', () async {
@@ -138,7 +150,7 @@ void main() {
           print('PROBLEMS ($lang ${size.width.toInt()}x${size.height.toInt()}):\n${problems.toSet().join('\n')}');
           fail('${problems.toSet().length} problem(s); see the list above');
         }
-      });
+      }, timeout: const Timeout(Duration(minutes: 3)));
     }
   }
 }
