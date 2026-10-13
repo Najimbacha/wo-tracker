@@ -657,7 +657,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                       m.oldNumber = v;
                       _touch();
                     },
-                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber')),
+                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber'), hintText: s.t('common.optional')),
                   ),
                 ),
               SizedBox(
@@ -667,7 +667,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
                   decoration: InputDecoration(labelText: s.t('order.meterType')),
                   items: [
-                    const DropdownMenuItem<String?>(value: null, child: Text('—')),
+                    DropdownMenuItem<String?>(value: null, child: Text('— ${s.t('common.optional')}', overflow: TextOverflow.ellipsis)),
                     for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'), overflow: TextOverflow.ellipsis)),
                   ],
                   onChanged: (v) => setState(() {
@@ -687,7 +687,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     m.amps = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.breakerAmps')),
+                  decoration: InputDecoration(labelText: s.t('order.breakerAmps'), hintText: s.t('common.optional')),
                 ),
               ),
             ],
