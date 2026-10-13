@@ -28,7 +28,13 @@ void main() {
         FlutterError.onError = (d) {
           final text = d.exceptionAsString().split('\n').take(3).join(' / ');
           if (text.contains('MissingPluginException')) return; // PDF preview plugin: not in tests
-          problems.add('[$where] $text');
+          // Where in the app it happened: the widget named in the report and the first app frame.
+          final full = d.toString();
+          final at = <String>{
+            for (final m in RegExp(r'(lib/[\w/]+\.dart:\d+)').allMatches(full)) m.group(1)!,
+            for (final m in RegExp(r'package:wo_tracker/([\w/]+\.dart):(\d+)').allMatches(d.stack?.toString() ?? '')) 'lib/${m.group(1)}:${m.group(2)}',
+          }.take(4).join(', ');
+          problems.add('[$where] $text  @ $at');
         };
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1;

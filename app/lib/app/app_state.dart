@@ -392,9 +392,12 @@ class AppState extends ChangeNotifier {
     // close it after its time so it never stays over the screen (works on every version).
     // Only the toast still showing is closed (closing an older one would hide the newer).
     _toast = ctl;
+    ctl.closed.then((_) {
+      if (identical(_toast, ctl)) _toast = null; // closed by hand or replaced: nothing left to close
+    });
     if (onUndo != null) {
       Timer(Duration(seconds: error ? 8 : 6) + const Duration(milliseconds: 400), () {
-        if (identical(_toast, ctl)) {
+        if (identical(_toast, ctl) && messengerKey.currentState != null) {
           _toast = null;
           ctl.close();
         }

@@ -430,18 +430,36 @@ class _OrderFormPageState extends State<OrderFormPage> {
             child: Container(
               decoration: const BoxDecoration(color: Color(0xFFFBFBFA), border: Border(top: BorderSide(color: C.lineSoft))),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(children: [
-                if (!phone && _isNew) Text(s.t('order.keptForNext'), style: const TextStyle(color: C.faint, fontSize: 12.5)),
-                const Spacer(),
-                TextButton(onPressed: () => Navigator.of(context).maybePop(), child: Text(s.t('common.cancel'))),
-                const SizedBox(width: 8),
-                if (_isNew) ...[
-                  OutlinedButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
-                  const SizedBox(width: 8),
-                  FilledButton(onPressed: _saving ? null : () => _save(next: true), child: Text(s.t('common.saveAndNext'))),
-                ] else
-                  FilledButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
-              ]),
+              // On a phone: two wide buttons (back arrow cancels). On the PC: the hint can wrap.
+              child: phone
+                  ? Row(children: [
+                      if (_isNew) ...[
+                        Expanded(child: OutlinedButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save')))),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: FilledButton(
+                              onPressed: _saving ? null : () => _save(next: true),
+                              child: Text(s.t('common.saveAndNext'), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        ),
+                      ] else
+                        Expanded(child: FilledButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save')))),
+                    ])
+                  : Row(children: [
+                      Expanded(
+                        child: _isNew
+                            ? Text(s.t('order.keptForNext'), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12.5))
+                            : const SizedBox.shrink(),
+                      ),
+                      const SizedBox(width: 12),
+                      TextButton(onPressed: () => Navigator.of(context).maybePop(), child: Text(s.t('common.cancel'))),
+                      const SizedBox(width: 8),
+                      if (_isNew) ...[
+                        OutlinedButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
+                        const SizedBox(width: 8),
+                        FilledButton(onPressed: _saving ? null : () => _save(next: true), child: Text(s.t('common.saveAndNext'))),
+                      ] else
+                        FilledButton(onPressed: _saving ? null : () => _save(), child: Text(s.t('common.save'))),
+                    ]),
             ),
           ),
         ),
@@ -472,8 +490,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 width: 130,
                 child: DropdownButtonFormField<String>(
                   initialValue: g.base,
+                  isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
                   decoration: InputDecoration(labelText: s.t('order.base')),
-                  items: [for (final b in const ['soil', 'asphalt']) DropdownMenuItem(value: b, child: Text(s.t('order.base.$b')))],
+                  items: [for (final b in const ['soil', 'asphalt']) DropdownMenuItem(value: b, child: Text(s.t('order.base.$b'), overflow: TextOverflow.ellipsis))],
                   onChanged: (v) => setState(() {
                     g.base = v ?? 'soil';
                     _dirty = true;
@@ -484,10 +503,11 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 width: 150,
                 child: DropdownButtonFormField<int>(
                   initialValue: g.width,
+                  isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
                   decoration: InputDecoration(labelText: s.t('order.width')),
                   items: [
-                    DropdownMenuItem(value: 40, child: Text(s.t('order.width40'))),
-                    DropdownMenuItem(value: 80, child: Text(s.t('order.width80'))),
+                    DropdownMenuItem(value: 40, child: Text(s.t('order.width40'), overflow: TextOverflow.ellipsis)),
+                    DropdownMenuItem(value: 80, child: Text(s.t('order.width80'), overflow: TextOverflow.ellipsis)),
                   ],
                   onChanged: (v) => setState(() {
                     g.width = v ?? 40;
@@ -557,6 +577,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 width: 140,
                 child: DropdownButtonFormField<int>(
                   initialValue: c.size,
+                  isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
                   decoration: InputDecoration(labelText: s.t('order.cableSize')),
                   items: [for (final z in {...sizes, if (c.size != null) c.size!}) DropdownMenuItem(value: z, child: Text('$z mm²'))],
                   onChanged: (v) => setState(() {
@@ -643,10 +664,11 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 width: 170,
                 child: DropdownButtonFormField<String?>(
                   initialValue: m.type,
+                  isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
                   decoration: InputDecoration(labelText: s.t('order.meterType')),
                   items: [
                     const DropdownMenuItem<String?>(value: null, child: Text('—')),
-                    for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'))),
+                    for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'), overflow: TextOverflow.ellipsis)),
                   ],
                   onChanged: (v) => setState(() {
                     m.type = v;

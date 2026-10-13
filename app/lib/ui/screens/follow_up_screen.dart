@@ -53,7 +53,14 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
     ]);
     if (!wide) return side;
     return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(width: 300, child: DecoratedBox(decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: side)),
+      // A Material (not a coloured box) so the selected contractor's highlight shows.
+      SizedBox(
+        width: 300,
+        child: Material(
+          color: C.card,
+          child: DecoratedBox(decoration: const BoxDecoration(border: BorderDirectional(end: BorderSide(color: C.line))), child: side),
+        ),
+      ),
       Expanded(child: _Detail(key: ValueKey(cur.contractor), con: cur)),
     ]);
   }
