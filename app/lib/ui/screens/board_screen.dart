@@ -121,7 +121,7 @@ class _Card extends StatelessWidget {
             decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: severityEdge(c.severity), width: 3))),
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [Expanded(child: Mono(c.woNumber ?? '—', size: 13, weight: FontWeight.w600)), TypeTag(c.type)]),
+              Row(children: [Expanded(child: Mono(c.woNumber ?? '—', size: 13, weight: FontWeight.w600)), TypeTag(c.type ?? '')]),
               const SizedBox(height: 3),
               Text([c.district, c.contractor ?? s.t('common.unassigned')].whereType<String>().join(' · '),
                   maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: C.muted)),

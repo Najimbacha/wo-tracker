@@ -377,20 +377,32 @@ class AppState extends ChangeNotifier {
     final m = messengerKey.currentState;
     if (m == null) return;
     m.hideCurrentSnackBar();
+    _toast = null;
     final w = m.context.mounted ? MediaQuery.maybeSizeOf(m.context)?.width : null;
-    m.showSnackBar(SnackBar(
+    final ctl = m.showSnackBar(SnackBar(
       content: Text(text),
       behavior: SnackBarBehavior.floating,
       width: w != null && w >= 700 ? 560 : null, // a tidy toast on the PC, full width on a phone
-      // A toast with Undo would otherwise stay until closed by hand (Flutter keeps toasts
-      // that have a button); it goes away by itself, and Undo works while it shows.
-      persist: false,
       duration: Duration(seconds: error ? 8 : (onUndo != null ? 6 : 4)),
       backgroundColor: error ? const Color(0xFF8C1D17) : null,
       showCloseIcon: error,
       action: onUndo == null ? null : SnackBarAction(label: s.t('common.undo'), onPressed: onUndo),
     ));
+    // Newer Flutter keeps a toast that has a button (Undo) until it is closed by hand;
+    // close it after its time so it never stays over the screen (works on every version).
+    // Only the toast still showing is closed (closing an older one would hide the newer).
+    _toast = ctl;
+    if (onUndo != null) {
+      Timer(Duration(seconds: error ? 8 : 6) + const Duration(milliseconds: 400), () {
+        if (identical(_toast, ctl)) {
+          _toast = null;
+          ctl.close();
+        }
+      });
+    }
   }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? _toast;
 
   void showError(Object e) {
     if (e is RepoException) {

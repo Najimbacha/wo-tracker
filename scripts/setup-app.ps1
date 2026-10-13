@@ -27,15 +27,13 @@ if (-not (Get-Command flutter -ErrorAction SilentlyContinue)) {
   throw 'Flutter is not installed or not on PATH. Install it from https://docs.flutter.dev/get-started/install/windows and open a new PowerShell window.'
 }
 Run flutter @('--version')
-# The app uses features of Flutter 3.47 (October 2026). An older Flutter fails to build
-# with confusing errors, so it is updated first.
+# The app needs Flutter 3.35 or newer (it is tested to work with 3.41 and 3.47).
 try {
   $machine = (& flutter --version --machine 2>$null | Out-String)
   $fv = [version](($machine | ConvertFrom-Json).frameworkVersion -replace '[^0-9.].*$', '')
 } catch { $fv = $null }
-if ($fv -and $fv -lt [version]'3.47.0') {
-  Write-Warning "Flutter $fv is older than 3.47. Updating Flutter (flutter upgrade)..."
-  Run flutter @('upgrade')
+if ($fv -and $fv -lt [version]'3.35.0') {
+  throw "Flutter $fv is too old (needs 3.35 or newer). Run: flutter upgrade"
 }
 
 # Platform folders (windows/, android/) are generated, not kept in the project.
