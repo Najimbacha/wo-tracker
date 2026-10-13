@@ -462,8 +462,13 @@ class _Filters extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SegmentedButton<String>(
+            // No tick and no wrapping: in the narrow filter panel "Ready now" was being
+            // broken in the middle of a word. A label that still does not fit shrinks a little.
+            showSelectedIcon: false,
+            style: const ButtonStyle(visualDensity: VisualDensity.compact, padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 6))),
             segments: [
-              for (final v in const ['done', 'not_done', 'ready']) ButtonSegment(value: v, label: Text(s.t('filter.stepState.$v'))),
+              for (final v in const ['done', 'not_done', 'ready'])
+                ButtonSegment(value: v, label: FittedBox(fit: BoxFit.scaleDown, child: Text(s.t('filter.stepState.$v'), maxLines: 1, softWrap: false))),
             ],
             selected: {st._stepState},
             onSelectionChanged: st._stepKey == null ? null : (v) => upd(() => st._stepState = v.first),

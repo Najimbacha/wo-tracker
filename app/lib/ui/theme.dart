@@ -86,6 +86,10 @@ ThemeData appTheme({required bool arabic}) {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(foregroundColor: C.accent, textStyle: const TextStyle(fontSize: 13.5)),
     ),
+    // Segmented buttons keep each label on one line where they can.
+    segmentedButtonTheme: const SegmentedButtonThemeData(
+      style: ButtonStyle(visualDensity: VisualDensity.compact, textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 13))),
+    ),
     snackBarTheme: const SnackBarThemeData(backgroundColor: C.ink, actionTextColor: Color(0xFF9DB8F5)),
     dialogTheme: const DialogThemeData(backgroundColor: C.card, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
   );
