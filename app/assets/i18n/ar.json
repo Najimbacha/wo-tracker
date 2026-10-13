@@ -151,7 +151,7 @@
   "error.unknown_category": "اختر توصيلات أو طوارئ.",
   "error.unknown_type": "اختر نوع أمر العمل.",
   "error.permit_end_before_start": "تاريخ النهاية قبل تاريخ البداية. تحقق من الشهر والسنة.",
-  "error.permit_start_before_applied": "تاريخ البداية قبل تاريخ تقديم التصريح.",
+  "error.permit_start_before_applied": "تاريخ البداية قبل تاريخ تقديم التصريح. إذا قُدِّم التصريح قبل ذلك، غيّر تاريخ التقديم إلى اليوم الصحيح.",
   "error.duplicate_permit": "رقم التصريح {permit} مستخدم مسبقاً.",
   "error.bad_segment_base": "اختر تراب أو أسفلت.",
   "error.bad_segment_width": "يجب أن يكون العرض 40 سم أو 80 سم.",

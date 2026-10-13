@@ -231,8 +231,36 @@ export function savePermit(rules, order, index, input, orders, today) {
   if (p.appliedDate && hasStep && !isClosed(o, 'tasreeh_applied')) {
     const r = markDone(rules, o, 'tasreeh_applied', p.appliedDate, today);
     if (r.ok) { o = r.order; markedApplied = true; }
+  } else if (p.appliedDate && hasStep && index !== null) {
+    // The applied date was corrected (e.g. typed late): the "Tasreeh applied" step moves
+    // with it when it still carries the old applied date and the steps around it allow.
+    const old = (order.permits || [])[index]?.appliedDate;
+    const rec = o.steps?.tasreeh_applied;
+    if (old && old !== p.appliedDate && rec && rec.done === old && movable(rules, o, 'tasreeh_applied', p.appliedDate)) {
+      o.steps = { ...o.steps, tasreeh_applied: { ...rec, done: p.appliedDate } };
+      markedApplied = true;
+    }
   }
   return { ok: true, order: o, markedApplied };
+}
+
+/** True when the done step [id] can take [date]: not before the steps it waits for, and
+ *  not after any finished step that waits for it. */
+function movable(rules, o, id, date) {
+  const steps = generate(rules, o);
+  const s = steps.find((x) => x.id === id);
+  if (!s) return false;
+  const d = toDay(date);
+  for (const dep of s.deps) {
+    const done = o.steps?.[dep]?.done;
+    if (done && toDay(done) > d) return false;
+  }
+  for (const x of steps) {
+    if (!x.deps.includes(id)) continue;
+    const done = o.steps?.[x.id]?.done;
+    if (done && toDay(done) < d) return false;
+  }
+  return true;
 }
 
 /** Remove one tasreeh (e.g. typed on the wrong order). The step dates stay as they are. */

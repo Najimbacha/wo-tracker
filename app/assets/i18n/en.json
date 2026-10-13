@@ -151,7 +151,7 @@
   "error.unknown_category": "Choose Extension or Emergency.",
   "error.unknown_type": "Choose a work order type.",
   "error.permit_end_before_start": "The end date is before the start date. Check the month and year.",
-  "error.permit_start_before_applied": "The start date is before the date the tasreeh was applied for.",
+  "error.permit_start_before_applied": "The start date is before the date it was applied for. If it was applied earlier, change the Applied date to the real day.",
   "error.duplicate_permit": "Tasreeh number {permit} is already used.",
   "error.bad_segment_base": "Choose soil or asphalt.",
   "error.bad_segment_width": "The width must be 40 cm or 80 cm.",

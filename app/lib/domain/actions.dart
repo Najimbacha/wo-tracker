@@ -313,8 +313,36 @@ class Actions {
         next = r.order!;
         marked = true;
       }
+    } else if (p.appliedDate != null && index != null && _known(next, 'tasreeh_applied')) {
+      // The applied date was corrected (e.g. typed late): the "Tasreeh applied" step moves
+      // with it when it still carries the old applied date and the steps around it allow.
+      final old = o.permits[index].appliedDate;
+      final rec = next.steps['tasreeh_applied'];
+      if (old != null && old != p.appliedDate && rec != null && rec.done == old && _movable(next, 'tasreeh_applied', p.appliedDate!)) {
+        next = next.copyWith(steps: {...next.steps, 'tasreeh_applied': StepRecord(done: p.appliedDate, note: rec.note)});
+        marked = true;
+      }
     }
     return ActionResult._(ok: true, order: next, markedApplied: marked);
+  }
+
+  /// True when the done step [id] can take [date]: not before the steps it waits for, and
+  /// not after any finished step that waits for it.
+  bool _movable(OrderInput o, String id, String date) {
+    final steps = engine.generate(o);
+    final s = steps.where((x) => x.id == id).firstOrNull;
+    if (s == null) return false;
+    final d = toDay(date);
+    for (final dep in s.deps) {
+      final done = o.steps[dep]?.done;
+      if (done != null && toDay(done) > d) return false;
+    }
+    for (final x in steps) {
+      if (!x.deps.contains(id)) continue;
+      final done = o.steps[x.id]?.done;
+      if (done != null && toDay(done) < d) return false;
+    }
+    return true;
   }
 
   /// Remove one tasreeh (typed on the wrong order). Step dates stay as they are.
