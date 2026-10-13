@@ -104,10 +104,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final fingerprint = Object.hashAll([
       for (final o in app.orders)
         Object.hash(o.id, o.woNumber, o.lastChangeDate, o.state, o.stateDate, o.contractor, o.district, o.type, o.receivedDate,
+            // category, excavation and meters change which steps an order has, and so its alerts
+            Object.hash(o.category, o.needsExcavation, Object.hashAll(o.meters.map((m) => m.id))),
             Object.hashAll(o.steps.entries.map((e) => Object.hash(e.key, e.value.done, e.value.na))),
             Object.hashAll(o.holdPeriods.map((h) => Object.hash(h.from, h.to))),
             Object.hashAll(o.permits.map((p) => Object.hash(p.startDate, p.endDate))),
-            Object.hashAll(o.segments.map((g) => Object.hash(g.base, g.width, g.lengthM, g.tiled))), Object.hashAll(o.cableRuns.map((c) => Object.hash(c.voltage, c.lengthM)))),
+            Object.hashAll(o.segments.map((g) => Object.hash(g.id, g.base, g.width, g.lengthM, g.tiled))), Object.hashAll(o.cableRuns.map((c) => Object.hash(c.voltage, c.sizeMm2, c.lengthM)))),
+      // changed alert timings in Settings change the report's alerts too
+      Object.hashAll(app.alertSettings.entries.map((e) => Object.hash(e.key, e.value))),
     ]);
     final key = '$_kind|$_date|$_lang|$_contractor|$fingerprint|${app.today}|${app.data.settings.preparedBy}';
     if (key != _pdfKey) {
