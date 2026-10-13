@@ -595,7 +595,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 }),
               ),
               SizedBox(
-                width: 110,
+                width: 170,
                 child: TextFormField(
                   initialValue: c.length,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -604,7 +604,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     c.length = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.lengthM'), hintText: s.t('common.optional')),
+                  decoration: InputDecoration(labelText: '${s.t('order.lengthM')} (${s.t('common.optional')})'),
                 ),
               ),
             ],
@@ -649,7 +649,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               ),
               if (spec.oldMeterNumber)
                 SizedBox(
-                  width: 160,
+                  width: 210,
                   child: TextFormField(
                     initialValue: m.oldNumber,
                     textDirection: TextDirection.ltr,
@@ -657,17 +657,17 @@ class _OrderFormPageState extends State<OrderFormPage> {
                       m.oldNumber = v;
                       _touch();
                     },
-                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber'), hintText: s.t('common.optional')),
+                    decoration: InputDecoration(labelText: '${s.t('order.oldMeterNumber')} (${s.t('common.optional')})'),
                   ),
                 ),
               SizedBox(
-                width: 170,
+                width: 200,
                 child: DropdownButtonFormField<String?>(
                   initialValue: m.type,
                   isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
-                  decoration: InputDecoration(labelText: s.t('order.meterType')),
+                  decoration: InputDecoration(labelText: '${s.t('order.meterType')} (${s.t('common.optional')})'),
                   items: [
-                    DropdownMenuItem<String?>(value: null, child: Text('— ${s.t('common.optional')}', overflow: TextOverflow.ellipsis)),
+                    const DropdownMenuItem<String?>(value: null, child: Text('—')),
                     for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'), overflow: TextOverflow.ellipsis)),
                   ],
                   onChanged: (v) => setState(() {
@@ -677,7 +677,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 ),
               ),
               SizedBox(
-                width: 110,
+                width: 170,
                 child: TextFormField(
                   initialValue: m.amps,
                   keyboardType: TextInputType.number,
@@ -687,7 +687,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     m.amps = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.breakerAmps'), hintText: s.t('common.optional')),
+                  decoration: InputDecoration(labelText: '${s.t('order.breakerAmps')} (${s.t('common.optional')})'),
                 ),
               ),
             ],
@@ -759,7 +759,7 @@ class _Line extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(border: Border.all(color: C.line), borderRadius: BorderRadius.circular(8)),
         child: Row(children: [
-          Expanded(child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: children)),
+          Expanded(child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.start, children: children)),
           if (onRemove != null) IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: const Icon(Icons.close, size: 18, color: C.faint)),
         ]),
       );
