@@ -247,7 +247,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "Open trench · next: Asphalt stage 2",
        "days": 25,
@@ -256,7 +256,7 @@
       {
        "wo": "441753922",
        "type": "402",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Sahm Al-Sharq",
        "issue": "Open trench · next: Cable installed",
        "days": 14,
@@ -265,7 +265,7 @@
       {
        "wo": "441742873",
        "type": "402",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "Open trench · next: Asphalt",
        "days": 12,
@@ -274,7 +274,7 @@
       {
        "wo": "441785736",
        "type": "404",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Afaq Engineering",
        "issue": "Open trench · next: Concrete",
        "days": 9,
@@ -283,7 +283,7 @@
       {
        "wo": "T-94034",
        "type": "802",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Dar Al-Itqan",
        "issue": "Open trench · next: Compaction",
        "days": 9,
@@ -292,7 +292,7 @@
       {
        "wo": "441756291",
        "type": "802",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "Late start · next: Excavation",
        "days": 8,
@@ -301,7 +301,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "Tasreeh expired · next: Asphalt",
        "days": 4,
@@ -310,7 +310,7 @@
       {
        "wo": "441762699",
        "type": "403",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Wafa Electrical",
        "issue": "No progress · next: Stringing",
        "days": 21,
@@ -319,7 +319,7 @@
       {
        "wo": "441797044",
        "type": "803",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Nasr Al-Jazeera",
        "issue": "No progress · next: Stringing",
        "days": 21,
@@ -328,7 +328,7 @@
       {
        "wo": "441721045",
        "type": "403",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Sahm Al-Sharq",
        "issue": "No progress",
        "days": 20,
@@ -337,7 +337,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "Restoration overdue · next: Asphalt",
        "days": 19,
@@ -346,7 +346,7 @@
       {
        "wo": "441781381",
        "type": "403",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Al-Falak Power",
        "issue": "Meter not on",
        "days": 5,
@@ -355,7 +355,7 @@
       {
        "wo": "441762745",
        "type": "803",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Masar Al-Taqa",
        "issue": "Late start · next: Poles installed",
        "days": 3,
@@ -364,7 +364,7 @@
       {
        "wo": "441779626",
        "type": "402",
-       "district": "حي الملقا",
+       "district": "حي الحوية",
        "contractor": "Bawabat Al-Noor",
        "issue": "Late start · next: Excavation",
        "days": 2,
@@ -373,7 +373,7 @@
       {
        "wo": "T-97795",
        "type": "402",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Dar Al-Itqan",
        "issue": "Emergency, no tasreeh",
        "days": 2,
@@ -382,7 +382,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "Tasreeh ends in 4 days · next: Asphalt stage 1",
        "days": null,
@@ -391,7 +391,7 @@
       {
        "wo": "T-35680",
        "type": "803",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Masar Al-Taqa",
        "issue": "Emergency, no tasreeh",
        "days": 0,
@@ -792,7 +792,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "حفرة مفتوحة · التالي: أسفلت المرحلة الثانية",
        "days": 25,
@@ -801,7 +801,7 @@
       {
        "wo": "441753922",
        "type": "402",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Sahm Al-Sharq",
        "issue": "حفرة مفتوحة · التالي: تمديد الكيبل",
        "days": 14,
@@ -810,7 +810,7 @@
       {
        "wo": "441742873",
        "type": "402",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "حفرة مفتوحة · التالي: الأسفلت",
        "days": 12,
@@ -819,7 +819,7 @@
       {
        "wo": "441785736",
        "type": "404",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Afaq Engineering",
        "issue": "حفرة مفتوحة · التالي: الخرسانة",
        "days": 9,
@@ -828,7 +828,7 @@
       {
        "wo": "T-94034",
        "type": "802",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Dar Al-Itqan",
        "issue": "حفرة مفتوحة · التالي: الدك",
        "days": 9,
@@ -837,7 +837,7 @@
       {
        "wo": "441756291",
        "type": "802",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "تأخر البدء · التالي: الحفر",
        "days": 8,
@@ -846,7 +846,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "التصريح منتهي · التالي: الأسفلت",
        "days": 4,
@@ -855,7 +855,7 @@
       {
        "wo": "441762699",
        "type": "403",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Wafa Electrical",
        "issue": "لا تقدم · التالي: شد الموصلات",
        "days": 21,
@@ -864,7 +864,7 @@
       {
        "wo": "441797044",
        "type": "803",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Nasr Al-Jazeera",
        "issue": "لا تقدم · التالي: شد الموصلات",
        "days": 21,
@@ -873,7 +873,7 @@
       {
        "wo": "441721045",
        "type": "403",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Sahm Al-Sharq",
        "issue": "لا تقدم",
        "days": 20,
@@ -882,7 +882,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "تأخر إعادة السطح · التالي: الأسفلت",
        "days": 19,
@@ -891,7 +891,7 @@
       {
        "wo": "441781381",
        "type": "403",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Al-Falak Power",
        "issue": "العداد لم يُشغَّل",
        "days": 5,
@@ -900,7 +900,7 @@
       {
        "wo": "441762745",
        "type": "803",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Masar Al-Taqa",
        "issue": "تأخر البدء · التالي: تركيب الأعمدة",
        "days": 3,
@@ -909,7 +909,7 @@
       {
        "wo": "441779626",
        "type": "402",
-       "district": "حي الملقا",
+       "district": "حي الحوية",
        "contractor": "Bawabat Al-Noor",
        "issue": "تأخر البدء · التالي: الحفر",
        "days": 2,
@@ -918,7 +918,7 @@
       {
        "wo": "T-97795",
        "type": "402",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Dar Al-Itqan",
        "issue": "طوارئ بدون تصريح",
        "days": 2,
@@ -927,7 +927,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "ينتهي التصريح بعد 4 أيام · التالي: أسفلت المرحلة الأولى",
        "days": null,
@@ -936,7 +936,7 @@
       {
        "wo": "T-35680",
        "type": "803",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Masar Al-Taqa",
        "issue": "طوارئ بدون تصريح",
        "days": 0,
@@ -1385,7 +1385,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "Open trench · next: Asphalt stage 2",
        "days": 23,
@@ -1394,7 +1394,7 @@
       {
        "wo": "441753922",
        "type": "402",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Sahm Al-Sharq",
        "issue": "Open trench · next: Cable installed",
        "days": 12,
@@ -1403,7 +1403,7 @@
       {
        "wo": "441742873",
        "type": "402",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "Open trench · next: Asphalt",
        "days": 10,
@@ -1412,7 +1412,7 @@
       {
        "wo": "441785736",
        "type": "404",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Afaq Engineering",
        "issue": "Open trench · next: Concrete",
        "days": 7,
@@ -1421,7 +1421,7 @@
       {
        "wo": "T-94034",
        "type": "802",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Dar Al-Itqan",
        "issue": "Open trench · next: Compaction",
        "days": 7,
@@ -1430,7 +1430,7 @@
       {
        "wo": "441756291",
        "type": "802",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "Late start · next: Excavation",
        "days": 6,
@@ -1439,7 +1439,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "Tasreeh expired · next: Asphalt",
        "days": 2,
@@ -1448,7 +1448,7 @@
       {
        "wo": "441762699",
        "type": "403",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Wafa Electrical",
        "issue": "No progress · next: Stringing",
        "days": 19,
@@ -1457,7 +1457,7 @@
       {
        "wo": "441797044",
        "type": "803",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Nasr Al-Jazeera",
        "issue": "No progress · next: Stringing",
        "days": 19,
@@ -1466,7 +1466,7 @@
       {
        "wo": "441721045",
        "type": "403",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Sahm Al-Sharq",
        "issue": "No progress",
        "days": 18,
@@ -1475,7 +1475,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "Restoration overdue · next: Asphalt",
        "days": 17,
@@ -1484,7 +1484,7 @@
       {
        "wo": "441781381",
        "type": "403",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Al-Falak Power",
        "issue": "Meter not on",
        "days": 3,
@@ -1493,7 +1493,7 @@
       {
        "wo": "441762745",
        "type": "803",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Masar Al-Taqa",
        "issue": "Late start · next: Poles installed",
        "days": 1,
@@ -1502,7 +1502,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "Tasreeh ends in 6 days · next: Asphalt stage 1",
        "days": null,
@@ -1511,7 +1511,7 @@
       {
        "wo": "T-97795",
        "type": "402",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Dar Al-Itqan",
        "issue": "Emergency, no tasreeh",
        "days": 0,
@@ -1866,7 +1866,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "حفرة مفتوحة · التالي: أسفلت المرحلة الثانية",
        "days": 25,
@@ -1875,7 +1875,7 @@
       {
        "wo": "441753922",
        "type": "402",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Sahm Al-Sharq",
        "issue": "حفرة مفتوحة · التالي: تمديد الكيبل",
        "days": 14,
@@ -1884,7 +1884,7 @@
       {
        "wo": "441742873",
        "type": "402",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "حفرة مفتوحة · التالي: الأسفلت",
        "days": 12,
@@ -1893,7 +1893,7 @@
       {
        "wo": "441785736",
        "type": "404",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Afaq Engineering",
        "issue": "حفرة مفتوحة · التالي: الخرسانة",
        "days": 9,
@@ -1902,7 +1902,7 @@
       {
        "wo": "T-94034",
        "type": "802",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Dar Al-Itqan",
        "issue": "حفرة مفتوحة · التالي: الدك",
        "days": 9,
@@ -1911,7 +1911,7 @@
       {
        "wo": "441756291",
        "type": "802",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "تأخر البدء · التالي: الحفر",
        "days": 8,
@@ -1920,7 +1920,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "التصريح منتهي · التالي: الأسفلت",
        "days": 4,
@@ -1929,7 +1929,7 @@
       {
        "wo": "441762699",
        "type": "403",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Wafa Electrical",
        "issue": "لا تقدم · التالي: شد الموصلات",
        "days": 21,
@@ -1938,7 +1938,7 @@
       {
        "wo": "441797044",
        "type": "803",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Nasr Al-Jazeera",
        "issue": "لا تقدم · التالي: شد الموصلات",
        "days": 21,
@@ -1947,7 +1947,7 @@
       {
        "wo": "441721045",
        "type": "403",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Sahm Al-Sharq",
        "issue": "لا تقدم",
        "days": 20,
@@ -1956,7 +1956,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "تأخر إعادة السطح · التالي: الأسفلت",
        "days": 19,
@@ -1965,7 +1965,7 @@
       {
        "wo": "441781381",
        "type": "403",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Al-Falak Power",
        "issue": "العداد لم يُشغَّل",
        "days": 5,
@@ -1974,7 +1974,7 @@
       {
        "wo": "441762745",
        "type": "803",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Masar Al-Taqa",
        "issue": "تأخر البدء · التالي: تركيب الأعمدة",
        "days": 3,
@@ -1983,7 +1983,7 @@
       {
        "wo": "441779626",
        "type": "402",
-       "district": "حي الملقا",
+       "district": "حي الحوية",
        "contractor": "Bawabat Al-Noor",
        "issue": "تأخر البدء · التالي: الحفر",
        "days": 2,
@@ -1992,7 +1992,7 @@
       {
        "wo": "T-97795",
        "type": "402",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Dar Al-Itqan",
        "issue": "طوارئ بدون تصريح",
        "days": 2,
@@ -2001,7 +2001,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "ينتهي التصريح بعد 4 أيام · التالي: أسفلت المرحلة الأولى",
        "days": null,
@@ -2010,7 +2010,7 @@
       {
        "wo": "T-35680",
        "type": "803",
-       "district": "Al Aqiq",
+       "district": "Shihar",
        "contractor": "Masar Al-Taqa",
        "issue": "طوارئ بدون تصريح",
        "days": 0,
@@ -2438,7 +2438,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "Open trench · next: Asphalt stage 2",
        "days": 18,
@@ -2447,7 +2447,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "Open trench · next: Asphalt stage 1",
        "days": 13,
@@ -2456,7 +2456,7 @@
       {
        "wo": "441753922",
        "type": "402",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Sahm Al-Sharq",
        "issue": "Open trench · next: Cable installed",
        "days": 7,
@@ -2465,7 +2465,7 @@
       {
        "wo": "441762699",
        "type": "403",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Wafa Electrical",
        "issue": "No progress · next: Stringing",
        "days": 14,
@@ -2474,7 +2474,7 @@
       {
        "wo": "441797044",
        "type": "803",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Nasr Al-Jazeera",
        "issue": "No progress · next: Stringing",
        "days": 14,
@@ -2483,7 +2483,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "Restoration overdue · next: Asphalt",
        "days": 12,
@@ -2492,7 +2492,7 @@
       {
        "wo": "441792305",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Sahm Al-Sharq",
        "issue": "Late start · next: Excavation",
        "days": 2,
@@ -2501,7 +2501,7 @@
       {
        "wo": "T-94034",
        "type": "802",
-       "district": "الصحافة",
+       "district": "العرفاء",
        "contractor": "Dar Al-Itqan",
        "issue": "Emergency, no tasreeh · next: Compaction",
        "days": 2,
@@ -2510,7 +2510,7 @@
       {
        "wo": "441756291",
        "type": "802",
-       "district": "Al Olaya",
+       "district": "Al Faisaliyah",
        "contractor": "Al-Falak Power",
        "issue": "Late start · next: Excavation",
        "days": 1,
@@ -2519,7 +2519,7 @@
       {
        "wo": "441780846",
        "type": "804",
-       "district": "Al Malqa",
+       "district": "Al Hawiyah",
        "contractor": "Al-Falak Power",
        "issue": "Tasreeh ending · next: Foundation",
        "days": null,
@@ -2528,7 +2528,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "Tasreeh ends in 2 days · next: Asphalt",
        "days": null,
@@ -3128,7 +3128,7 @@
       {
        "wo": "441780846",
        "type": "804",
-       "district": "Al Malqa",
+       "district": "Al Hawiyah",
        "contractor": "Al-Falak Power",
        "issue": "حفرة مفتوحة · التالي: القاعدة",
        "days": 19,
@@ -3137,7 +3137,7 @@
       {
        "wo": "441781486",
        "type": "802",
-       "district": "Al Nakheel",
+       "district": "Al Qumariyah",
        "contractor": "Rawabi Electric",
        "issue": "حفرة مفتوحة · التالي: أسفلت المرحلة الثانية",
        "days": 14,
@@ -3146,7 +3146,7 @@
       {
        "wo": "441777127",
        "type": "804",
-       "district": "Qurtubah",
+       "district": "Al Rayyan",
        "contractor": "Qimam Contracting",
        "issue": "حفرة مفتوحة · التالي: أسفلت المرحلة الأولى",
        "days": 9,
@@ -3155,7 +3155,7 @@
       {
        "wo": "441770542",
        "type": "402",
-       "district": "Al Yasmin",
+       "district": "Al Wurud",
        "contractor": "Bawabat Al-Noor",
        "issue": "تأخر إعادة السطح · التالي: الأسفلت",
        "days": 8,
@@ -3164,7 +3164,7 @@
       {
        "wo": "441785736",
        "type": "404",
-       "district": "حي النرجس",
+       "district": "حي الجودية",
        "contractor": "Afaq Engineering",
        "issue": "تأخر البدء · التالي: الخرسانة",
        "days": 2,
@@ -3173,7 +3173,7 @@
       {
        "wo": "441789999",
        "type": "402",
-       "district": "Al Sulimaniyah",
+       "district": "Nakhab",
        "contractor": "Al-Wafa Electrical",
        "issue": "ينتهي التصريح بعد 6 أيام · التالي: الأسفلت",
        "days": null,
