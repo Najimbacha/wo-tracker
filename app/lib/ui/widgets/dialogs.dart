@@ -112,7 +112,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
       );
 }
 
-String ymdOf(DateTime d) => '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+String ymdOf(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 DateTime dateOf(String ymd) {
   final p = ymd.split('-').map(int.parse).toList();
   return DateTime(p[0], p[1], p[2]);
@@ -150,7 +150,8 @@ String? parseTypedDate(String text, String today) {
     m = int.parse(iso[2]!);
     d = int.parse(iso[3]!);
   } else {
-    final dm = RegExp(r'^(\d{1,2})[/.\-](\d{1,2})(?:[/.\-](\d{2,4}))?$').firstMatch(s);
+    // The year is 2 digits (26) or 4 digits (2026); a half-typed year (202) is not a date yet.
+    final dm = RegExp(r'^(\d{1,2})[/.\-](\d{1,2})(?:[/.\-](\d{2}|\d{4}))?$').firstMatch(s);
     if (dm == null) return null;
     d = int.parse(dm[1]!);
     m = int.parse(dm[2]!);
@@ -158,7 +159,7 @@ String? parseTypedDate(String text, String today) {
     y = dm[3] == null ? ty : int.parse(dm[3]!);
     if (y < 100) y += 2000;
   }
-  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+  if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2000 || y > 2100) return null;
   final dt = DateTime.utc(y, m, d);
   if (dt.month != m || dt.day != d) return null;
   return ymdOf(dt);
@@ -220,7 +221,17 @@ class _DateFieldState extends State<DateField> {
   Widget build(BuildContext context) {
     final app = context.app;
     final v = widget.value;
-    final helper = v == null ? (widget.optional ? context.t('date.typeHint') : null) : '${app.s.weekday(v)} · ${app.s.hijri(v, app.calendar)}';
+    String? helper;
+    if (v == null) {
+      helper = widget.optional ? context.t('date.typeHint') : null;
+    } else {
+      // Weekday and Hijri under the box; a date that can't be read just shows nothing here.
+      try {
+        helper = '${app.s.weekday(v)} · ${app.s.hijri(v, app.calendar)}';
+      } on FormatException {
+        helper = null;
+      }
+    }
     return TextField(
       controller: _ctl,
       keyboardType: TextInputType.datetime,
