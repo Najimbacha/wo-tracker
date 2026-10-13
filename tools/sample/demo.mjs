@@ -16,7 +16,8 @@ const CONTRACTORS = [
   'Al-Bina Contracting', 'Rawabi Electric', 'Nasr Al-Jazeera', 'Masar Al-Taqa', 'Dar Al-Itqan', 'Sahm Al-Sharq',
   'Afaq Engineering', 'Al-Wafa Electrical', 'Bawabat Al-Noor', 'Qimam Contracting', 'Al-Falak Power', 'Tamkeen Works',
 ];
-const DISTRICTS = ['Al Olaya', 'Al Malqa', 'Al Nakheel', 'Al Yasmin', 'Hittin', 'Al Sulimaniyah', 'Al Rawdah', 'Qurtubah', 'Al Aqiq', 'حي النرجس', 'حي الملقا', 'الصحافة'];
+// Real Taif districts. The same district is sometimes typed in English and in Arabic, as on real orders.
+const DISTRICTS = ['Al Faisaliyah', 'Al Hawiyah', 'Al Qumariyah', 'Al Wurud', 'Al Sadad', 'Nakhab', 'Al Sharafiyah', 'Al Rayyan', 'Shihar', 'حي الجودية', 'حي الحوية', 'العرفاء'];
 const STREETS = ['King Fahd Rd', 'Olaya St', 'Anas Bin Malik Rd', 'Prince Turki St', 'Takhassusi St', 'شارع الأمير سلطان', 'Imam Saud Rd', 'Abu Bakr Rd'];
 const NOTES = [
   'Customer asked to finish before school starts.',
