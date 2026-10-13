@@ -23,7 +23,7 @@ class TodayScreen extends StatelessWidget {
     final sel = app.orderById(app.selectedOrderId);
     return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       SizedBox(
-        width: 420,
+        width: MediaQuery.sizeOf(context).width >= 1600 ? 480 : 420, // more room for the reason on a big monitor
         child: DecoratedBox(
           decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))),
           child: queue,

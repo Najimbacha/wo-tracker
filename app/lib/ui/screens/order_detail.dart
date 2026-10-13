@@ -43,8 +43,12 @@ class OrderDetail extends StatelessWidget {
     if (o == null) return EmptyState(icon: Icons.search_off, title: app.s.t('order.notFound'));
     final ev = app.evaluate(o);
     final phone = isPhone(context);
-    return ListView(
-      padding: EdgeInsets.all(phone ? 12 : 24),
+    return LayoutBuilder(builder: (context, box) {
+      // On a big monitor the details stay at a readable width (names, dates and buttons
+      // close together) instead of stretching across the whole screen.
+      final end = phone ? 12.0 : (box.maxWidth - 1100 - 24).clamp(24.0, double.infinity);
+      return ListView(
+      padding: EdgeInsetsDirectional.fromSTEB(phone ? 12 : 24, phone ? 12 : 24, end, phone ? 12 : 24),
       children: [
         _Header(order: o, ev: ev),
         const SizedBox(height: 14),
@@ -68,6 +72,7 @@ class OrderDetail extends StatelessWidget {
         const SizedBox(height: 40),
       ],
     );
+    });
   }
 
   static Future<void> _restore(BuildContext context, OrderInput o) async {

@@ -248,7 +248,7 @@ class OrderTile extends StatelessWidget {
             Expanded(
               child: Text(
                 subtitle ?? [order.district, issue ?? (next == null ? null : s.t('order.nextStep', {'step': next}))].whereType<String>().where((x) => x.isNotEmpty).join(' · '),
-                maxLines: 1,
+                maxLines: 2, // a long reason goes onto a second line instead of being cut off
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: sev == null ? C.muted : severityColor(sev), fontSize: 13),
               ),

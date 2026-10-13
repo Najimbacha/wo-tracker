@@ -135,6 +135,14 @@ class WoTrackerApp extends StatelessWidget {
       scaffoldMessengerKey: app.messengerKey,
       navigatorKey: app.navigatorKey,
       home: const Shell(),
+      // A PC screen gets text about 7% larger (phones and small windows stay as they are),
+      // on top of any size the user set in Windows.
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        if (mq.size.width < 1280) return child!;
+        return MediaQuery(data: mq.copyWith(textScaler: TextScaler.linear(mq.textScaler.scale(14) / 14 * 1.07)), child: child!);
+      },
     );
   }
 }
+
