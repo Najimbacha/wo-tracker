@@ -405,7 +405,7 @@ class _StepGroupState extends State<_StepGroup> {
       onTap: allDone ? () => setState(() => _open = !_open) : null,
       borderRadius: BorderRadius.circular(10),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(14, 10, 10, _open ? 2 : 10),
+        padding: EdgeInsets.fromLTRB(14, 10, 10, (_open || !allDone) ? 2 : 10),
         child: Row(children: [
           if (allDone) ...[const Icon(Icons.check_circle, size: 18, color: C.success), const SizedBox(width: 8)],
           Expanded(child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14))),
@@ -418,7 +418,7 @@ class _StepGroupState extends State<_StepGroup> {
     return Card(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
         head,
-        if (_open)
+        if (_open || !allDone)
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 8, 4),
             child: Column(children: [for (final st in steps) _StepRow(order: widget.order, st: st)]),
