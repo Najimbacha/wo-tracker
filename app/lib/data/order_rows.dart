@@ -93,7 +93,7 @@ OrderInput orderFromRows(OrderRows r, {String? contractorName, String? districtN
     ],
     cableRuns: [
       for (final c in cables)
-        CableRun(id: c['id'] as String, sizeMm2: _int(c['size_mm2']) ?? 0, voltage: c['voltage'] as String, lengthM: _num(c['length_m'])),
+        CableRun(id: c['id'] as String, sizeMm2: _int(c['size_mm2']) ?? 0, voltage: c['voltage'] as String, lengthM: c['length_m'] == null ? null : _num(c['length_m'])),
     ],
     permits: [
       for (final p in permits)

@@ -826,5 +826,13 @@
   "toast.unexpected": "حدث خطأ:",
   "toast.preparingFile": "جارٍ تجهيز الملف…",
   "toast.shareCopied": "المشاركة غير متاحة هنا، لذلك نُسخت الرسالة. الصقها في واتساب.",
-  "toast.fileBusy": "ربما الملف مفتوح في برنامج آخر (أغلقه وحاول مرة أخرى)، أو لا يمكن الكتابة في هذا المجلد"
+  "toast.fileBusy": "ربما الملف مفتوح في برنامج آخر (أغلقه وحاول مرة أخرى)، أو لا يمكن الكتابة في هذا المجلد",
+  "common.optional": "اختياري",
+  "order.lengthNotEntered": "لم يُدخل الطول بعد",
+  "order.someLengthsMissing": "{count#run} بدون طول",
+  "unit.run.one": "كابل",
+  "unit.run.two": "كابلين",
+  "unit.run.few": "كابلات",
+  "unit.run.many": "كابلاً",
+  "unit.run.other": "كابل"
 }

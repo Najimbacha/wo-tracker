@@ -569,7 +569,7 @@ class Insights {
       if (done('cable_installed')) {
         for (final r in x.order.cableRuns) {
           final k = r.voltage == 'MV' ? 'cableMV' : 'cableLV';
-          q[k] = q[k]! + r.lengthM;
+          q[k] = q[k]! + (r.lengthM ?? 0); // length is optional
         }
       }
       for (final seg in x.order.segments) {

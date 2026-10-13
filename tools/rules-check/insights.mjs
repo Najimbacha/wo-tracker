@@ -406,7 +406,7 @@ export function report(rules, orders, from, to, today = to, settings) {
   const quantities = { cableLV: 0, cableMV: 0, asphalt40: 0, asphalt80: 0, soil: 0, tiles: 0 };
   for (const { order, ev } of all) {
     const done = (id) => { const s = ev.steps.find((x) => x.id === id); return s && s.state === 'done' && inRange(s.doneDate, from, to); };
-    if (done('cable_installed')) for (const r of order.cableRuns || []) quantities[r.voltage === 'MV' ? 'cableMV' : 'cableLV'] += r.lengthM;
+    if (done('cable_installed')) for (const r of order.cableRuns || []) quantities[r.voltage === 'MV' ? 'cableMV' : 'cableLV'] += r.lengthM || 0; // length is optional
     for (const seg of order.segments || []) {
       if (seg.base === 'soil' && done(`compaction@${seg.id}`)) quantities.soil += seg.lengthM;
       if (seg.base === 'asphalt' && seg.width < 80 && done(`asphalt@${seg.id}`)) quantities.asphalt40 += seg.lengthM;

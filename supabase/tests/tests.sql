@@ -80,6 +80,10 @@ select pg_temp.expect_error($$insert into steps (work_order_id, step_key, not_ap
   'not applicable needs a reason');
 select pg_temp.expect_error($$insert into steps (work_order_id, step_key, done_date, not_applicable, na_reason) values ('aaaaaaaa-0000-0000-0000-000000000010', 'warning_tape', date '2026-10-07', true, 'x')$$,
   'a step cannot be both done and not applicable');
+-- Cable length is optional (often not measured yet), but never 0 or negative.
+insert into cable_runs (work_order_id, size_mm2, voltage) values ('aaaaaaaa-0000-0000-0000-000000000010', 185, 'LV');
+select pg_temp.expect_error($$insert into cable_runs (work_order_id, size_mm2, voltage, length_m) values ('aaaaaaaa-0000-0000-0000-000000000010', 185, 'LV', 0)$$,
+  'a cable length of 0 is refused');
 select pg_temp.expect_error($$insert into steps (work_order_id, step_key, done_date) values ('aaaaaaaa-0000-0000-0000-000000000010', 'kashfeya', date '2026-10-04')$$,
   'the same step cannot be recorded twice');
 select pg_temp.expect_error($$update steps set done_date = public.riyadh_today() + 2 where id = 'aaaaaaaa-0000-0000-0000-000000000040'$$,

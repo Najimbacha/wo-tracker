@@ -48,6 +48,15 @@ void main() {
     expect(c.id, startsWith('new-'));
   });
 
+  test('a cable run without a length is saved and read back without one', () {
+    final w = writes(base, base.copyWith(cableRuns: const [CableRun(id: 'c-1', sizeMm2: 185, voltage: 'LV')]));
+    final c = w.where((x) => x.table == 'cable_runs').single;
+    expect(c.values['length_m'], isNull);
+    final o = orderFromRows(const OrderRows({'id': 'wo-1', 'type_code': '402', 'category': 'extension', 'state': 'open'},
+        cableRuns: [{'id': 'c-1', 'size_mm2': 185, 'voltage': 'LV', 'length_m': null}]));
+    expect(o.cableRuns.single.lengthM, isNull);
+  });
+
   test('a cleared step keeps its row with the date removed', () {
     final done = base.copyWith(steps: {'kashfeya': const StepRecord(done: '2026-10-02')});
     final w = writes(done, base);

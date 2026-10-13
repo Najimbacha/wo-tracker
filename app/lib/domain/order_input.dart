@@ -50,14 +50,14 @@ class CableRun {
   final String? id;
   final int sizeMm2;
   final String voltage; // 'LV' | 'MV'
-  final double lengthM;
-  const CableRun({this.id, required this.sizeMm2, required this.voltage, required this.lengthM});
+  final double? lengthM; // optional: often not known when the run is entered
+  const CableRun({this.id, required this.sizeMm2, required this.voltage, this.lengthM});
   factory CableRun.fromJson(Map<String, dynamic> j) => CableRun(
       id: j['id'] as String?,
       sizeMm2: (j['sizeMm2'] as num).toInt(),
       voltage: j['voltage'] as String,
-      lengthM: (j['lengthM'] as num).toDouble());
-  Map<String, Object?> toJson() => {if (id != null) 'id': id, 'sizeMm2': sizeMm2, 'voltage': voltage, 'lengthM': lengthM};
+      lengthM: (j['lengthM'] as num?)?.toDouble());
+  Map<String, Object?> toJson() => {if (id != null) 'id': id, 'sizeMm2': sizeMm2, 'voltage': voltage, if (lengthM != null) 'lengthM': lengthM};
 }
 
 class Permit {

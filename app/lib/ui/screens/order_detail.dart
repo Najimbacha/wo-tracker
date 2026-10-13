@@ -313,11 +313,16 @@ class _Facts extends StatelessWidget {
     }
     if (pkgs.contains('civil')) {
       final runs = o.cableRuns;
-      final total = runs.fold<double>(0, (n, r) => n + r.lengthM);
+      final total = runs.fold<double>(0, (n, r) => n + (r.lengthM ?? 0));
+      final missing = runs.where((r) => r.lengthM == null).length;
       cards.add(_Fact(
         label: s.t('order.cableRuns'),
         value: runs.isEmpty ? '—' : runs.map((r) => '${r.voltage} ${r.sizeMm2}').toSet().join(', '),
-        sub: runs.isEmpty ? s.t('order.addCable') : s.t('common.metres', {'value': _num(total)}),
+        sub: runs.isEmpty
+            ? s.t('order.addCable')
+            : missing == runs.length
+                ? s.t('order.lengthNotEntered')
+                : [s.t('common.metres', {'value': _num(total)}), if (missing > 0) s.t('order.someLengthsMissing', {'count': missing})].join(' · '),
         onTap: o.deleted ? null : () => editOrder(context, o),
       ));
     }

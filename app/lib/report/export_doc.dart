@@ -318,7 +318,7 @@ class ExportDoc {
           ],
           cableRuns: [
             for (final c in cables[r['id']] ?? const <Map<String, Object?>>[])
-              CableRun(sizeMm2: (c['sizeMm2'] as num).toInt(), voltage: c['voltage'] as String, lengthM: (c['lengthM'] as num).toDouble()),
+              CableRun(sizeMm2: (c['sizeMm2'] as num).toInt(), voltage: c['voltage'] as String, lengthM: (c['lengthM'] as num?)?.toDouble()),
           ],
           permits: [
             for (final p in permits[r['id']] ?? const <Map<String, Object?>>[])

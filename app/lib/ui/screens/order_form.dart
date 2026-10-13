@@ -65,7 +65,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       _MeterDraft(id: m.id, number: m.number ?? '', oldNumber: m.oldNumber ?? '', type: m.meterType, amps: m.breakerAmps?.toString() ?? ''),
   ];
   late final List<_CableDraft> _cables = [
-    for (final c in widget.editing?.cableRuns ?? const <CableRun>[]) _CableDraft(id: c.id, size: c.sizeMm2, voltage: c.voltage, length: _numText(c.lengthM)),
+    for (final c in widget.editing?.cableRuns ?? const <CableRun>[]) _CableDraft(id: c.id, size: c.sizeMm2, voltage: c.voltage, length: c.lengthM == null ? '' : _numText(c.lengthM!)),
   ];
   List<Reason> _errors = [];
   bool _saving = false;
@@ -117,7 +117,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       ],
       cableRuns: [
         for (final c in _cables)
-          if (spec.cableRuns && c.size != null) CableRun(id: c.id, sizeMm2: c.size!, voltage: c.voltage, lengthM: len(c.length)),
+          if (spec.cableRuns && c.size != null) CableRun(id: c.id, sizeMm2: c.size!, voltage: c.voltage, lengthM: c.length.trim().isEmpty ? null : len(c.length)),
       ],
       permits: base?.permits ?? const [],
       steps: base?.steps ?? const {},
@@ -158,7 +158,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
     }
     // Segment lengths and cable lengths must be numbers above 0.
     for (final c in _spec.cableRuns ? _cables : const <_CableDraft>[]) {
-      if (c.size == null || (double.tryParse(c.length.replaceAll(',', '.')) ?? 0) <= 0) {
+      // The length may be left empty (not measured yet); a typed length must be above 0.
+      final typed = c.length.trim();
+      if (c.size == null || (typed.isNotEmpty && (double.tryParse(typed.replaceAll(',', '.')) ?? 0) <= 0)) {
         errors.add(const Reason('bad_cable_run'));
         break;
       }
@@ -581,7 +583,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     c.length = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.lengthM')),
+                  decoration: InputDecoration(labelText: s.t('order.lengthM'), hintText: s.t('common.optional')),
                 ),
               ),
             ],

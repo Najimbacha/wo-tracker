@@ -259,7 +259,7 @@ create table public.cable_runs (
   work_order_id  uuid not null references public.work_orders (id) on delete restrict,
   size_mm2       integer not null check (size_mm2 > 0),
   voltage        text not null check (voltage in ('LV', 'MV')),
-  length_m       numeric(9, 2) not null check (length_m > 0),
+  length_m       numeric(9, 2) check (length_m > 0),  -- optional: often not known yet
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now(),
   deleted_at     timestamptz

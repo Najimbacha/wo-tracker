@@ -805,5 +805,10 @@
   "toast.unexpected": "Something went wrong:",
   "toast.preparingFile": "Preparing the file…",
   "toast.shareCopied": "Sharing isn't available here, so the message was copied. Paste it into WhatsApp.",
-  "toast.fileBusy": "the file may be open in another program (close it and try again), or that folder can't be written to"
+  "toast.fileBusy": "the file may be open in another program (close it and try again), or that folder can't be written to",
+  "common.optional": "optional",
+  "order.lengthNotEntered": "Length not entered yet",
+  "order.someLengthsMissing": "{count#run} without length",
+  "unit.run.one": "cable run",
+  "unit.run.other": "cable runs"
 }
