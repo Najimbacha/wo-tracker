@@ -75,7 +75,7 @@ class _Queue extends StatelessWidget {
 
     final children = <Widget>[
       Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 2),
         child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Text(s.t('nav.today'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(width: 10),
@@ -86,7 +86,7 @@ class _Queue extends StatelessWidget {
         ]),
       ),
       Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
         child: Text.rich(TextSpan(style: const TextStyle(color: C.muted, fontSize: 13), children: [
           TextSpan(text: s.t('today.summary', {'open': active.length, 'received': receivedToday})),
           if (attention.isNotEmpty) TextSpan(text: ' · ${s.t('today.needAttention', {'count': attention.length})}', style: const TextStyle(color: C.critical, fontWeight: FontWeight.w500)),
@@ -183,7 +183,7 @@ class _Head extends StatelessWidget {
   Widget build(BuildContext context) => InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
           child: Row(children: [
             Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5))),
             Mono('$count', size: 12.5, color: C.muted),
@@ -203,7 +203,7 @@ class _GroupLink extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: severityEdge(severity), width: 3))),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           child: Row(children: [
             SeverityDot(severity),
             const SizedBox(width: 10),

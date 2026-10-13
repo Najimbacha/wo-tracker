@@ -38,7 +38,7 @@ class _BoardScreenState extends State<BoardScreen> {
     final phone = isPhone(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Padding(
-        padding: EdgeInsets.fromLTRB(phone ? 14 : 24, 18, phone ? 14 : 24, 10),
+        padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 18, phone ? 12 : 16, 10),
         child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, alignment: WrapAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(s.t('board.title'), style: Theme.of(context).textTheme.titleLarge),
@@ -56,7 +56,7 @@ class _BoardScreenState extends State<BoardScreen> {
             ? EmptyState(icon: Icons.view_kanban_outlined, title: s.t('board.empty'))
             : ListView(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.fromLTRB(phone ? 14 : 24, 0, phone ? 14 : 24, 20),
+                padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 0, phone ? 12 : 16, 20),
                 children: [
                   for (final (stage, cards) in shown)
                     Container(
@@ -91,7 +91,7 @@ class _BoardScreenState extends State<BoardScreen> {
               ),
       ),
       Padding(
-        padding: EdgeInsets.fromLTRB(phone ? 14 : 24, 0, phone ? 14 : 24, 12),
+        padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 0, phone ? 12 : 16, 12),
         child: Text(s.t('board.footer'), style: const TextStyle(fontSize: 12, color: C.faint)),
       ),
     ]);

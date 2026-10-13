@@ -32,17 +32,23 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
     final wide = isWide(context);
     final side = ListView(children: [
       Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 2),
         child: Text(s.t('followUp.title'), style: Theme.of(context).textTheme.titleLarge),
       ),
-      Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 12), child: Text(s.t('followUp.subtitle'), style: const TextStyle(color: C.muted, fontSize: 13))),
+      Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(s.t('followUp.subtitle'), style: const TextStyle(color: C.muted, fontSize: 13))),
       for (final c in list)
         ListTile(
+          dense: true,
+          visualDensity: VisualDensity.compact,
           selected: c.contractor == cur.contractor,
           selectedTileColor: C.accentSoft,
-          title: Text(_name(s, c.contractor)),
-          subtitle: c.late > 0 ? Text(s.t('followUp.late', {'count': c.late}), style: const TextStyle(color: C.critical)) : null,
-          trailing: Mono('${c.orders}', color: C.muted),
+          title: Text(_name(s, c.contractor), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5)),
+          // late count and total on the same line as the name
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (c.late > 0) Text(s.t('followUp.late', {'count': c.late}), style: const TextStyle(color: C.critical, fontSize: 12)),
+            const SizedBox(width: 10),
+            Mono('${c.orders}', color: C.muted),
+          ]),
           onTap: () {
             setState(() => _selected = c.contractor);
             if (!wide) {
@@ -116,7 +122,7 @@ class _DetailState extends State<_Detail> {
     final app = context.app;
     final s = app.s;
     final last = _lastFollowUp(app, con.contractor);
-    return ListView(padding: const EdgeInsets.all(24), children: [
+    return ListView(padding: const EdgeInsets.all(16), children: [
       Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, runSpacing: 8, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(_name(s, con.contractor), style: Theme.of(context).textTheme.titleLarge),

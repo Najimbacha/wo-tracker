@@ -115,7 +115,7 @@ class ProgressLine extends StatelessWidget {
 
 /// White card with a title row.
 class SectionCard extends StatelessWidget {
-  const SectionCard({super.key, this.title, this.trailing, required this.child, this.padding = const EdgeInsets.all(18)});
+  const SectionCard({super.key, this.title, this.trailing, required this.child, this.padding = const EdgeInsets.all(14)});
   final String? title;
   final Widget? trailing;
   final Widget child;
@@ -127,7 +127,7 @@ class SectionCard extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
             if (title != null || trailing != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Row(children: [
                   if (title != null) Expanded(flex: 3, child: Text(title!, style: Theme.of(context).textTheme.titleMedium)),
                   // Kept at the far end; a long label shrinks instead of overflowing.
@@ -237,7 +237,7 @@ class OrderTile extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: severityEdge(sev), width: 3))),
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: dense ? 7 : 10),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: dense ? 5 : 8),
           child: Row(children: [
             SeverityDot(sev),
             const SizedBox(width: 10),

@@ -46,15 +46,15 @@ class OrderDetail extends StatelessWidget {
     return LayoutBuilder(builder: (context, box) {
       // On a big monitor the details stay at a readable width (names, dates and buttons
       // close together) instead of stretching across the whole screen.
-      final end = phone ? 12.0 : (box.maxWidth - 1100 - 24).clamp(24.0, double.infinity);
+      final end = phone ? 12.0 : (box.maxWidth - 1100 - 16).clamp(16.0, double.infinity);
       return ListView(
-      padding: EdgeInsetsDirectional.fromSTEB(phone ? 12 : 24, phone ? 12 : 24, end, phone ? 12 : 24),
+      padding: EdgeInsetsDirectional.fromSTEB(phone ? 12 : 16, phone ? 12 : 14, end, phone ? 12 : 16),
       children: [
         _Header(order: o, ev: ev),
-        const SizedBox(height: 14),
+        const SizedBox(height: 10),
         if (o.deleted)
           Padding(
-            padding: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Banner2(
               text: app.s.t('order.deletedBanner', {'reason': o.deletedReason ?? ''}),
               icon: Icons.delete_outline,
@@ -63,11 +63,11 @@ class OrderDetail extends StatelessWidget {
               action: TextButton(onPressed: () => _restore(context, o), child: Text(app.s.t('common.restore'))),
             ),
           ),
-        if (ev.alerts.isNotEmpty) ...[_Alerts(ev: ev), const SizedBox(height: 14)],
+        if (ev.alerts.isNotEmpty) ...[_Alerts(ev: ev), const SizedBox(height: 10)],
         _Facts(order: o, ev: ev),
-        const SizedBox(height: 14),
+        const SizedBox(height: 10),
         ..._stepSections(context, o, ev),
-        const SizedBox(height: 14),
+        const SizedBox(height: 10),
         _Notes(order: o),
         const SizedBox(height: 40),
       ],
@@ -128,7 +128,7 @@ class OrderDetail extends StatelessWidget {
     final close = ev.steps.where((x) => x.step.package == 'closeout').toList();
     if (close.isNotEmpty) out.add(_StepGroup(title: _pkgName(pkgDefs, 'closeout', app.lang), order: o, steps: close));
     return [
-      for (final w in out) ...[w, const SizedBox(height: 14)]
+      for (final w in out) ...[w, const SizedBox(height: 10)]
     ];
   }
 
@@ -368,7 +368,7 @@ class _Fact extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(label, style: const TextStyle(fontSize: 12, color: C.faint)),
               const SizedBox(height: 4),
@@ -381,19 +381,49 @@ class _Fact extends StatelessWidget {
       );
 }
 
-class _StepGroup extends StatelessWidget {
-  const _StepGroup({required this.title, required this.order, required this.steps});
+/// A group of steps. A group whose steps are all done starts folded to one line, so
+/// the steps still to do are what fills the screen; tap it to see the dates.
+class _StepGroup extends StatefulWidget {
+  _StepGroup({required this.title, required this.order, required this.steps}) : super(key: ValueKey('${order.id}|$title'));
   final String title;
   final OrderInput order;
   final List<StepState> steps;
   @override
+  State<_StepGroup> createState() => _StepGroupState();
+}
+
+class _StepGroupState extends State<_StepGroup> {
+  late bool _open = !widget.steps.every((x) => x.closed);
+
+  @override
   Widget build(BuildContext context) {
+    final steps = widget.steps;
     final closed = steps.where((x) => x.closed).length;
-    return SectionCard(
-      title: title,
-      trailing: Mono(context.t('order.progress', {'closed': closed, 'total': steps.length}), size: 12, color: C.faint),
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
-      child: Column(children: [for (final st in steps) _StepRow(order: order, st: st)]),
+    final allDone = closed == steps.length;
+    final count = Mono(context.t('order.progress', {'closed': closed, 'total': steps.length}), size: 12, color: allDone ? C.success : C.faint);
+    final head = InkWell(
+      onTap: allDone ? () => setState(() => _open = !_open) : null,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(14, 10, 10, _open ? 2 : 10),
+        child: Row(children: [
+          if (allDone) ...[const Icon(Icons.check_circle, size: 18, color: C.success), const SizedBox(width: 8)],
+          Expanded(child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14))),
+          const SizedBox(width: 8),
+          count,
+          if (allDone) Icon(_open ? Icons.expand_less : Icons.expand_more, size: 20, color: C.faint),
+        ]),
+      ),
+    );
+    return Card(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+        head,
+        if (_open)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 8, 4),
+            child: Column(children: [for (final st in steps) _StepRow(order: widget.order, st: st)]),
+          ),
+      ]),
     );
   }
 }
@@ -429,16 +459,24 @@ class _StepRow extends StatelessWidget {
         color = C.faint;
     }
     final ready = st.state == 'ready' && editable;
+    // A done step shows its date on the same line, so each finished step takes one short row.
+    final inline = st.state == 'done';
     return Container(
       decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: ready ? 5 : 4),
+      constraints: const BoxConstraints(minHeight: 36),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        SizedBox(width: 30, child: Center(child: icon)),
+        SizedBox(width: 28, child: Center(child: icon)),
         const SizedBox(width: 8),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, style: TextStyle(color: color, fontWeight: ready ? FontWeight.w600 : FontWeight.w400, fontSize: 14)),
-            if (sub != null && sub.isNotEmpty) Text(sub, style: const TextStyle(fontSize: 12, color: C.faint)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+            Text.rich(
+              TextSpan(children: [
+                TextSpan(text: name, style: TextStyle(color: color, fontWeight: ready ? FontWeight.w600 : FontWeight.w400, fontSize: 14)),
+                if (inline && sub != null) TextSpan(text: '   $sub', style: const TextStyle(fontSize: 12, color: C.faint)),
+              ]),
+            ),
+            if (!inline && sub != null && sub.isNotEmpty) Text(sub, style: const TextStyle(fontSize: 12, color: C.faint)),
             if (note != null && note.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 2),

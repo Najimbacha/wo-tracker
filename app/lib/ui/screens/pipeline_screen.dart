@@ -77,15 +77,14 @@ class _PipelineScreenState extends State<PipelineScreen> {
       ]),
     ];
 
-    return ListView(padding: EdgeInsets.all(phone ? 14 : 24), children: [
+    return ListView(padding: EdgeInsets.all(phone ? 12 : 16), children: [
       Text(s.t('pipeline.title'), style: Theme.of(context).textTheme.titleLarge),
       Text(s.t('pipeline.subtitle', {'count': p.activeCount}), style: const TextStyle(color: C.muted, fontSize: 13)),
-      const SizedBox(height: 16),
+      const SizedBox(height: 10),
       SectionCard(
         title: s.t('pipeline.startsNext7', {'count': startTotal}),
+        trailing: Text(s.t('pipeline.startsNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(s.t('pipeline.startsNote'), style: const TextStyle(color: C.faint, fontSize: 12.5)),
-          const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(children: [
@@ -100,15 +99,15 @@ class _PipelineScreenState extends State<PipelineScreen> {
                 ),
             ]),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           if (day.orders.isEmpty)
-            Padding(padding: const EdgeInsets.all(12), child: Text(s.t('pipeline.noStarts'), style: const TextStyle(color: C.faint)))
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6), child: Text(s.t('pipeline.noStarts'), style: const TextStyle(color: C.faint)))
           else
             for (final id in day.orders)
               if (app.orderById(id) != null) OrderTile(order: app.orderById(id)!, dense: true, onTap: () => openOrder(context, id)),
         ]),
       ),
-      const SizedBox(height: 16),
+      const SizedBox(height: 14),
       Text(s.t('pipeline.notDoneTitle'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       Text(s.t('pipeline.notDoneNote'), style: const TextStyle(color: C.faint, fontSize: 12.5)),
       const SizedBox(height: 10),

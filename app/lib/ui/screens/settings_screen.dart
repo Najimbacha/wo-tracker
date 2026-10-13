@@ -63,7 +63,7 @@ class SettingsScreen extends StatelessWidget {
       Widget column(List<int> ids) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             for (var i = 0; i < ids.length; i++) ...[if (i > 0) const SizedBox(height: 16), cards[ids[i]]],
           ]);
-      return ListView(padding: EdgeInsets.all(phone ? 14 : 24), children: [
+      return ListView(padding: EdgeInsets.all(phone ? 12 : 16), children: [
         Text(s.t('settings.title'), style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 14),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [

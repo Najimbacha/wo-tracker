@@ -36,7 +36,8 @@ ThemeData appTheme({required bool arabic}) {
     fontFamilyFallback: const [sansAr, sansEn],
     colorScheme: ColorScheme.fromSeed(seedColor: C.accent, surface: C.card, primary: C.accent, error: C.critical),
     scaffoldBackgroundColor: C.bg,
-    visualDensity: VisualDensity.standard,
+    // Compact on PC (more on screen), normal touch sizes on the phone.
+    visualDensity: VisualDensity.adaptivePlatformDensity,
   );
   final text = base.textTheme.apply(bodyColor: C.ink, displayColor: C.ink);
   return base.copyWith(
@@ -57,7 +58,7 @@ ThemeData appTheme({required bool arabic}) {
       isDense: true,
       filled: true,
       fillColor: C.card,
-      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.field)),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.field)),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.accent, width: 1.5)),
@@ -70,7 +71,7 @@ ThemeData appTheme({required bool arabic}) {
         foregroundColor: Colors.white,
         textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -79,7 +80,7 @@ ThemeData appTheme({required bool arabic}) {
         side: const BorderSide(color: C.field),
         textStyle: const TextStyle(fontSize: 13.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       ),
     ),
     textButtonTheme: TextButtonThemeData(

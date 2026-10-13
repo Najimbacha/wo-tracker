@@ -151,7 +151,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final roomForFacts = MediaQuery.sizeOf(context).width - (wide ? 300 : 0) >= 820;
 
     final header = Padding(
-      padding: EdgeInsets.fromLTRB(phone ? 14 : 24, 18, phone ? 14 : 24, 8),
+      padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 18, phone ? 12 : 16, 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [
           Expanded(child: Text(_title ?? s.t('nav.allOrders'), style: Theme.of(context).textTheme.titleLarge)),
