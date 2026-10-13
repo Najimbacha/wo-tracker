@@ -149,7 +149,8 @@ class _Header extends StatelessWidget {
       if (place.isNotEmpty) place,
       o.contractor ?? s.t('common.unassigned'),
       if (o.networkRef != null && o.networkRef!.isNotEmpty) o.networkRef!,
-      if (o.receivedDate != null) s.t('order.receivedOn', {'date': app.date(o.receivedDate!)}),
+      // The received date (with its Hijri date) stays on one line instead of breaking in the middle.
+      if (o.receivedDate != null) s.t('order.receivedOn', {'date': app.date(o.receivedDate!)}).replaceAll(' ', '\u00a0'),
     ].join(' · ');
     final active = ev.status == 'open' || ev.status == 'on_hold';
     return Wrap(
@@ -159,7 +160,7 @@ class _Header extends StatelessWidget {
       spacing: 16,
       children: [
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 640),
+          constraints: const BoxConstraints(maxWidth: 760),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
               Pill(s.category(o.category), color: o.category == 'emergency' ? C.critical : C.muted, background: o.category == 'emergency' ? C.criticalSoft : C.chip),
