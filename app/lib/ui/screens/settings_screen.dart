@@ -385,9 +385,18 @@ class _SyncCard extends StatefulWidget {
 }
 
 class _SyncCardState extends State<_SyncCard> {
-  late final _url = TextEditingController(text: context.appRead.prefs.getString('supabaseUrl') ?? '');
-  late final _key = TextEditingController(text: context.appRead.prefs.getString('supabaseAnonKey') ?? '');
-  late final _ps = TextEditingController(text: context.appRead.prefs.getString('powersyncUrl') ?? '');
+  // Made when the card opens (not on first use: otherwise leaving Settings without opening
+  // Cloud setup would create them while the screen is closing).
+  late final TextEditingController _url, _key, _ps;
+
+  @override
+  void initState() {
+    super.initState();
+    final prefs = context.appRead.prefs;
+    _url = TextEditingController(text: prefs.getString('supabaseUrl') ?? '');
+    _key = TextEditingController(text: prefs.getString('supabaseAnonKey') ?? '');
+    _ps = TextEditingController(text: prefs.getString('powersyncUrl') ?? '');
+  }
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
