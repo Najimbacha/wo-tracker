@@ -186,8 +186,11 @@ class _OrderFormPageState extends State<OrderFormPage> {
     if (!mounted) return ok;
     setState(() => _saving = false);
     if (!ok) return false;
-    await app.prefs.setString('lastType', _type);
-    if (_contractor != null) await app.prefs.setString('lastContractor', _contractor!);
+    // Only a new order sets the defaults for the next one (editing an old order must not).
+    if (_isNew) {
+      await app.prefs.setString('lastType', _type);
+      if (_contractor != null) await app.prefs.setString('lastContractor', _contractor!);
+    }
     if (!mounted) return true;
     if (next) {
       setState(() {
