@@ -49,6 +49,8 @@ void main() {
 
         Future<void> step(String name, Future<void> Function() f) async {
           where = name;
+          // ignore: avoid_print
+          print('[$lang${size.width.toInt()}] > $name');
           try {
             await f();
             await settle();
