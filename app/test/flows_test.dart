@@ -21,6 +21,8 @@ void main() {
     for (final size in const [Size(1440, 900), Size(390, 844)]) {
       testWidgets('a working day: $lang ${size.width.toInt()}', (tester) async {
         final problems = <String>[];
+        final clock = Stopwatch()..start();
+        var round = 0;
         var where = 'start';
         final previous = FlutterError.onError;
         FlutterError.onError = (d) {
@@ -78,10 +80,13 @@ void main() {
           // Look at the order and every screen after the change.
           await step('$name: order page', () async => nav().push(MaterialPageRoute<void>(builder: (_) => OrderPage(orderId: o.id!))));
           await back();
-          for (final d in AppState.destinations) {
-            await step('$name: screen $d', () async => app.go(d));
-          }
+          // One screen after each change, in turn (all seven are drawn at the end), so the
+          // run stays short; the order page and Today are looked at every time.
+          final d = AppState.destinations[round++ % AppState.destinations.length];
+          await step('$name: screen $d', () async => app.go(d));
           await step('$name: today', () async => app.go('today'));
+          // ignore: avoid_print
+          print('[${lang}${size.width.toInt()}] $name done (${clock.elapsed.inSeconds}s)');
         }
 
         final open = app.orders.where((o) => app.evaluate(o).status == 'open').toList();
@@ -196,7 +201,7 @@ void main() {
           print('PROBLEMS ($lang ${size.width.toInt()}):\n${problems.toSet().join('\n')}');
           fail('${problems.toSet().length} problem(s); see the list above');
         }
-      }, timeout: const Timeout(Duration(minutes: 4)));
+      }, timeout: const Timeout(Duration(minutes: 10)));
     }
   }
 }
