@@ -63,9 +63,7 @@ void main() {
         NavigatorState nav() => app.navigatorKey.currentState!;
         BuildContext ctx() => app.navigatorKey.currentContext!;
         Future<void> back() async {
-          while (nav().canPop()) {
-            nav().pop();
-          }
+          nav().popUntil((r) => r.isFirst);
           await settle();
         }
 
