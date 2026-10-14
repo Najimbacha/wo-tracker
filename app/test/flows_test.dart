@@ -44,6 +44,8 @@ void main() {
         Future<void> settle() async {
           for (var i = 0; i < 6; i++) {
             await tester.pump(const Duration(milliseconds: 200));
+            // ignore: avoid_print
+            print('    pump ${i + 1} ok (${clock.elapsed.inSeconds}s)');
           }
         }
 
@@ -65,7 +67,11 @@ void main() {
         NavigatorState nav() => app.navigatorKey.currentState!;
         BuildContext ctx() => app.navigatorKey.currentContext!;
         Future<void> back() async {
+          // ignore: avoid_print
+          print('    closing pages');
           nav().popUntil((r) => r.isFirst);
+          // ignore: avoid_print
+          print('    pages closed');
           await settle();
         }
 
