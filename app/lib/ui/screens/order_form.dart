@@ -29,6 +29,9 @@ class _SegDraft {
   bool tiled;
 }
 
+/// Puts the same gap between cards.
+List<Widget> _gapped(List<Widget> items) => [for (var i = 0; i < items.length; i++) ...[if (i > 0) const SizedBox(height: 14), items[i]]];
+
 /// The types used almost every time (the picker shows these first).
 const _commonTypes = ['401', '402', '801', '802'];
 
@@ -242,7 +245,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
     final numberOk = _number.text.trim().isEmpty || pattern.hasMatch(Actions.normalizeDraft(OrderInput(type: _type, category: _category, woNumber: _number.text)).woNumber ?? '');
     final todayAdded = app.data.orders.where((o) => o.receivedDate == app.today && !o.deleted).length;
 
-    final form = <Widget>[
+    final left = <Widget>[
       SectionCard(
         title: s.t('order.sectionOrder'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -320,7 +323,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
             child: Text(dup.deleted ? s.t('action.restoreInstead') : s.t('order.openExisting')),
           ),
         ),
-      const SizedBox(height: 12),
       SectionCard(
         title: s.t('order.type'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -377,7 +379,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
             ),
         ]),
       ),
-      const SizedBox(height: 12),
       SectionCard(
         title: s.t('order.sectionPlace'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -387,7 +388,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
               child: _Suggest(
                 controller: _district,
                 label: s.t('order.district'),
-                helper: s.t('order.districtHint'),
                 options: [for (final d in app.data.districts) if (!d.deleted) d.name],
                 onChanged: _touch,
               ),
@@ -431,16 +431,16 @@ class _OrderFormPageState extends State<OrderFormPage> {
           ]),
         ]),
       ),
-      if (spec.segments) ...[const SizedBox(height: 12), _segmentsEditor(context)],
-      if (spec.cableRuns) ...[const SizedBox(height: 12), _cablesEditor(context)],
-      if (spec.meters) ...[const SizedBox(height: 12), _metersEditor(context, spec)],
-      const SizedBox(height: 12),
+    ];
+    final right = <Widget>[
+      if (spec.segments) _segmentsEditor(context),
+      if (spec.cableRuns) _cablesEditor(context),
+      if (spec.meters) _metersEditor(context, spec),
       SectionCard(
         title: s.t('order.notes'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: TextField(controller: _notes, onChanged: (_) => _touch(), minLines: 2, maxLines: 5, decoration: InputDecoration(hintText: s.t('order.notesHint'))),
       ),
-      const SizedBox(height: 16),
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
@@ -452,6 +452,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
           style: const TextStyle(fontSize: 12.5, color: C.muted, height: 1.45),
         ),
       ),
+    ];
+    final problems = <Widget>[
       if (_showErrors && _errors.isNotEmpty) ...[
         const SizedBox(height: 12),
         for (final e in _errors)
@@ -486,12 +488,26 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 ),
             ],
           ),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 900),
-              child: ListView(padding: EdgeInsets.all(phone ? 16 : 28), children: form),
-            ),
-          ),
+          body: LayoutBuilder(builder: (context, box) {
+            // Wide screen: the form takes two columns (order, type, place | work details, notes).
+            final wide = box.maxWidth >= 1200;
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: wide ? 1500 : 900),
+                child: ListView(padding: EdgeInsets.all(phone ? 16 : 28), children: [
+                  if (wide)
+                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: _gapped(left))),
+                      const SizedBox(width: 20),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: _gapped(right))),
+                    ])
+                  else
+                    Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: _gapped([...left, ...right])),
+                  ...problems,
+                ]),
+              ),
+            );
+          }),
           bottomNavigationBar: SafeArea(
             child: Container(
               decoration: const BoxDecoration(color: Color(0xFFFBFBFA), border: Border(top: BorderSide(color: C.lineSoft))),
