@@ -78,6 +78,8 @@
   "order.width80": "80 سم أو أكثر",
   "order.length": "الطول",
   "order.tiled": "بلاط",
+  "order.meterCount": "عدد العدادات المراد تركيبها",
+  "order.meterCountKept": "العداد الأخير فيه بيانات. احذفه بزر ✕.",
   "order.meters": "العدادات",
   "order.meterOf": "العداد {index} من {total}",
   "order.addMeter": "إضافة عداد",

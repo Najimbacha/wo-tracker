@@ -78,6 +78,8 @@
   "order.width80": "80 cm or wider",
   "order.length": "Length",
   "order.tiled": "Tiled",
+  "order.meterCount": "Meters to install",
+  "order.meterCountKept": "The last meter already has details. Remove it with its ✕ button.",
   "order.meters": "Meters",
   "order.meterOf": "Meter {index} of {total}",
   "order.addMeter": "Add meter",

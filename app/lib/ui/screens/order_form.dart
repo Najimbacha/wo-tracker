@@ -70,6 +70,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
     for (final m in widget.editing?.meters ?? const <Meter>[])
       _MeterDraft(id: m.id, number: m.number ?? '', oldNumber: m.oldNumber ?? '', type: m.meterType, amps: m.breakerAmps?.toString() ?? ''),
   ];
+  late final _meterCount = TextEditingController(text: '${_meters.isEmpty ? 1 : _meters.length}');
   late final List<_CableDraft> _cables = [
     for (final c in widget.editing?.cableRuns ?? const <CableRun>[]) _CableDraft(id: c.id, size: c.sizeMm2, voltage: c.voltage, length: c.lengthM == null ? '' : _numText(c.lengthM!)),
   ];
@@ -89,11 +90,39 @@ class _OrderFormPageState extends State<OrderFormPage> {
 
   @override
   void dispose() {
-    for (final c in [_number, _district, _street, _network, _notes]) {
+    for (final c in [_number, _district, _street, _network, _notes, _meterCount]) {
       c.dispose();
     }
     _numberFocus.dispose();
     super.dispose();
+  }
+
+  /// "How many meters": adds blank meter rows, or removes empty rows from the end.
+  /// A row that already has details is never removed here (nothing typed is lost).
+  void _setMeterCount(int n) {
+    final app = context.appRead;
+    n = n.clamp(1, 50);
+    setState(() {
+      while (_meters.length < n) {
+        _meters.add(_MeterDraft(id: app.repo.newId()));
+      }
+      while (_meters.length > n) {
+        final m = _meters.last;
+        if (m.number.trim().isNotEmpty || m.oldNumber.trim().isNotEmpty || m.type != null || m.amps.trim().isNotEmpty) {
+          app.showToast(app.s.t('order.meterCountKept'));
+          break;
+        }
+        _meters.removeLast();
+      }
+      _dirty = true;
+    });
+    _showMeterCount();
+  }
+
+  /// Keeps the count box equal to the number of rows (after Add meter / remove).
+  void _showMeterCount() {
+    final t = '${_meters.length}';
+    if (_meterCount.text != t) _meterCount.text = t;
   }
 
   void _touch() => setState(() => _dirty = true);
@@ -212,6 +241,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
         _notes.clear();
         _segs.clear();
         _meters.clear();
+        _meterCount.text = '1';
         _cables.clear();
         _errors = [];
         _showErrors = false;
@@ -711,10 +741,31 @@ class _OrderFormPageState extends State<OrderFormPage> {
     return _Group(
       title: s.t('order.meters'),
       hint: s.t('order.metersHint'),
-      onAdd: () => setState(() {
-        _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
-        _dirty = true;
-      }),
+      header: Row(children: [
+        Text(s.t('order.meterCount'), style: const TextStyle(fontWeight: FontWeight.w500)),
+        const SizedBox(width: 12),
+        IconButton.outlined(tooltip: '−', onPressed: _meters.length <= 1 ? null : () => _setMeterCount(_meters.length - 1), icon: const Icon(Icons.remove, size: 18)),
+        SizedBox(
+          width: 72,
+          child: TextField(
+            controller: _meterCount,
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            textDirection: TextDirection.ltr,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: monoStyle.copyWith(fontSize: 22, fontWeight: FontWeight.w600),
+            decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 10)),
+            onChanged: (v) {
+              final n = int.tryParse(v);
+              if (n != null && n >= 1) _setMeterCount(n);
+            },
+          ),
+        ),
+        IconButton.outlined(tooltip: '+', onPressed: () => _setMeterCount(_meters.length + 1), icon: const Icon(Icons.add, size: 18)),
+      ]),
+      onAdd: () {
+        _setMeterCount(_meters.length + 1);
+      },
       addLabel: s.t('order.addMeter'),
       children: [
         for (final m in _meters)
@@ -722,10 +773,13 @@ class _OrderFormPageState extends State<OrderFormPage> {
             key: ObjectKey(m),
             onRemove: _meters.length <= 1
                 ? null
-                : () => setState(() {
+                : () {
+                    setState(() {
                       _meters.remove(m);
                       _dirty = true;
-                    }),
+                    });
+                    _showMeterCount();
+                  },
             children: [
               SizedBox(
                 width: 160,
@@ -825,8 +879,9 @@ class _TypeButton extends StatelessWidget {
 }
 
 class _Group extends StatelessWidget {
-  const _Group({required this.title, this.hint, required this.children, required this.onAdd, required this.addLabel});
+  const _Group({required this.title, this.hint, this.header, required this.children, required this.onAdd, required this.addLabel});
   final String title;
+  final Widget? header;
   final String? hint;
   final List<Widget> children;
   final VoidCallback onAdd;
@@ -838,6 +893,7 @@ class _Group extends StatelessWidget {
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           if (hint != null) Text(hint!, style: const TextStyle(fontSize: 12.5, color: C.faint)),
           const SizedBox(height: 10),
+          if (header != null) ...[header!, const SizedBox(height: 12)],
           ...children,
           Align(alignment: AlignmentDirectional.centerStart, child: OutlinedButton.icon(onPressed: onAdd, icon: const Icon(Icons.add, size: 18), label: Text(addLabel))),
         ]),
