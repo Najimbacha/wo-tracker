@@ -797,31 +797,28 @@ class _TypeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (tint, ink) = typeColors(code);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        decoration: BoxDecoration(
-          color: selected ? tint : C.card,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: selected ? ink : C.field, width: selected ? 1.5 : 1),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          // The thin top edge carries the kind of work (same colours as the tags on the lists).
-          Container(height: 4, color: ink),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Mono(code, size: 18, weight: FontWeight.w700, color: selected ? ink : C.ink),
-                const SizedBox(height: 3),
-                Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: selected ? ink : C.muted)),
-              ]),
-            ),
+    return Tooltip(
+      message: label, // the name shows on hover; everybody knows the codes
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          decoration: BoxDecoration(
+            color: selected ? tint : C.card,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: selected ? ink : C.field, width: selected ? 1.5 : 1),
           ),
-        ]),
+          clipBehavior: Clip.antiAlias,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            // The thin top edge carries the kind of work (same colours as the tags on the lists).
+            Container(height: 4, color: ink),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: Center(child: Mono(code, size: 24, weight: FontWeight.w700, color: selected ? ink : C.ink)),
+            ),
+          ]),
+        ),
       ),
     );
   }
