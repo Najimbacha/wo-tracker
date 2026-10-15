@@ -776,6 +776,7 @@ class _TypeButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           width: width,
+          constraints: const BoxConstraints(minHeight: 84), // the four tiles line up even when a name is one line
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
             color: selected ? C.accentSoft : C.card,
