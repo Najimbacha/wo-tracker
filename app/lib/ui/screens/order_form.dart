@@ -29,6 +29,9 @@ class _SegDraft {
   bool tiled;
 }
 
+/// The types used almost every time (the picker shows these first).
+const _commonTypes = ['401', '402', '801', '802'];
+
 class _MeterDraft {
   _MeterDraft({required this.id, this.number = '', this.oldNumber = '', this.type, this.amps = ''});
   final String id;
@@ -300,19 +303,26 @@ class _OrderFormPageState extends State<OrderFormPage> {
         ),
       const SizedBox(height: 18),
       _Label(s.t('order.type')),
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final t in (app.rules['types'] as Map).keys.cast<String>())
-          _TypeButton(
-            code: t,
-            label: s.type(t),
-            selected: _type == t,
-            onTap: () => setState(() {
-              _type = t;
-              _dirty = true;
-              if (!_actions.formSpec(OrderInput(type: t, category: _category)).excavationSwitch) _excavation = false;
-            }),
-          ),
-      ]),
+      // The four types used almost every time come first; the rest are rare.
+      for (final group in [
+        _commonTypes.where((t) => (app.rules['types'] as Map).containsKey(t)).toList(),
+        (app.rules['types'] as Map).keys.cast<String>().where((t) => !_commonTypes.contains(t)).toList(),
+      ]) ...[
+        if (group.isNotEmpty && group.first != _commonTypes.first) Padding(padding: const EdgeInsets.only(top: 12, bottom: 6), child: Text(s.t('order.typesRare'), style: const TextStyle(fontSize: 12, color: C.faint))),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final t in group)
+            _TypeButton(
+              code: t,
+              label: s.type(t),
+              selected: _type == t,
+              onTap: () => setState(() {
+                _type = t;
+                _dirty = true;
+                if (!_actions.formSpec(OrderInput(type: t, category: _category)).excavationSwitch) _excavation = false;
+              }),
+            ),
+        ]),
+      ],
       if (spec.excavationSwitch)
         SwitchListTile(
           contentPadding: EdgeInsets.zero,

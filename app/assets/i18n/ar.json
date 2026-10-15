@@ -56,6 +56,7 @@
   "stage.meter": "العداد",
   "stage.closeout": "الإغلاق",
   "order.woNumber": "رقم أمر العمل",
+  "order.typesRare": "نادرة الاستخدام",
   "order.type": "النوع",
   "order.category": "الفئة",
   "order.received": "تاريخ الاستلام",

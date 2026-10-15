@@ -56,6 +56,7 @@
   "stage.meter": "Meter",
   "stage.closeout": "Close-out",
   "order.woNumber": "Work order number",
+  "order.typesRare": "Rarely used",
   "order.type": "Type",
   "order.category": "Category",
   "order.received": "Received",
