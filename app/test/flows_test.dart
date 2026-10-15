@@ -23,6 +23,9 @@ void main() {
         final problems = <String>[];
         final clock = Stopwatch()..start();
         var round = 0;
+        // Reports has a PDF preview that needs the printing plugin, which does not exist in
+        // tests (it fails after the test has moved on); the screens test already draws it.
+        final screens = [for (final d in AppState.destinations) if (d != 'reports') d];
         var where = 'start';
         final previous = FlutterError.onError;
         FlutterError.onError = (d) {
@@ -91,7 +94,7 @@ void main() {
           await back();
           // One screen after each change, in turn (all seven are drawn at the end), so the
           // run stays short; the order page and Today are looked at every time.
-          final d = AppState.destinations[round++ % AppState.destinations.length];
+          final d = screens[round++ % screens.length];
           await step('$name: screen $d', () async => app.go(d));
           await step('$name: today', () async => app.go('today'));
           // ignore: avoid_print
@@ -188,13 +191,13 @@ void main() {
           });
           app.go('settings');
         });
-        for (final dd in AppState.destinations) {
+        for (final dd in screens) {
           await step('after settings: screen $dd', () async => app.go(dd));
         }
         await step('switch language', () async {
           await tester.runAsync(() => app.setLanguage(lang == 'en' ? 'ar' : 'en'));
         });
-        for (final dd in AppState.destinations) {
+        for (final dd in screens) {
           await step('other language: screen $dd', () async => app.go(dd));
         }
 
