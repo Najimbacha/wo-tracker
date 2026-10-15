@@ -34,7 +34,11 @@ void main() {
             for (final m in RegExp(r'(lib/[\w/]+\.dart:\d+)').allMatches(full)) m.group(1)!,
             for (final m in RegExp(r'package:wo_tracker/([\w/]+\.dart):(\d+)').allMatches(d.stack?.toString() ?? '')) 'lib/${m.group(1)}:${m.group(2)}',
           }.take(4).join(', ');
-          problems.add('[$where] $text  @ $at');
+          // An overflow: add what the framework says about it (which widget, how wide), so it
+          // can be found without running the test again.
+          final flat = full.replaceAll(RegExp(r'\s+'), ' ');
+          final more = text.contains('overflowed') ? '\n      ${flat.length > 1400 ? flat.substring(0, 1400) : flat}' : '';
+          problems.add('[$where] $text  @ $at$more');
         };
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1;
