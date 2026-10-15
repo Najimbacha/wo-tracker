@@ -84,7 +84,10 @@ void main() {
             await tester.runAsync(() => app.apply(fresh, r, toast: 'toast.stepDone', toastParams: {'step': name}));
           });
           // Look at the order and every screen after the change.
-          await step('$name: order page', () async => nav().push(MaterialPageRoute<void>(builder: (_) => OrderPage(orderId: o.id!))));
+          await step('$name: order page', () async {
+            // Not awaited: the push finishes only when the page is closed again.
+            nav().push(MaterialPageRoute<void>(builder: (_) => OrderPage(orderId: o.id!)));
+          });
           await back();
           // One screen after each change, in turn (all seven are drawn at the end), so the
           // run stays short; the order page and Today are looked at every time.
