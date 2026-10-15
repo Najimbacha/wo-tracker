@@ -24,6 +24,18 @@ class C {
   static const locked = Color(0xFF9AA19B);
 }
 
+/// One colour per board stage, so a column (and the card in it) is known at a glance.
+Color stageColor(String key) => switch (key) {
+      'kashfeya' => const Color(0xFF5A6B7B),
+      'tasreeh' => const Color(0xFFB36B00),
+      'starting' => const Color(0xFF0F7F85),
+      'civil' => const Color(0xFF2152C4),
+      'restoration' => const Color(0xFFB5481C),
+      'meter' => const Color(0xFF6A3FB5),
+      'closeout' => const Color(0xFF23784A),
+      _ => C.accent,
+    };
+
 const sansEn = 'IBMPlexSans';
 const sansAr = 'IBMPlexSansArabic';
 const mono = 'IBMPlexMono';

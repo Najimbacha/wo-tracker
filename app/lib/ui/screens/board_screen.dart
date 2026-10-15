@@ -63,13 +63,18 @@ class _BoardScreenState extends State<BoardScreen> {
                       width: phone ? 280 : 250,
                       margin: const EdgeInsetsDirectional.only(end: 12),
                       padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(color: C.lineSoft, borderRadius: BorderRadius.circular(10)),
+                      decoration: BoxDecoration(color: Color.alphaBlend(stageColor(stage).withAlpha(20), C.lineSoft), borderRadius: BorderRadius.circular(10)),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
                           child: Row(children: [
-                            Expanded(child: Text(s.stage(stage), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13))),
-                            Mono('${cards.length}', size: 12.5, color: C.muted),
+                            Container(width: 10, height: 10, margin: const EdgeInsetsDirectional.only(end: 8), decoration: BoxDecoration(color: stageColor(stage), shape: BoxShape.circle)),
+                            Expanded(child: Text(s.stage(stage), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: stageColor(stage)))),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                              decoration: BoxDecoration(color: stageColor(stage), borderRadius: BorderRadius.circular(999)),
+                              child: Mono('${cards.length}', size: 12, color: Colors.white),
+                            ),
                           ]),
                         ),
                         Padding(

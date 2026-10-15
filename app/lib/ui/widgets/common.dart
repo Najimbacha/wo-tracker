@@ -24,11 +24,19 @@ class TypeTag extends StatelessWidget {
   const TypeTag(this.type, {super.key});
   final String type;
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(color: C.chip, borderRadius: BorderRadius.circular(4)),
-        child: Text(type, textDirection: TextDirection.ltr, style: monoStyle.copyWith(fontSize: 11, color: C.muted, fontWeight: FontWeight.w500)),
-      );
+  Widget build(BuildContext context) {
+    // 4xx are extensions (blue), 8xx are emergencies (purple); anything else stays grey.
+    final (bg, fg) = type.startsWith('4')
+        ? (C.accentSoft, C.accentDark)
+        : type.startsWith('8')
+            ? (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E))
+            : (C.chip, C.muted);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)),
+      child: Text(type, textDirection: TextDirection.ltr, style: monoStyle.copyWith(fontSize: 11, color: fg, fontWeight: FontWeight.w600)),
+    );
+  }
 }
 
 class Pill extends StatelessWidget {
