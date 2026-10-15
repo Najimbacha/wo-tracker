@@ -36,6 +36,8 @@ class _BoardScreenState extends State<BoardScreen> {
     final contractors = {for (final c in cols) for (final k in c.cards) k.contractor ?? unassignedContractor}.toList()..sort();
     final districts = {for (final c in cols) for (final k in c.cards) if (k.district != null) k.district!}.toList()..sort();
     final phone = isPhone(context);
+    // Columns share a wide screen (up to 340 px each) instead of leaving empty space on the right.
+    final colWidth = phone ? 280.0 : ((MediaQuery.sizeOf(context).width - 32 - 12 * shown.length) / shown.length).clamp(250.0, 340.0);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Padding(
         padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 18, phone ? 12 : 16, 10),
@@ -60,7 +62,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 children: [
                   for (final (stage, cards) in shown)
                     Container(
-                      width: phone ? 280 : 250,
+                      width: colWidth,
                       margin: const EdgeInsetsDirectional.only(end: 12),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(color: Color.alphaBlend(stageColor(stage).withAlpha(20), C.lineSoft), borderRadius: BorderRadius.circular(10)),
@@ -68,18 +70,18 @@ class _BoardScreenState extends State<BoardScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
                           child: Row(children: [
-                            Container(width: 10, height: 10, margin: const EdgeInsetsDirectional.only(end: 8), decoration: BoxDecoration(color: stageColor(stage), shape: BoxShape.circle)),
-                            Expanded(child: Text(s.stage(stage), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: stageColor(stage)))),
+                            Container(width: 12, height: 12, margin: const EdgeInsetsDirectional.only(end: 8), decoration: BoxDecoration(color: stageColor(stage), shape: BoxShape.circle)),
+                            Expanded(child: Text(s.stage(stage), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: stageColor(stage)))),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                               decoration: BoxDecoration(color: stageColor(stage), borderRadius: BorderRadius.circular(999)),
-                              child: Mono('${cards.length}', size: 12, color: Colors.white),
+                              child: Mono('${cards.length}', size: 14, color: Colors.white),
                             ),
                           ]),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-                          child: Text(s.t('board.hint.$stage'), style: const TextStyle(fontSize: 11.5, color: C.faint)),
+                          child: Text(s.t('board.hint.$stage'), style: const TextStyle(fontSize: 13, color: C.muted)),
                         ),
                         Expanded(
                           child: cards.isEmpty
@@ -126,10 +128,10 @@ class _Card extends StatelessWidget {
             decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: severityEdge(c.severity), width: 3))),
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [Expanded(child: Mono(c.woNumber ?? '—', size: 13, weight: FontWeight.w600)), TypeTag(c.type ?? '')]),
+              Row(children: [Expanded(child: Mono(c.woNumber ?? '—', size: 15, weight: FontWeight.w600)), TypeTag(c.type ?? '')]),
               const SizedBox(height: 3),
               Text([c.district, c.contractor ?? s.t('common.unassigned')].whereType<String>().join(' · '),
-                  maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: C.muted)),
+                  maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, color: C.muted)),
               const SizedBox(height: 6),
               Row(children: [
                 Expanded(
@@ -137,13 +139,13 @@ class _Card extends StatelessWidget {
                     c.startsOn != null ? s.t('board.startsOn', {'date': app.dateShort(c.startsOn!)}) : (c.nextKey == null ? '' : s.t('order.nextStep', {'step': s.todo(c.nextKey!)})),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ),
                 if (c.onHold)
                   Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft)
                 else if (c.startsOn == null)
-                  Text(s.t('board.waitingDays', {'count': c.daysWaiting}), style: TextStyle(fontSize: 11.5, color: c.severity == null ? C.faint : severityColor(c.severity))),
+                  Text(s.t('board.waitingDays', {'count': c.daysWaiting}), style: TextStyle(fontSize: 13, color: c.severity == null ? C.faint : severityColor(c.severity))),
               ]),
             ]),
           ),
