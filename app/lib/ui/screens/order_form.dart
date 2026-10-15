@@ -434,7 +434,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: TextField(controller: _street, onChanged: (_) => _touch(), decoration: InputDecoration(labelText: s.t('order.street'))),
+              child: TextField(controller: _street, onChanged: (_) => _touch(), decoration: InputDecoration(labelText: s.t('order.street'), floatingLabelBehavior: FloatingLabelBehavior.always)),
             ),
           ]),
           const SizedBox(height: 14),
@@ -443,7 +443,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
               child: DropdownButtonFormField<String?>(
                   initialValue: _contractor,
                   isExpanded: true,
-                  decoration: InputDecoration(labelText: s.t('order.contractor')),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  decoration: InputDecoration(labelText: s.t('order.contractor'), floatingLabelBehavior: FloatingLabelBehavior.always),
                   items: [
                     DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
                     for (final c in app.data.contractors)
@@ -465,7 +466,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                 controller: _network,
                 onChanged: (_) => _touch(),
                 textDirection: TextDirection.ltr,
-                decoration: InputDecoration(labelText: s.t('order.network'), hintText: s.t('order.networkHint')),
+                decoration: InputDecoration(labelText: s.t('order.network'), hintText: s.t('order.networkHint'), floatingLabelBehavior: FloatingLabelBehavior.always),
               ),
             ),
           ]),
@@ -959,7 +960,7 @@ class _SuggestState extends State<_Suggest> {
           controller: ctl,
           focusNode: focus,
           onChanged: (_) => widget.onChanged(),
-          decoration: InputDecoration(labelText: widget.label, helperText: widget.helper),
+          decoration: InputDecoration(labelText: widget.label, helperText: widget.helper, floatingLabelBehavior: FloatingLabelBehavior.always),
         ),
         optionsViewBuilder: (context, select, opts) => Align(
           alignment: AlignmentDirectional.topStart,
