@@ -509,6 +509,7 @@
   "toast.tasreehSaved": "Tasreeh saved",
   "toast.tasreehRemoved": "Tasreeh removed",
   "toast.cableSizeRemoved": "{size} mm² removed",
+  "step.onlyToday": "Only today is possible for this step: the order was received, or the step before it was done, on {date}. Use \"Mark done today\".",
   "toast.undone": "Undone",
   "toast.undoneNew": "Undone right after adding",
   "toast.saveFailed": "Couldn't save: {reason}. Nothing was changed.",

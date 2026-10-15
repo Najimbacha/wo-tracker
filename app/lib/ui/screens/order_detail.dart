@@ -576,7 +576,14 @@ class _StepRow extends StatelessWidget {
   Future<void> _markOther(BuildContext context) async {
     final app = context.appRead;
     final deps = st.step.deps.map((d) => order.steps[d]?.done).whereType<String>().toList()..sort();
-    final first = deps.isNotEmpty ? deps.last : order.receivedDate;
+    // Not before the order was received, nor before the step it waits for was done.
+    final first = [if (deps.isNotEmpty) deps.last, if (order.receivedDate != null) order.receivedDate!].fold<String?>(null, (m, x) => m == null || x.compareTo(m) > 0 ? x : m);
+    // When that is today, no other day can be chosen: say why instead of showing a calendar
+    // with every day greyed out.
+    if (first != null && first.compareTo(app.today) >= 0) {
+      app.showToast(app.s.t('step.onlyToday', {'date': app.dateShort(first)}));
+      return;
+    }
     final d = await pickDate(context, first: first, help: app.s.step(st.step.key));
     if (d == null || !context.mounted) return;
     await _mark(context, d);

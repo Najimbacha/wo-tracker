@@ -530,6 +530,7 @@
   "toast.tasreehSaved": "تم حفظ التصريح",
   "toast.tasreehRemoved": "تمت إزالة التصريح",
   "toast.cableSizeRemoved": "تمت إزالة {size} mm²",
+  "step.onlyToday": "لا يمكن اختيار تاريخ آخر لهذه الخطوة: استُلم الطلب أو أُنجزت الخطوة التي قبلها بتاريخ {date}. استخدم «تم اليوم».",
   "toast.undone": "تم التراجع",
   "toast.undoneNew": "تم التراجع فور الإضافة",
   "toast.saveFailed": "تعذر الحفظ: {reason}. لم يتغير شيء.",
