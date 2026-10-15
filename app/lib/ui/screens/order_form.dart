@@ -141,6 +141,12 @@ class _OrderFormPageState extends State<OrderFormPage> {
     return Actions.normalizeDraft(draft, rules: context.appRead.rules);
   }
 
+  void _pickType(String t) => setState(() {
+        _type = t;
+        _dirty = true;
+        if (!_actions.formSpec(OrderInput(type: t, category: _category)).excavationSwitch) _excavation = false;
+      });
+
   FormSpec get _spec => _actions.formSpec(OrderInput(type: _type, category: _category, needsExcavation: _excavation));
 
   /// Every type with meters starts with one meter row, so its steps have a home.
@@ -237,20 +243,26 @@ class _OrderFormPageState extends State<OrderFormPage> {
     final todayAdded = app.data.orders.where((o) => o.receivedDate == app.today && !o.deleted).length;
 
     final form = <Widget>[
-      // Category
-      _Label(s.t('order.category')),
-      SegmentedButton<String>(
-        segments: [
-          ButtonSegment(value: 'extension', label: Text(s.t('category.extensionLong'))),
-          ButtonSegment(value: 'emergency', label: Text(s.t('category.emergencyLong'))),
-        ],
-        selected: {_category},
-        onSelectionChanged: (v) => setState(() {
-          _category = v.first;
-          _dirty = true;
-        }),
-      ),
-      const SizedBox(height: 18),
+      SectionCard(
+        title: s.t('order.sectionOrder'),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(value: 'extension', label: Text(s.t('category.extensionLong'))),
+                ButtonSegment(value: 'emergency', label: Text(s.t('category.emergencyLong'))),
+              ],
+              selected: {_category},
+              onSelectionChanged: (v) => setState(() {
+                _category = v.first;
+                _dirty = true;
+              }),
+            ),
+          ),
+          const SizedBox(height: 16),
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
           child: TextField(
@@ -282,6 +294,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
           ),
         ),
       ]),
+        ]),
+      ),
       if (dup != null)
         Align(
           alignment: AlignmentDirectional.centerStart,
@@ -301,92 +315,126 @@ class _OrderFormPageState extends State<OrderFormPage> {
             child: Text(dup.deleted ? s.t('action.restoreInstead') : s.t('order.openExisting')),
           ),
         ),
-      const SizedBox(height: 18),
-      _Label(s.t('order.type')),
-      // The four types used almost every time come first; the rest are rare.
-      for (final group in [
-        _commonTypes.where((t) => (app.rules['types'] as Map).containsKey(t)).toList(),
-        (app.rules['types'] as Map).keys.cast<String>().where((t) => !_commonTypes.contains(t)).toList(),
-      ]) ...[
-        if (group.isNotEmpty && group.first != _commonTypes.first) Padding(padding: const EdgeInsets.only(top: 12, bottom: 6), child: Text(s.t('order.typesRare'), style: const TextStyle(fontSize: 12, color: C.faint))),
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final t in group)
-            _TypeButton(
-              code: t,
-              label: s.type(t),
-              selected: _type == t,
-              onTap: () => setState(() {
-                _type = t;
+      const SizedBox(height: 12),
+      SectionCard(
+        title: s.t('order.type'),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          // The four types used almost every time are big tiles; the rest are small chips.
+          LayoutBuilder(builder: (context, box) {
+            final per = box.maxWidth >= 560 ? 4 : 2;
+            final w = (box.maxWidth - 10 * (per - 1)) / per;
+            final types = app.rules['types'] as Map;
+            return Wrap(spacing: 10, runSpacing: 10, children: [
+              for (final t in _commonTypes.where(types.containsKey))
+                _TypeButton(
+                  code: t,
+                  label: s.type(t),
+                  selected: _type == t,
+                  width: w,
+                  onTap: () => _pickType(t),
+                ),
+            ]);
+          }),
+          if ((app.rules['types'] as Map).keys.any((t) => !_commonTypes.contains(t))) ...[
+            const SizedBox(height: 14),
+            Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+              Text(s.t('order.typesRare'), style: const TextStyle(fontSize: 12.5, color: C.faint)),
+              for (final t in (app.rules['types'] as Map).keys.cast<String>().where((t) => !_commonTypes.contains(t)))
+                Tooltip(
+                  message: s.type(t),
+                  child: ChoiceChip(
+                    visualDensity: VisualDensity.compact,
+                    showCheckmark: false,
+                    label: Mono(t, size: 13, color: _type == t ? C.accentDark : C.ink),
+                    selected: _type == t,
+                    selectedColor: C.accentSoft,
+                    onSelected: (_) => _pickType(t),
+                  ),
+                ),
+            ]),
+            if (!_commonTypes.contains(_type))
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('$_type · ${s.type(_type)}', style: const TextStyle(fontSize: 13, color: C.accentDark, fontWeight: FontWeight.w500)),
+              ),
+          ],
+          if (spec.excavationSwitch)
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _excavation,
+              onChanged: (v) => setState(() {
+                _excavation = v;
                 _dirty = true;
-                if (!_actions.formSpec(OrderInput(type: t, category: _category)).excavationSwitch) _excavation = false;
               }),
+              title: Text(s.t('order.needsExcavation')),
+              subtitle: Text(s.t('order.needsExcavationHint')),
             ),
         ]),
-      ],
-      if (spec.excavationSwitch)
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          value: _excavation,
-          onChanged: (v) => setState(() {
-            _excavation = v;
-            _dirty = true;
-          }),
-          title: Text(s.t('order.needsExcavation')),
-          subtitle: Text(s.t('order.needsExcavationHint')),
-        ),
-      const SizedBox(height: 18),
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(
-          child: _Suggest(
-            controller: _district,
-            label: s.t('order.district'),
-            helper: s.t('order.districtHint'),
-            options: [for (final d in app.data.districts) if (!d.deleted) d.name],
-            onChanged: _touch,
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: TextField(controller: _street, onChanged: (_) => _touch(), decoration: InputDecoration(labelText: s.t('order.street'))),
-        ),
-      ]),
-      const SizedBox(height: 14),
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(
-          child: DropdownButtonFormField<String?>(
-            initialValue: _contractor,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: s.t('order.contractor')),
-            items: [
-              DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
-              for (final c in app.data.contractors)
-                if (!c.deleted && (c.active || c.name == _contractor)) DropdownMenuItem<String?>(value: c.name, child: Text(c.name)),
-              // The order's contractor may have been removed since: keep it selectable,
-              // or the list would have no item for the current value.
-              if (_contractor != null && !app.data.contractors.any((c) => !c.deleted && c.name == _contractor))
-                DropdownMenuItem<String?>(value: _contractor, child: Text(_contractor!)),
-            ],
-            onChanged: (v) => setState(() {
-              _contractor = v;
-              _dirty = true;
-            }),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: TextField(
-            controller: _network,
-            onChanged: (_) => _touch(),
-            textDirection: TextDirection.ltr,
-            decoration: InputDecoration(labelText: s.t('order.network'), hintText: s.t('order.networkHint')),
-          ),
-        ),
-      ]),
-      if (spec.segments) ...[const SizedBox(height: 22), _segmentsEditor(context)],
-      if (spec.cableRuns) ...[const SizedBox(height: 22), _cablesEditor(context)],
-      if (spec.meters) ...[const SizedBox(height: 22), _metersEditor(context, spec)],
-      const SizedBox(height: 18),
-      TextField(controller: _notes, onChanged: (_) => _touch(), minLines: 1, maxLines: 4, decoration: InputDecoration(labelText: s.t('order.notes'))),
+      ),
+      const SizedBox(height: 12),
+      SectionCard(
+        title: s.t('order.sectionPlace'),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(
+              child: _Suggest(
+                controller: _district,
+                label: s.t('order.district'),
+                helper: s.t('order.districtHint'),
+                options: [for (final d in app.data.districts) if (!d.deleted) d.name],
+                onChanged: _touch,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: TextField(controller: _street, onChanged: (_) => _touch(), decoration: InputDecoration(labelText: s.t('order.street'))),
+            ),
+          ]),
+          const SizedBox(height: 14),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(
+              child: DropdownButtonFormField<String?>(
+                  initialValue: _contractor,
+                  isExpanded: true,
+                  decoration: InputDecoration(labelText: s.t('order.contractor')),
+                  items: [
+                    DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
+                    for (final c in app.data.contractors)
+                      if (!c.deleted && (c.active || c.name == _contractor)) DropdownMenuItem<String?>(value: c.name, child: Text(c.name)),
+                    // The order's contractor may have been removed since: keep it selectable,
+                    // or the list would have no item for the current value.
+                    if (_contractor != null && !app.data.contractors.any((c) => !c.deleted && c.name == _contractor))
+                      DropdownMenuItem<String?>(value: _contractor, child: Text(_contractor!)),
+                  ],
+                  onChanged: (v) => setState(() {
+                    _contractor = v;
+                    _dirty = true;
+                  }),
+                ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: TextField(
+                controller: _network,
+                onChanged: (_) => _touch(),
+                textDirection: TextDirection.ltr,
+                decoration: InputDecoration(labelText: s.t('order.network'), hintText: s.t('order.networkHint')),
+              ),
+            ),
+          ]),
+        ]),
+      ),
+      if (spec.segments) ...[const SizedBox(height: 12), _segmentsEditor(context)],
+      if (spec.cableRuns) ...[const SizedBox(height: 12), _cablesEditor(context)],
+      if (spec.meters) ...[const SizedBox(height: 12), _metersEditor(context, spec)],
+      const SizedBox(height: 12),
+      SectionCard(
+        title: s.t('order.notes'),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        child: TextField(controller: _notes, onChanged: (_) => _touch(), minLines: 2, maxLines: 5, decoration: InputDecoration(hintText: s.t('order.notesHint'))),
+      ),
       const SizedBox(height: 16),
       Container(
         padding: const EdgeInsets.all(12),
@@ -435,7 +483,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
           ),
           body: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 820),
+              constraints: const BoxConstraints(maxWidth: 900),
               child: ListView(padding: EdgeInsets.all(phone ? 16 : 28), children: form),
             ),
           ),
@@ -710,17 +758,10 @@ class _OrderFormPageState extends State<OrderFormPage> {
   }
 }
 
-class _Label extends StatelessWidget {
-  const _Label(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) =>
-      Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(text, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: C.muted)));
-}
-
 class _TypeButton extends StatelessWidget {
-  const _TypeButton({required this.code, required this.label, required this.selected, required this.onTap});
+  const _TypeButton({required this.code, required this.label, required this.selected, required this.onTap, this.width = 150});
   final String code, label;
+  final double width;
   final bool selected;
   final VoidCallback onTap;
   @override
@@ -729,17 +770,17 @@ class _TypeButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          width: 150,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          width: width,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
             color: selected ? C.accentSoft : C.card,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: selected ? C.accent : C.field, width: selected ? 1.5 : 1),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Mono(code, size: 14, weight: FontWeight.w600, color: selected ? C.accentDark : C.ink),
-            const SizedBox(height: 2),
-            Text(label, maxLines: 2, style: TextStyle(fontSize: 11.5, color: selected ? C.accentDark : C.muted)),
+            Mono(code, size: 18, weight: FontWeight.w700, color: selected ? C.accentDark : C.ink),
+            const SizedBox(height: 3),
+            Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: selected ? C.accentDark : C.muted)),
           ]),
         ),
       );
@@ -753,13 +794,16 @@ class _Group extends StatelessWidget {
   final VoidCallback onAdd;
   final String addLabel;
   @override
-  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14.5)),
-        if (hint != null) Text(hint!, style: const TextStyle(fontSize: 12, color: C.faint)),
-        const SizedBox(height: 8),
-        ...children,
-        TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add, size: 18), label: Text(addLabel)),
-      ]);
+  Widget build(BuildContext context) => SectionCard(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          if (hint != null) Text(hint!, style: const TextStyle(fontSize: 12.5, color: C.faint)),
+          const SizedBox(height: 10),
+          ...children,
+          Align(alignment: AlignmentDirectional.centerStart, child: OutlinedButton.icon(onPressed: onAdd, icon: const Icon(Icons.add, size: 18), label: Text(addLabel))),
+        ]),
+      );
 }
 
 class _Line extends StatelessWidget {
