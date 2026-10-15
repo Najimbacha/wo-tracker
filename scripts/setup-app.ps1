@@ -67,6 +67,18 @@ if (Test-Path (Join-Path $app 'windows')) {
   [IO.File]::WriteAllText($main, $cpp, (New-Object Text.UTF8Encoding $false))
 }
 
+# App icon (kept in assets/icon, copied over the Flutter default every build).
+$icons = Join-Path $app 'assets\icon'
+if (Test-Path (Join-Path $app 'windows')) {
+  Copy-Item (Join-Path $icons 'app_icon.ico') (Join-Path $app 'windows\runner\resources\app_icon.ico') -Force
+}
+if (Test-Path (Join-Path $app 'android')) {
+  Get-ChildItem (Join-Path $icons 'android') -Directory | ForEach-Object {
+    $dest = Join-Path $app ('android\app\src\main\res\' + $_.Name)
+    if (Test-Path $dest) { Copy-Item (Join-Path $_.FullName 'ic_launcher.png') $dest -Force }
+  }
+}
+
 Step 'Getting packages'
 Run flutter @('pub', 'get')
 

@@ -263,7 +263,7 @@ class OrderTile extends StatelessWidget {
                 style: TextStyle(color: sev == null ? C.muted : severityColor(sev), fontSize: 13),
               ),
             ),
-            if (trailing != null) trailing!,
+            if (trailing != null) ...[const SizedBox(width: 8), Flexible(child: trailing!)],
           ]),
         ),
       ),

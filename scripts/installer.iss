@@ -28,6 +28,7 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayIcon={app}\wo_tracker.exe
+SetupIconFile=..\app\assets\icon\app_icon.ico
 CloseApplications=yes
 
 [Languages]

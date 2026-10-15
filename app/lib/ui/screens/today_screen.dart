@@ -127,7 +127,7 @@ class _Queue extends StatelessWidget {
               dense: true,
               onTap: () => openOrder(context, id),
               trailing: Text(d.date == app.today ? s.t('today.startsToday') : s.t('board.startsOn', {'date': '${s.weekday(d.date)} ${app.dateShort(d.date)}'}),
-                  style: const TextStyle(fontSize: 12, color: C.muted)),
+                  maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: C.muted)),
             ),
       for (final col in board)
         if (col.cards.isNotEmpty && col.stage != 'starting') ...[
