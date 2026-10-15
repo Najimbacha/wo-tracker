@@ -121,6 +121,7 @@ class OrderDetail extends StatelessWidget {
       out.add(_StepGroup(
         title: s.t('order.section.field'),
         order: o,
+        color: stageColor('civil'),
         steps: orderSteps,
       ));
     }
@@ -132,6 +133,7 @@ class OrderDetail extends StatelessWidget {
       out.add(_StepGroup(
         title: [base, width, s.t('common.metres', {'value': _num(seg.lengthM)}), if (seg.tiled) s.t('order.tiled')].whereType<String>().join(' · '),
         order: o,
+        color: stageColor('restoration'),
         steps: segSteps,
       ));
     }
@@ -152,10 +154,10 @@ class OrderDetail extends StatelessWidget {
       if (mSteps.isEmpty) continue;
       final pkg = mSteps.first.step.package;
       final title = o.meters.length > 1 ? s.t('order.meterOf', {'index': i + 1, 'total': o.meters.length}) : _pkgName(pkgDefs, pkg, app.lang);
-      out.add(_StepGroup(title: [title, if (m.number != null && m.number!.isNotEmpty) m.number!].join(' · '), order: o, steps: mSteps));
+      out.add(_StepGroup(title: [title, if (m.number != null && m.number!.isNotEmpty) m.number!].join(' · '), order: o, color: stageColor('meter'), steps: mSteps));
     }
     final close = ev.steps.where((x) => x.step.package == 'closeout').toList();
-    if (close.isNotEmpty) out.add(_StepGroup(title: _pkgName(pkgDefs, 'closeout', app.lang), order: o, steps: close));
+    if (close.isNotEmpty) out.add(_StepGroup(title: _pkgName(pkgDefs, 'closeout', app.lang), order: o, color: stageColor('closeout'), steps: close));
     return out;
   }
 
@@ -338,6 +340,7 @@ class _Facts extends StatelessWidget {
             : s.t('tasreeh.endedOn', {'date': app.dateShort(p.endDate!)});
       }
       cards.add(_Fact(
+        accent: stageColor('tasreeh'),
         label: s.t('tasreeh.title'),
         value: p?.number ?? (p == null ? s.t('tasreeh.add') : '—'),
         sub: sub,
@@ -349,6 +352,7 @@ class _Facts extends StatelessWidget {
       final total = runs.fold<double>(0, (n, r) => n + (r.lengthM ?? 0));
       final missing = runs.where((r) => r.lengthM == null).length;
       cards.add(_Fact(
+        accent: stageColor('civil'),
         label: s.t('order.cableRuns'),
         value: runs.isEmpty ? '—' : runs.map((r) => '${r.voltage} ${r.sizeMm2}').toSet().join(', '),
         sub: runs.isEmpty
@@ -361,6 +365,7 @@ class _Facts extends StatelessWidget {
     }
     if (pkgs.contains('restoration')) {
       cards.add(_Fact(
+        accent: stageColor('restoration'),
         label: s.t('order.segments'),
         value: o.segments.isEmpty ? '—' : o.segments.map((g) => s.t('order.base.${g.base}')).toSet().join(', '),
         sub: o.segments.isEmpty
@@ -370,6 +375,7 @@ class _Facts extends StatelessWidget {
       ));
     }
     cards.add(_Fact(
+      accent: stageColor('closeout'),
       label: s.t('order.progressTitle'),
       value: s.t('order.progress', {'closed': ev.closed, 'total': ev.total}),
       sub: ev.stage == null ? s.status(ev.status) : s.stage(ev.stage!),
@@ -384,8 +390,9 @@ class _Facts extends StatelessWidget {
 }
 
 class _Fact extends StatelessWidget {
-  const _Fact({required this.label, required this.value, this.sub, this.onTap, this.child});
+  const _Fact({required this.label, required this.value, this.sub, this.onTap, this.child, this.accent = C.faint});
   final String label, value;
+  final Color accent;
   final String? sub;
   final VoidCallback? onTap;
   final Widget? child;
@@ -397,7 +404,10 @@ class _Fact extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(label, style: const TextStyle(fontSize: 12, color: C.faint)),
+              Row(children: [
+                Container(width: 8, height: 8, margin: const EdgeInsetsDirectional.only(end: 6), decoration: BoxDecoration(color: accent, shape: BoxShape.circle)),
+                Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: accent, fontWeight: FontWeight.w500))),
+              ]),
               const SizedBox(height: 4),
               Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
               if (sub != null) ...[const SizedBox(height: 2), Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: C.muted))],
@@ -411,8 +421,9 @@ class _Fact extends StatelessWidget {
 /// A group of steps. A group whose steps are all done starts folded to one line, so
 /// the steps still to do are what fills the screen; tap it to see the dates.
 class _StepGroup extends StatefulWidget {
-  _StepGroup({required this.title, required this.order, required this.steps}) : super(key: ValueKey('${order.id}|$title'));
+  _StepGroup({required this.title, required this.order, required this.steps, this.color = C.accent}) : super(key: ValueKey('${order.id}|$title'));
   final String title;
+  final Color color;
   final OrderInput order;
   final List<StepState> steps;
   @override
@@ -443,7 +454,10 @@ class _StepGroupState extends State<_StepGroup> {
       ),
     );
     return Card(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: allDone ? C.success : widget.color, width: 4))),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
         head,
         if (_open || !allDone)
           Padding(
@@ -451,6 +465,7 @@ class _StepGroupState extends State<_StepGroup> {
             child: Column(children: [for (final st in steps) _StepRow(order: widget.order, st: st)]),
           ),
       ]),
+      ),
     );
   }
 }
@@ -489,8 +504,8 @@ class _StepRow extends StatelessWidget {
     // A done step shows its date on the same line, so each finished step takes one short row.
     final inline = st.state == 'done';
     return Container(
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
-      padding: EdgeInsets.symmetric(vertical: ready ? 5 : 4),
+      decoration: BoxDecoration(color: ready ? C.accentSoft : null, border: const Border(bottom: BorderSide(color: C.lineSoft))),
+      padding: EdgeInsets.symmetric(vertical: ready ? 5 : 4, horizontal: ready ? 6 : 0),
       constraints: const BoxConstraints(minHeight: 36),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         SizedBox(width: 28, child: Center(child: icon)),

@@ -25,12 +25,14 @@ class TypeTag extends StatelessWidget {
   final String type;
   @override
   Widget build(BuildContext context) {
-    // 4xx are extensions (blue), 8xx are emergencies (purple); anything else stays grey.
-    final (bg, fg) = type.startsWith('4')
-        ? (C.accentSoft, C.accentDark)
-        : type.startsWith('8')
-            ? (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E))
-            : (C.chip, C.muted);
+    // Coloured by the kind of work: meter only (violet), underground / excavation (blue),
+    // overhead line (teal). Any other code stays grey.
+    final (bg, fg) = switch (type) {
+      '401' || '409' || '801' => (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E)),
+      '402' || '404' || '802' || '804' => (C.accentSoft, C.accentDark),
+      '403' || '803' || '805' => (const Color(0xFFE0F3F3), const Color(0xFF0B5F64)),
+      _ => (C.chip, C.muted),
+    };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)),
