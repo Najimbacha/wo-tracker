@@ -19,20 +19,22 @@ class Mono extends StatelessWidget {
       textDirection: TextDirection.ltr, style: monoStyle.copyWith(fontSize: size, fontWeight: weight, color: color));
 }
 
-/// Work order type, e.g. "402", in a small grey tag.
-class TypeTag extends StatelessWidget {
-  const TypeTag(this.type, {super.key});
-  final String type;
-  @override
-  Widget build(BuildContext context) {
-    // Coloured by the kind of work: meter only (violet), underground / excavation (blue),
-    // overhead line (teal). Any other code stays grey.
-    final (bg, fg) = switch (type) {
+/// Colours by the kind of work: meter only (violet), underground / excavation (blue),
+/// overhead line (teal). Any other code is grey. Returns (background, text).
+(Color, Color) typeColors(String type) => switch (type) {
       '401' || '409' || '801' => (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E)),
       '402' || '404' || '802' || '804' => (C.accentSoft, C.accentDark),
       '403' || '803' || '805' => (const Color(0xFFE0F3F3), const Color(0xFF0B5F64)),
       _ => (C.chip, C.muted),
     };
+
+/// Work order type, e.g. "402", in a small tag coloured by the kind of work.
+class TypeTag extends StatelessWidget {
+  const TypeTag(this.type, {super.key});
+  final String type;
+  @override
+  Widget build(BuildContext context) {
+    final (bg, fg) = typeColors(type);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)),

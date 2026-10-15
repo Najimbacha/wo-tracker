@@ -330,16 +330,25 @@ class _OrderFormPageState extends State<OrderFormPage> {
           // The four types used almost every time are big tiles; the rest are small chips.
           LayoutBuilder(builder: (context, box) {
             final per = box.maxWidth >= 560 ? 4 : 2;
-            final w = (box.maxWidth - 10 * (per - 1)) / per;
             final types = app.rules['types'] as Map;
-            return Wrap(spacing: 10, runSpacing: 10, children: [
-              for (final t in _commonTypes.where(types.containsKey))
-                _TypeButton(
-                  code: t,
-                  label: s.type(t),
-                  selected: _type == t,
-                  width: w,
-                  onTap: () => _pickType(t),
+            final common = _commonTypes.where(types.containsKey).toList();
+            // Rows of equal-width, equal-height tiles (a two-line name does not make one tile taller).
+            return Column(children: [
+              for (var r = 0; r < common.length; r += per)
+                Padding(
+                  padding: EdgeInsets.only(top: r == 0 ? 0 : 10),
+                  child: IntrinsicHeight(
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      for (var c = 0; c < per; c++) ...[
+                        if (c > 0) const SizedBox(width: 10),
+                        Expanded(
+                          child: r + c < common.length
+                              ? _TypeButton(code: common[r + c], label: s.type(common[r + c]), selected: _type == common[r + c], onTap: () => _pickType(common[r + c]))
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ]),
+                  ),
                 ),
             ]);
           }),
@@ -353,7 +362,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   child: ChoiceChip(
                     visualDensity: VisualDensity.compact,
                     showCheckmark: false,
-                    label: Mono(t, size: 13, color: _type == t ? C.accentDark : C.ink),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    label: SizedBox(width: 34, child: Center(child: Mono(t, size: 13, color: _type == t ? typeColors(t).$2 : C.ink))),
                     selected: _type == t,
                     selectedColor: C.accentSoft,
                     onSelected: (_) => _pickType(t),
@@ -780,32 +790,41 @@ class _OrderFormPageState extends State<OrderFormPage> {
 }
 
 class _TypeButton extends StatelessWidget {
-  const _TypeButton({required this.code, required this.label, required this.selected, required this.onTap, this.width = 150});
+  const _TypeButton({required this.code, required this.label, required this.selected, required this.onTap});
   final String code, label;
-  final double width;
   final bool selected;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: width,
-          constraints: const BoxConstraints(minHeight: 84), // the four tiles line up even when a name is one line
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: BoxDecoration(
-            color: selected ? C.accentSoft : C.card,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: selected ? C.accent : C.field, width: selected ? 1.5 : 1),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Mono(code, size: 18, weight: FontWeight.w700, color: selected ? C.accentDark : C.ink),
-            const SizedBox(height: 3),
-            Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: selected ? C.accentDark : C.muted)),
-          ]),
+  Widget build(BuildContext context) {
+    final (tint, ink) = typeColors(code);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+          color: selected ? tint : C.card,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: selected ? ink : C.field, width: selected ? 1.5 : 1),
         ),
-      );
+        clipBehavior: Clip.antiAlias,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          // The thin top edge carries the kind of work (same colours as the tags on the lists).
+          Container(height: 4, color: ink),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Mono(code, size: 18, weight: FontWeight.w700, color: selected ? ink : C.ink),
+                const SizedBox(height: 3),
+                Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: selected ? ink : C.muted)),
+              ]),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
 }
 
 class _Group extends StatelessWidget {
