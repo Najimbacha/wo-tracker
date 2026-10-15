@@ -263,37 +263,42 @@ class _OrderFormPageState extends State<OrderFormPage> {
             ),
           ),
           const SizedBox(height: 16),
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(
-          child: TextField(
-            controller: _number,
-            focusNode: _numberFocus,
-            autofocus: _isNew,
-            textDirection: TextDirection.ltr,
-            style: monoStyle.copyWith(fontSize: 16),
-            onChanged: (_) => _touch(),
-            decoration: InputDecoration(
-              labelText: s.t('order.woNumber'),
-              helperText: dup == null && numberOk ? s.t(_category == 'extension' ? 'order.woHintExtension' : 'order.woHintEmergency') : null,
-              errorText: dup != null
-                  ? s.t(dup.deleted ? 'error.duplicate_wo_deleted' : 'error.duplicate_wo', {'date': dup.receivedDate == null ? '' : app.dateShort(dup.receivedDate!), 'district': dup.district ?? ''})
-                  : (!numberOk ? s.t('error.bad_wo_number') : _fieldError(['wo_number_required', 'bad_wo_number'])),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _number,
+                focusNode: _numberFocus,
+                autofocus: _isNew,
+                textDirection: TextDirection.ltr,
+                // The number is what you type from the SEC paper: big, so it can be checked at a glance.
+                style: monoStyle.copyWith(fontSize: 32, fontWeight: FontWeight.w600, letterSpacing: 2),
+                onChanged: (_) => _touch(),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  labelStyle: const TextStyle(fontSize: 16),
+                  labelText: s.t('order.woNumber'),
+                  helperText: dup == null && numberOk ? s.t(_category == 'extension' ? 'order.woHintExtension' : 'order.woHintEmergency') : null,
+                  errorText: dup != null
+                      ? s.t(dup.deleted ? 'error.duplicate_wo_deleted' : 'error.duplicate_wo', {'date': dup.receivedDate == null ? '' : app.dateShort(dup.receivedDate!), 'district': dup.district ?? ''})
+                      : (!numberOk ? s.t('error.bad_wo_number') : _fieldError(['wo_number_required', 'bad_wo_number'])),
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: DateField(
-            label: s.t('order.received'),
-            value: _received,
-            onChanged: (v) => setState(() {
-              _received = v;
-              _dirty = true;
-            }),
-            errorText: _fieldError(['received_required', 'future_date', 'received_after_state']),
-          ),
-        ),
-      ]),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 2,
+              child: DateField(
+                label: s.t('order.received'),
+                value: _received,
+                onChanged: (v) => setState(() {
+                  _received = v;
+                  _dirty = true;
+                }),
+                errorText: _fieldError(['received_required', 'future_date', 'received_after_state']),
+              ),
+            ),
+          ]),
         ]),
       ),
       if (dup != null)
