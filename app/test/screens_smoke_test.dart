@@ -18,7 +18,7 @@ import 'package:wo_tracker/ui/screens/search_dialog.dart';
 import 'package:wo_tracker/ui/screens/status_dialog.dart';
 
 void main() {
-  const sizes = [Size(1440, 900), Size(1000, 760), Size(390, 844)];
+  const sizes = [Size(1920, 1080), Size(1440, 900), Size(1000, 760), Size(390, 844)];
   for (final lang in const ['en', 'ar']) {
     for (final size in sizes) {
       testWidgets('every screen draws: $lang ${size.width.toInt()}x${size.height.toInt()}', (tester) async {

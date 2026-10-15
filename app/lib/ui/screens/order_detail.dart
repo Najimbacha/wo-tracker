@@ -46,7 +46,11 @@ class OrderDetail extends StatelessWidget {
     return LayoutBuilder(builder: (context, box) {
       // On a big monitor the details stay at a readable width (names, dates and buttons
       // close together) instead of stretching across the whole screen.
-      final end = phone ? 12.0 : (box.maxWidth - 1100 - 16).clamp(16.0, double.infinity);
+      // A very wide screen puts the step groups in two columns, so the page is filled with
+      // work to do instead of empty space.
+      final twoCols = !phone && box.maxWidth >= 1500;
+      final maxW = twoCols ? 1700.0 : 1100.0;
+      final end = phone ? 12.0 : (box.maxWidth - maxW - 16).clamp(16.0, double.infinity);
       return ListView(
       padding: EdgeInsetsDirectional.fromSTEB(phone ? 12 : 16, phone ? 12 : 14, end, phone ? 12 : 16),
       children: [
@@ -66,7 +70,7 @@ class OrderDetail extends StatelessWidget {
         if (ev.alerts.isNotEmpty) ...[_Alerts(ev: ev), const SizedBox(height: 10)],
         _Facts(order: o, ev: ev),
         const SizedBox(height: 10),
-        ..._stepSections(context, o, ev),
+        if (twoCols) _twoColumns(_stepGroups(context, o, ev)) else ..._spaced(_stepGroups(context, o, ev)),
         const SizedBox(height: 10),
         _Notes(order: o),
         const SizedBox(height: 40),
@@ -80,7 +84,32 @@ class OrderDetail extends StatelessWidget {
     await app.apply(o, app.actions.restoreOrder(o, app.data.orders), toast: 'toast.restored');
   }
 
-  List<Widget> _stepSections(BuildContext context, OrderInput o, Evaluation ev) {
+  static List<Widget> _spaced(List<Widget> groups) => [
+        for (final w in groups) ...[w, const SizedBox(height: 10)]
+      ];
+
+  /// Groups split over two columns, each new group going under the shorter column.
+  static Widget _twoColumns(List<Widget> groups) {
+    final left = <Widget>[], right = <Widget>[];
+    var l = 0, r = 0;
+    for (final g in groups) {
+      final weight = g is _StepGroup ? g.steps.length + 2 : 3;
+      if (l <= r) {
+        left.add(g);
+        l += weight;
+      } else {
+        right.add(g);
+        r += weight;
+      }
+    }
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(child: Column(children: _spaced(left))),
+      const SizedBox(width: 12),
+      Expanded(child: Column(children: _spaced(right))),
+    ]);
+  }
+
+  List<Widget> _stepGroups(BuildContext context, OrderInput o, Evaluation ev) {
     final app = context.app;
     final s = app.s;
     final pkgDefs = (app.rules['packages'] as Map).cast<String, dynamic>();
@@ -127,9 +156,7 @@ class OrderDetail extends StatelessWidget {
     }
     final close = ev.steps.where((x) => x.step.package == 'closeout').toList();
     if (close.isNotEmpty) out.add(_StepGroup(title: _pkgName(pkgDefs, 'closeout', app.lang), order: o, steps: close));
-    return [
-      for (final w in out) ...[w, const SizedBox(height: 10)]
-    ];
+    return out;
   }
 
   static String _pkgName(Map<String, dynamic> defs, String pkg, String lang) {
