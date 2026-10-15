@@ -605,6 +605,19 @@ class _OrderFormPageState extends State<OrderFormPage> {
         for (final g in _segs)
           _Line(
             key: ObjectKey(g),
+            cols: 3,
+            footer: Row(children: [
+              Checkbox(
+                value: g.tiled,
+                onChanged: (v) => setState(() {
+                  g.tiled = v ?? false;
+                  _dirty = true;
+                }),
+              ),
+              Text(s.t('order.tiled')),
+              const SizedBox(width: 16),
+              Expanded(child: Text(_recipe(context, g), style: const TextStyle(fontSize: 12, color: C.faint))),
+            ]),
             onRemove: () => setState(() {
               _segs.remove(g);
               _dirty = true;
@@ -654,17 +667,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   decoration: InputDecoration(labelText: s.t('order.lengthM')),
                 ),
               ),
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                Checkbox(
-                  value: g.tiled,
-                  onChanged: (v) => setState(() {
-                    g.tiled = v ?? false;
-                    _dirty = true;
-                  }),
-                ),
-                Text(s.t('order.tiled')),
-              ]),
-              Text(_recipe(context, g), style: const TextStyle(fontSize: 12, color: C.faint)),
             ],
           ),
       ],
@@ -746,9 +748,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
     return _Group(
       title: s.t('order.meters'),
       hint: s.t('order.metersHint2'),
-      header: Row(children: [
+      header: Wrap(spacing: 12, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
         Text(s.t('order.meterCount'), style: const TextStyle(fontWeight: FontWeight.w500)),
-        const SizedBox(width: 12),
         IconButton.outlined(tooltip: '−', onPressed: _meters.length <= 1 ? null : () => _setMeterCount(_meters.length - 1), icon: const Icon(Icons.remove, size: 18)),
         SizedBox(
           width: 72,
@@ -896,10 +897,12 @@ class _Group extends StatelessWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({super.key, required this.children, this.onRemove, this.index});
+  const _Line({super.key, required this.children, this.onRemove, this.index, this.cols, this.footer});
   final List<Widget> children;
   final VoidCallback? onRemove;
   final int? index;
+  final int? cols; // fields per row on a wide card (default: all in one row)
+  final Widget? footer; // full-width line under the fields
   @override
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.only(bottom: 10),
@@ -918,9 +921,10 @@ class _Line extends StatelessWidget {
           Expanded(
             // Wide: the fields share the row evenly and line up with the card edge. Narrow: two per row.
             child: LayoutBuilder(builder: (context, box) {
-              final cols = box.maxWidth >= 560 ? children.length : 2;
-              final w = (box.maxWidth - 12 * (cols - 1)) / cols;
-              return Wrap(spacing: 12, runSpacing: 12, children: [for (final c in children) SizedBox(width: w - 0.01, child: c)]);
+              final n = box.maxWidth >= 560 ? (cols ?? children.length) : 2;
+              final w = (box.maxWidth - 12 * (n - 1)) / n;
+              final fields = Wrap(spacing: 12, runSpacing: 12, children: [for (final c in children) SizedBox(width: w - 0.01, child: c)]);
+              return footer == null ? fields : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [fields, const SizedBox(height: 4), footer!]);
             }),
           ),
           SizedBox(

@@ -42,7 +42,7 @@ void main() {
     expect(en.step('warning_tape'), 'Warning tape');
     expect(ar.step('warning_tape'), 'شريط التحذير');
     expect(en.type('402'), 'Excavation and meter');
-    expect(ar.type('402'), 'حفر وعداد');
+    expect(ar.type('402'), 'حفرية وعداد');
     expect(ar.isRtl, isTrue);
     expect(en.isRtl, isFalse);
   });
@@ -50,7 +50,7 @@ void main() {
   test('lock reasons list each step name once', () {
     const r = Reason('waiting_for', steps: ['warning_tape', 'compaction@s1', 'compaction@s2', 'excavation']);
     expect(en.reason(r), 'Waiting for Warning tape, Compaction and Excavation');
-    expect(ar.reason(r), 'بانتظار شريط التحذير، الدك والحفر');
+    expect(ar.reason(r), 'بانتظار شريط التحذير، الدك والحفرية');
     expect(en.reason(const Reason('tasreeh_starts', date: '2026-10-14')), 'Tasreeh starts 14 October 2026');
   });
 
