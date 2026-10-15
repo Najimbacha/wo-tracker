@@ -508,6 +508,7 @@
   "toast.tasreehApplied": "Tasreeh saved and marked as applied",
   "toast.tasreehSaved": "Tasreeh saved",
   "toast.tasreehRemoved": "Tasreeh removed",
+  "toast.cableSizeRemoved": "{size} mm² removed",
   "toast.undone": "Undone",
   "toast.undoneNew": "Undone right after adding",
   "toast.saveFailed": "Couldn't save: {reason}. Nothing was changed.",

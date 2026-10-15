@@ -156,6 +156,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
         Row(children: [
           Expanded(child: Text(_title ?? s.t('nav.allOrders'), style: Theme.of(context).textTheme.titleLarge)),
           Text(s.t('filter.matches', {'count': rows.length}), style: const TextStyle(color: C.muted)),
+          // Deleted orders are kept for good; this is the way back to them.
+          if (app.deletedOrders.isNotEmpty)
+            TextButton.icon(
+              onPressed: () => openDataHealth(context),
+              icon: const Icon(Icons.restore_from_trash_outlined, size: 18),
+              label: Text('${s.t('settings.deletedOrders')} · ${app.deletedOrders.length}'),
+            ),
         ]),
         const SizedBox(height: 10),
         Row(children: [

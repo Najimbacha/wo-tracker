@@ -529,6 +529,7 @@
   "toast.tasreehApplied": "تم حفظ التصريح وتسجيله كمقدَّم",
   "toast.tasreehSaved": "تم حفظ التصريح",
   "toast.tasreehRemoved": "تمت إزالة التصريح",
+  "toast.cableSizeRemoved": "تمت إزالة {size} mm²",
   "toast.undone": "تم التراجع",
   "toast.undoneNew": "تم التراجع فور الإضافة",
   "toast.saveFailed": "تعذر الحفظ: {reason}. لم يتغير شيء.",

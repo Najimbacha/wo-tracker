@@ -350,7 +350,11 @@ class _CableCard extends StatelessWidget {
         Text(s.t('settings.cableNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
         const SizedBox(height: 8),
         Wrap(spacing: 6, runSpacing: 6, children: [
-          for (final c in app.data.cableSizes) InputChip(label: Text('${c.sizeMm2} mm²'), onDeleted: () => app.repo.removeCableSize(c.id)),
+          for (final c in app.data.cableSizes) InputChip(label: Text('${c.sizeMm2} mm²'), onDeleted: () async {
+            await app.repo.removeCableSize(c.id);
+            // Nothing is erased: Undo brings the size back.
+            app.showToast(s.t('toast.cableSizeRemoved', {'size': c.sizeMm2}), onUndo: () => app.repo.addCableSize(c.sizeMm2));
+          }),
         ]),
         TextButton.icon(
           onPressed: () async {
