@@ -22,6 +22,8 @@ class _PermitDialog extends StatefulWidget {
 }
 
 class _PermitDialogState extends State<_PermitDialog> {
+  static String _plus(String ymd, int days) => fromDay(toDay(ymd) + days);
+
   late final Permit? _old = widget.index == null ? null : widget.order.permits[widget.index!];
   late final _number = TextEditingController(text: _old?.number ?? '');
   late String? _applied = _old?.appliedDate ?? (widget.index == null ? context.appRead.today : null);
@@ -105,9 +107,9 @@ class _PermitDialogState extends State<_PermitDialog> {
               ),
               const SizedBox(height: 14),
               Row(children: [
-                Expanded(child: DateField(label: s.t('tasreeh.start'), value: _start, allowFuture: true, optional: true, first: _applied, onChanged: (v) => setState(() => _start = v))),
+                Expanded(child: DateField(label: s.t('tasreeh.start'), value: _start, allowFuture: true, suggest: _plus(app.today, 5), quick: [(s.t('common.today'), app.today), for (final n in const [5, 7]) (s.t('date.afterDays', {'count': n}), _plus(app.today, n))], optional: true, first: _applied, onChanged: (v) => setState(() => _start = v))),
                 const SizedBox(width: 12),
-                Expanded(child: DateField(label: s.t('tasreeh.end'), value: _end, allowFuture: true, optional: true, first: _start, onChanged: (v) => setState(() => _end = v))),
+                Expanded(child: DateField(label: s.t('tasreeh.end'), value: _end, allowFuture: true, suggest: _plus(_start ?? app.today, 15), quick: [for (final n in const [15, 30]) (s.t('date.afterDays', {'count': n}), _plus(_start ?? app.today, n))], optional: true, first: _start, onChanged: (v) => setState(() => _end = v))),
               ]),
               if (info != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(info, style: const TextStyle(color: C.muted, fontSize: 13))),
               if (o.permits.length > 1 || (widget.index == null && o.permits.isNotEmpty)) ...[

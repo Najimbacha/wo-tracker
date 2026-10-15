@@ -167,7 +167,7 @@ String? parseTypedDate(String text, String today) {
 
 /// A date field: type it (16/10) or pick from the calendar. Shows the weekday and Hijri.
 class DateField extends StatefulWidget {
-  const DateField({super.key, required this.label, required this.value, required this.onChanged, this.first, this.last, this.allowFuture = false, this.errorText, this.optional = false});
+  const DateField({super.key, required this.label, required this.value, required this.onChanged, this.first, this.last, this.allowFuture = false, this.errorText, this.optional = false, this.suggest, this.quick = const []});
   final String label;
   final String? value;
   final ValueChanged<String?> onChanged;
@@ -175,6 +175,10 @@ class DateField extends StatefulWidget {
   final bool allowFuture;
   final String? errorText;
   final bool optional;
+  /// Where the calendar opens when the field is empty (default: today).
+  final String? suggest;
+  /// One-tap dates shown under the field: label and date.
+  final List<(String, String)> quick;
   @override
   State<DateField> createState() => _DateFieldState();
 }
@@ -232,7 +236,7 @@ class _DateFieldState extends State<DateField> {
         helper = null;
       }
     }
-    return TextField(
+    final field = TextField(
       controller: _ctl,
       keyboardType: TextInputType.datetime,
       textDirection: TextDirection.ltr,
@@ -248,7 +252,7 @@ class _DateFieldState extends State<DateField> {
           tooltip: context.t('date.pick'),
           icon: const Icon(Icons.calendar_month_outlined, size: 20),
           onPressed: () async {
-            final d = await pickDate(context, initial: v, first: widget.first, last: widget.allowFuture ? (widget.last ?? '2100-12-31') : widget.last);
+            final d = await pickDate(context, initial: v ?? widget.suggest ?? app.today, first: widget.first, last: widget.allowFuture ? (widget.last ?? '2100-12-31') : widget.last);
             if (d != null) {
               _ctl.text = _show(d);
               setState(() => _typedError = null);
@@ -258,6 +262,25 @@ class _DateFieldState extends State<DateField> {
         ),
       ),
     );
+    if (widget.quick.isEmpty) return field;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+      field,
+      const SizedBox(height: 6),
+      Wrap(spacing: 6, runSpacing: 4, children: [
+        for (final q in widget.quick)
+          ChoiceChip(
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            label: Text(q.$1, style: const TextStyle(fontSize: 12)),
+            selected: v == q.$2,
+            onSelected: (_) {
+              _ctl.text = _show(q.$2);
+              setState(() => _typedError = null);
+              widget.onChanged(q.$2);
+            },
+          ),
+      ]),
+    ]);
   }
 }
 

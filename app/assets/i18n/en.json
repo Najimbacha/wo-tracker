@@ -517,6 +517,7 @@
   "common.remove": "Remove",
   "category.extensionLong": "Extension · tawselat",
   "category.emergencyLong": "Emergency · tawari",
+  "date.afterDays": "+{count} days",
   "date.pick": "Pick from calendar",
   "date.typeHint": "Type as 16/10 or 16/10/2026",
   "time.justNow": "just now",

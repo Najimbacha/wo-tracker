@@ -538,6 +538,7 @@
   "common.remove": "إزالة",
   "category.extensionLong": "توصيلات",
   "category.emergencyLong": "طوارئ",
+  "date.afterDays": "بعد {count#day}",
   "date.pick": "اختر من التقويم",
   "date.typeHint": "اكتب التاريخ مثل 16/10 أو 16/10/2026",
   "time.justNow": "الآن",
