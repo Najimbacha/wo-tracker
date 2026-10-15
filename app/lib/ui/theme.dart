@@ -76,6 +76,8 @@ ThemeData appTheme({required bool arabic}) {
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.accent, width: 1.5)),
       errorBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.critical)),
       labelStyle: TextStyle(color: C.muted, fontSize: 13),
+      // Labels always sit above the box, so empty and filled fields look the same on every screen.
+      floatingLabelBehavior: FloatingLabelBehavior.always,
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(

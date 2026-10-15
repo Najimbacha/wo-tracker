@@ -466,6 +466,7 @@ class _Filters extends StatelessWidget {
         title: s.t('filter.step'),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           DropdownButtonFormField<String?>(
+            style: Theme.of(context).textTheme.bodyLarge,
             key: ValueKey('step-${st._stepKey}'),
             initialValue: st._stepKey,
             isExpanded: true,
@@ -493,6 +494,7 @@ class _Filters extends StatelessWidget {
       _FSection(
         title: s.t('order.contractor'),
         child: DropdownButtonFormField<String?>(
+          style: Theme.of(context).textTheme.bodyLarge,
           key: ValueKey('con-${st._contractor}'),
           initialValue: st._contractor,
           isExpanded: true,

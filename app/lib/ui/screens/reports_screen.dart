@@ -134,6 +134,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       Text(s.t('report.periodHint.$_kind'), style: const TextStyle(color: C.faint, fontSize: 12)),
       const SizedBox(height: 14),
       DropdownButtonFormField<String?>(
+        style: Theme.of(context).textTheme.bodyLarge,
         initialValue: _contractor,
         isExpanded: true,
         decoration: InputDecoration(labelText: s.t('report.forContractor')),
