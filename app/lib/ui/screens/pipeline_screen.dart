@@ -49,20 +49,23 @@ class _PipelineScreenState extends State<PipelineScreen> {
       return _CountRow(label: s.t('pipeline.bucket.$key'), total: n, onTotal: n == 0 ? null : () => list(s.t('pipeline.bucket.$key'), f));
     }
 
+    // The steps that can be done today, most orders first.
+    final doNow = [for (final e in p.steps.entries) if (e.value.ready > 0) MapEntry(e.key, e.value.ready)]..sort((a, b) => b.value - a.value);
+
     final segRecipes = (app.rules['segmentRecipes'] as Map).cast<String, dynamic>();
     final sections = <Widget>[
-      _Section(title: s.t('pipeline.section.paperwork'), children: [
+      _Section(title: s.t('pipeline.section.paperwork'), color: stageColor('tasreeh'), max: p.activeCount, children: [
         stepRow('kashfeya'),
         bucket('tasreehNotApplied', FilterCriteria(status: active, steps: const [StepCondition('tasreeh_applied', 'not_done')])),
         bucket('appliedNoDates', FilterCriteria(status: active, tasreeh: const ['none'], steps: const [StepCondition('tasreeh_applied', 'done')])),
         bucket('startsInFuture', FilterCriteria(status: active, tasreeh: const ['future'])),
         bucket('expiredWorkOpen', const FilterCriteria(quick: ['expired'])),
       ]),
-      _Section(title: s.t('pipeline.section.civil'), children: [
+      _Section(title: s.t('pipeline.section.civil'), color: stageColor('civil'), max: p.activeCount, children: [
         for (final k in const ['excavation', 'cable_installed', 'warning_tape', 'poles', 'stringing', 'stay_earthing', 'line_energized']) stepRow(k),
         bucket('lateStart', const FilterCriteria(quick: ['late_start'])),
       ]),
-      _Section(title: s.t('pipeline.section.restoration'), children: [
+      _Section(title: s.t('pipeline.section.restoration'), color: stageColor('restoration'), max: p.activeCount, children: [
         for (final entry in segRecipes.entries) ...[
           _SubHead(s.t('pipeline.recipe.${entry.key}')),
           for (final k in (entry.value as List).cast<String>()) stepRow(k),
@@ -72,7 +75,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
         _SubHead(s.t('pipeline.recipe.transformer')),
         for (final k in const ['foundation', 'transformer_installed', 'earthing', 'transformer_energized']) stepRow(k),
       ]),
-      _Section(title: s.t('pipeline.section.meter'), children: [
+      _Section(title: s.t('pipeline.section.meter'), color: stageColor('meter'), max: p.activeCount, children: [
         for (final k in const ['meter_installed', 'breaker_meter_changed', 'meter_relocated', 'meter_on', 'form_190', 'form_200', 'certificate', 'documents_submitted']) stepRow(k),
       ]),
     ];
@@ -80,6 +83,23 @@ class _PipelineScreenState extends State<PipelineScreen> {
     return ListView(padding: EdgeInsets.all(phone ? 12 : 16), children: [
       Text(s.t('pipeline.title'), style: Theme.of(context).textTheme.titleLarge),
       Text(s.t('pipeline.subtitle', {'count': p.activeCount}), style: const TextStyle(color: C.muted, fontSize: 13)),
+      const SizedBox(height: 10),
+      SectionCard(
+        title: s.t('pipeline.doNow'),
+        trailing: Text(s.t('pipeline.doNowNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12)),
+        child: doNow.isEmpty
+            ? Text(s.t('pipeline.doNowNone'), style: const TextStyle(color: C.faint))
+            : Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final e in doNow)
+                  ActionChip(
+                    backgroundColor: C.accentSoft,
+                    side: const BorderSide(color: C.accent, width: 0.8),
+                    onPressed: () => list('${s.t('pipeline.readyNow')}: ${s.step(e.key)}', FilterCriteria(status: active, steps: [StepCondition(e.key, 'ready')])),
+                    avatar: CircleAvatar(backgroundColor: C.accent, child: Text('${e.value}', style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w600))),
+                    label: Text(s.step(e.key), style: const TextStyle(fontWeight: FontWeight.w500)),
+                  ),
+              ]),
+      ),
       const SizedBox(height: 10),
       SectionCard(
         title: s.t('pipeline.startsNext7', {'count': startTotal}),
@@ -122,15 +142,44 @@ class _PipelineScreenState extends State<PipelineScreen> {
   }
 }
 
+/// Gives the rows inside a section their colour and the number the bars are measured against.
+class _RowStyle extends InheritedWidget {
+  const _RowStyle({required this.color, required this.max, required super.child});
+  final Color color;
+  final int max;
+  static _RowStyle? of(BuildContext c) => c.dependOnInheritedWidgetOfExactType<_RowStyle>();
+  @override
+  bool updateShouldNotify(_RowStyle o) => o.color != color || o.max != max;
+}
+
 class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.children});
+  const _Section({required this.title, required this.children, required this.color, required this.max});
   final String title;
   final List<Widget> children;
+  final Color color;
+  final int max;
   @override
-  Widget build(BuildContext context) => SectionCard(
-        title: title,
-        trailing: Text('${context.t('pipeline.readyNow')} · ${context.t('pipeline.totalNotDone')}', style: const TextStyle(fontSize: 11.5, color: C.faint)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+  Widget build(BuildContext context) => Card(
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: color, width: 4))),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+          child: _RowStyle(
+            color: color,
+            max: max,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: color)),
+              const SizedBox(height: 6),
+              // Column heads: blue number = can be done today, grey = every open order not done yet.
+              Row(children: [
+                const Expanded(child: SizedBox()),
+                SizedBox(width: 56, child: Text(context.t('pipeline.readyNow'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: C.accent, fontWeight: FontWeight.w600))),
+                SizedBox(width: 56, child: Text(context.t('pipeline.totalNotDone'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: C.faint))),
+              ]),
+              ...children,
+            ]),
+          ),
+        ),
       );
 }
 
@@ -149,17 +198,48 @@ class _CountRow extends StatelessWidget {
   final int total;
   final VoidCallback? onReady, onTotal;
   @override
-  Widget build(BuildContext context) => Container(
-        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(children: [
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 13.5))),
-          if (ready != null)
-            SizedBox(
-              width: 44,
-              child: InkWell(onTap: ready == 0 ? null : onReady, child: Mono('$ready', size: 13.5, color: ready == 0 ? C.faint : C.accent)),
+  Widget build(BuildContext context) {
+    final st = _RowStyle.of(context);
+    final frac = st == null || st.max <= 0 ? 0.0 : (total / st.max).clamp(0.0, 1.0);
+    return Container(
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
+      child: Stack(children: [
+        // The bar behind the row shows how many of the open orders are still at this step.
+        if (st != null)
+          Positioned.fill(
+            child: FractionallySizedBox(
+              alignment: AlignmentDirectional.centerStart,
+              widthFactor: frac == 0 ? 0.0001 : frac,
+              child: ColoredBox(color: st.color.withAlpha(22)),
             ),
-          SizedBox(width: 44, child: InkWell(onTap: total == 0 ? null : onTotal, child: Mono('$total', size: 13.5, color: total == 0 ? C.faint : C.ink))),
-        ]),
-      );
+          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+          child: Row(children: [
+            Expanded(child: Text(label, style: const TextStyle(fontSize: 13.5))),
+            if (ready != null)
+              SizedBox(
+                width: 56,
+                child: Center(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(999),
+                    onTap: ready == 0 ? null : onReady,
+                    child: ready == 0
+                        ? Mono('0', size: 13.5, color: C.faint)
+                        : Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 1),
+                            decoration: BoxDecoration(color: C.accent, borderRadius: BorderRadius.circular(999)),
+                            child: Mono('$ready', size: 13, color: Colors.white, weight: FontWeight.w600),
+                          ),
+                  ),
+                ),
+              )
+            else
+              const SizedBox(width: 56),
+            SizedBox(width: 56, child: Center(child: InkWell(onTap: total == 0 ? null : onTotal, child: Mono('$total', size: 13.5, color: total == 0 ? C.faint : C.ink)))),
+          ]),
+        ),
+      ]),
+    );
+  }
 }
