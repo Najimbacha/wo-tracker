@@ -239,7 +239,7 @@ class OrderTile extends StatelessWidget {
     final ev = app.evaluate(order);
     final sev = worstSeverity(ev.alerts);
     final s = app.s;
-    final next = ev.next.isEmpty ? null : s.step(ev.next.first.split('@').first);
+    final next = ev.next.isEmpty ? null : s.todo(ev.next.first.split('@').first);
     final issue = ev.alerts.isEmpty ? null : s.t('alertShort.${ev.alerts.first.code}');
     return Material(
       color: selected ? C.accentSoft : Colors.transparent,

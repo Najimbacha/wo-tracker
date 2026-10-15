@@ -90,6 +90,8 @@ class Strings {
 
   String _ruleLabel(Map<String, dynamic>? def, String fallback) => (def?[lang] ?? def?['en'] ?? fallback) as String;
 
+  /// The step as something to do ("Pour concrete"), for "Next: ..." lines; falls back to the step name.
+  String todo(String key) => _text.containsKey('todo.$key') || _fallback.containsKey('todo.$key') ? t('todo.$key') : step(key);
   String step(String key) => _ruleLabel((_rules['steps'] as Map)[key] as Map<String, dynamic>?, key);
   String type(String code) => _ruleLabel((_rules['types'] as Map)[code] as Map<String, dynamic>?, code);
   String category(String c) => t('category.$c');

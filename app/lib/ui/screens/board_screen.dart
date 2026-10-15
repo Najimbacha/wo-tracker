@@ -134,7 +134,7 @@ class _Card extends StatelessWidget {
               Row(children: [
                 Expanded(
                   child: Text(
-                    c.startsOn != null ? s.t('board.startsOn', {'date': app.dateShort(c.startsOn!)}) : (c.nextKey == null ? '' : s.t('order.nextStep', {'step': s.step(c.nextKey!)})),
+                    c.startsOn != null ? s.t('board.startsOn', {'date': app.dateShort(c.startsOn!)}) : (c.nextKey == null ? '' : s.t('order.nextStep', {'step': s.todo(c.nextKey!)})),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
