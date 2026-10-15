@@ -312,6 +312,7 @@
   "pipeline.bucket.lateStart": "Tasreeh started, not dug",
   "board.title": "Work in progress",
   "board.summary": "{count#order} with work under way · {late} late · {hold} on hold",
+  "board.waitingDays": "{count}d waiting",
   "board.startsOn": "Starts {date}",
   "report.daily": "Daily",
   "report.weekly": "Weekly",

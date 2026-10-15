@@ -134,8 +134,8 @@ class _Card extends StatelessWidget {
               Row(children: [
                 Expanded(
                   child: Text(
-                    c.startsOn != null ? s.t('board.startsOn', {'date': app.dateShort(c.startsOn!)}) : (c.nextKey == null ? '' : s.step(c.nextKey!)),
-                    maxLines: 1,
+                    c.startsOn != null ? s.t('board.startsOn', {'date': app.dateShort(c.startsOn!)}) : (c.nextKey == null ? '' : s.t('order.nextStep', {'step': s.step(c.nextKey!)})),
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                   ),
@@ -143,7 +143,7 @@ class _Card extends StatelessWidget {
                 if (c.onHold)
                   Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft)
                 else if (c.startsOn == null)
-                  Mono(s.t('common.daysShort', {'count': c.daysWaiting}), size: 11.5, color: c.severity == null ? C.faint : severityColor(c.severity)),
+                  Text(s.t('board.waitingDays', {'count': c.daysWaiting}), style: TextStyle(fontSize: 11.5, color: c.severity == null ? C.faint : severityColor(c.severity))),
               ]),
             ]),
           ),

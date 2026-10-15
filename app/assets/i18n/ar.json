@@ -312,6 +312,7 @@
   "pipeline.bucket.lateStart": "بدأ التصريح ولم يتم الحفر",
   "board.title": "الأعمال الجارية",
   "board.summary": "{count#order} قيد العمل · متأخر {late} · متوقف {hold}",
+  "board.waitingDays": "ينتظر {count#day}",
   "board.startsOn": "يبدأ {date}",
   "report.daily": "يومي",
   "report.weekly": "أسبوعي",

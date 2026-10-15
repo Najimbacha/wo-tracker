@@ -143,7 +143,7 @@ class _Queue extends StatelessWidget {
                 selected: c.id == selected,
                 dense: true,
                 onTap: () => openOrder(context, c.id),
-                subtitle: [c.district, c.nextKey == null ? null : s.step(c.nextKey!)].whereType<String>().join(' · '),
+                subtitle: [c.district, c.nextKey == null ? null : s.t('order.nextStep', {'step': s.step(c.nextKey!)})].whereType<String>().join(' · '),
                 trailing: c.onHold ? Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft) : Mono(s.t('common.daysShort', {'count': c.daysWaiting}), size: 11.5, color: C.faint),
               ),
           if (col.cards.length > 4) _More(count: col.cards.length - 4, onTap: () => app.go('board')),
