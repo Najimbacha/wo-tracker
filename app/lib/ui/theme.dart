@@ -64,18 +64,21 @@ ThemeData appTheme({required bool arabic}) {
       color: C.card,
       elevation: 0,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)), side: BorderSide(color: C.line)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)), side: BorderSide(color: C.line)),
     ),
     inputDecorationTheme: const InputDecorationTheme(
       isDense: true,
       filled: true,
       fillColor: C.card,
-      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.field)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.field)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.accent, width: 1.5)),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(6)), borderSide: BorderSide(color: C.critical)),
-      labelStyle: TextStyle(color: C.muted, fontSize: 13),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide(color: C.field)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide(color: C.field)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide(color: C.accent, width: 1.5)),
+      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide(color: C.critical)),
+      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide(color: C.critical, width: 1.5)),
+      labelStyle: TextStyle(color: C.muted, fontSize: 13, fontWeight: FontWeight.w500),
+      hintStyle: TextStyle(color: C.locked, fontSize: 13.5),
+      helperStyle: TextStyle(color: C.faint, fontSize: 12),
       // Labels always sit above the box, so empty and filled fields look the same on every screen.
       floatingLabelBehavior: FloatingLabelBehavior.always,
     ),
@@ -84,8 +87,8 @@ ThemeData appTheme({required bool arabic}) {
         backgroundColor: C.accent,
         foregroundColor: Colors.white,
         textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -93,8 +96,8 @@ ThemeData appTheme({required bool arabic}) {
         foregroundColor: C.ink,
         side: const BorderSide(color: C.field),
         textStyle: const TextStyle(fontSize: 13.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -104,8 +107,23 @@ ThemeData appTheme({required bool arabic}) {
     segmentedButtonTheme: const SegmentedButtonThemeData(
       style: ButtonStyle(visualDensity: VisualDensity.compact, textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 13))),
     ),
-    snackBarTheme: const SnackBarThemeData(backgroundColor: C.ink, actionTextColor: Color(0xFF9DB8F5)),
-    dialogTheme: const DialogThemeData(backgroundColor: C.card, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: C.ink,
+      actionTextColor: const Color(0xFF9DB8F5),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
+    chipTheme: ChipThemeData(
+      side: const BorderSide(color: C.field),
+      backgroundColor: C.card,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
+    tooltipTheme: TooltipThemeData(
+      decoration: BoxDecoration(color: C.ink, borderRadius: BorderRadius.circular(6)),
+      textStyle: const TextStyle(color: Colors.white, fontSize: 12.5),
+      waitDuration: const Duration(milliseconds: 400),
+    ),
+    dialogTheme: const DialogThemeData(backgroundColor: C.card, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
   );
 }
 
