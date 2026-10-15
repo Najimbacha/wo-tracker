@@ -63,7 +63,7 @@ export function buildDemo(rules, today = DEMO_TODAY, seed = 1448, { volume = 14,
       id,
       type: sc.type,
       category: sc.cat || 'extension',
-      woNumber: sc.cat === 'emergency' ? uniqueNumber(() => `T-${int(10000, 99999)}`) : uniqueNumber(() => `4417${int(10000, 99999)}`),
+      woNumber: uniqueNumber(() => { const n = int(10000, 99999); return `${n % 4 === 0 ? 2620 : 2520}${n}`; }), // 9 digits, 2520xxxxx or 2620xxxxx
       receivedDate: ago(sc.recv),
       needsExcavation: !!sc.excavation,
       contractor: sc.contractor === null ? null : sc.contractor || pick(CONTRACTORS),

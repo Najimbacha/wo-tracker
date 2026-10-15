@@ -20,7 +20,7 @@
   "steps": {
     "kashfeya":              { "package": "kashfeya",       "en": "Kashfeya",                    "ar": "الكشفية" },
     "tasreeh_applied":       { "package": "tasreeh",        "en": "Tasreeh applied",             "ar": "تقديم التصريح" },
-    "excavation":            { "package": "civil",          "en": "Excavation",                  "ar": "الحفر",               "gate": "tasreehStarted" },
+    "excavation":            { "package": "civil",          "en": "Excavation",                  "ar": "الحفرية",             "gate": "tasreehStarted" },
     "cable_installed":       { "package": "civil",          "en": "Cable installed",             "ar": "تمديد الكيبل",        "requires": "cableRuns" },
     "warning_tape":          { "package": "civil",          "en": "Warning tape",                "ar": "شريط التحذير" },
     "compaction":            { "package": "restoration",    "en": "Compaction",                  "ar": "الدك" },
@@ -86,12 +86,12 @@
 
   "types": {
     "401": { "en": "Change breaker, meter or both",        "ar": "تغيير القاطع أو العداد أو كليهما",  "packages": ["meter_change", "closeout"] },
-    "402": { "en": "Excavation and meter",                 "ar": "حفر وعداد",                         "packages": ["kashfeya", "tasreeh", "civil", "restoration", "meter_new", "closeout"] },
+    "402": { "en": "Excavation and meter",                 "ar": "حفرية وعداد",                         "packages": ["kashfeya", "tasreeh", "civil", "restoration", "meter_new", "closeout"] },
     "403": { "en": "Overhead line and meter",              "ar": "خط هوائي وعداد",                    "packages": ["kashfeya", "tasreeh", "overhead", "meter_new", "closeout"] },
     "404": { "en": "Underground, ground transformer and meter", "ar": "أرضي ومحول أرضي وعداد",        "packages": ["kashfeya", "tasreeh", "civil", "restoration", "transformer", "meter_new", "closeout"] },
     "409": { "en": "Relocate meter",                       "ar": "نقل العداد",                        "packages": ["meter_relocate", "closeout"], "optionalExcavation": true },
     "801": { "en": "Meter only, civil done earlier",       "ar": "عداد فقط",                          "packages": ["meter_new", "closeout"] },
-    "802": { "en": "Excavation only",                      "ar": "حفر فقط",                           "packages": ["kashfeya", "tasreeh", "civil", "restoration", "closeout"] },
+    "802": { "en": "Excavation only",                      "ar": "حفرية فقط",                          "packages": ["kashfeya", "tasreeh", "civil", "restoration", "closeout"] },
     "803": { "en": "Overhead line",                        "ar": "خط هوائي",                          "packages": ["kashfeya", "tasreeh", "overhead", "closeout"] },
     "804": { "en": "Underground and ground transformer",   "ar": "أرضي ومحول أرضي",                   "packages": ["kashfeya", "tasreeh", "civil", "restoration", "transformer", "closeout"] },
     "805": { "en": "Overhead and pole-mounted transformer", "ar": "هوائي ومحول على عمود",              "packages": ["kashfeya", "tasreeh", "overhead", "transformer", "closeout"] }
