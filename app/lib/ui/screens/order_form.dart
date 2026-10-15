@@ -280,8 +280,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
         title: s.t('order.sectionOrder'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Align(
-            alignment: AlignmentDirectional.centerStart,
+          SizedBox(
+            width: double.infinity,
             child: SegmentedButton<String>(
               showSelectedIcon: false,
               segments: [
@@ -471,16 +471,16 @@ class _OrderFormPageState extends State<OrderFormPage> {
           ]),
         ]),
       ),
-    ];
-    final right = <Widget>[
-      if (spec.segments) _segmentsEditor(context),
-      if (spec.cableRuns) _cablesEditor(context),
-      if (spec.meters) _metersEditor(context, spec),
       SectionCard(
         title: s.t('order.notes'),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: TextField(controller: _notes, onChanged: (_) => _touch(), minLines: 2, maxLines: 5, decoration: InputDecoration(hintText: s.t('order.notesHint'))),
       ),
+    ];
+    final right = <Widget>[
+      if (spec.segments) _segmentsEditor(context),
+      if (spec.cableRuns) _cablesEditor(context),
+      if (spec.meters) _metersEditor(context, spec),
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
@@ -740,7 +740,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
     if (_meters.isEmpty) _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
     return _Group(
       title: s.t('order.meters'),
-      hint: s.t('order.metersHint'),
+      hint: s.t('order.metersHint2'),
       header: Row(children: [
         Text(s.t('order.meterCount'), style: const TextStyle(fontWeight: FontWeight.w500)),
         const SizedBox(width: 12),
@@ -771,6 +771,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
         for (final m in _meters)
           _Line(
             key: ObjectKey(m),
+            index: _meters.indexOf(m) + 1,
             onRemove: _meters.length <= 1
                 ? null
                 : () {
@@ -781,37 +782,29 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     _showMeterCount();
                   },
             children: [
-              SizedBox(
-                width: 160,
-                child: TextFormField(
+              TextFormField(
                   initialValue: m.number,
                   textDirection: TextDirection.ltr,
                   onChanged: (v) {
                     m.number = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.meterNumber'), helperText: s.t('order.meterNumberLater')),
+                  decoration: InputDecoration(labelText: s.t('order.meterNumber')),
                 ),
-              ),
               if (spec.oldMeterNumber)
-                SizedBox(
-                  width: 210,
-                  child: TextFormField(
+                TextFormField(
                     initialValue: m.oldNumber,
                     textDirection: TextDirection.ltr,
                     onChanged: (v) {
                       m.oldNumber = v;
                       _touch();
                     },
-                    decoration: InputDecoration(labelText: '${s.t('order.oldMeterNumber')} (${s.t('common.optional')})'),
+                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber')),
                   ),
-                ),
-              SizedBox(
-                width: 200,
-                child: DropdownButtonFormField<String?>(
+              DropdownButtonFormField<String?>(
                   initialValue: m.type,
                   isExpanded: true, // the box is narrow: long labels are cut with … instead of overflowing
-                  decoration: InputDecoration(labelText: '${s.t('order.meterType')} (${s.t('common.optional')})'),
+                  decoration: InputDecoration(labelText: s.t('order.meterType')),
                   items: [
                     const DropdownMenuItem<String?>(value: null, child: Text('—')),
                     for (final t in const ['single_phase', 'three_phase', 'ct']) DropdownMenuItem<String?>(value: t, child: Text(s.t('order.meterType.$t'), overflow: TextOverflow.ellipsis)),
@@ -821,10 +814,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     _dirty = true;
                   }),
                 ),
-              ),
-              SizedBox(
-                width: 170,
-                child: TextFormField(
+              TextFormField(
                   initialValue: m.amps,
                   keyboardType: TextInputType.number,
                   textDirection: TextDirection.ltr,
@@ -833,9 +823,8 @@ class _OrderFormPageState extends State<OrderFormPage> {
                     m.amps = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: '${s.t('order.breakerAmps')} (${s.t('common.optional')})'),
+                  decoration: InputDecoration(labelText: s.t('order.breakerAmps')),
                 ),
-              ),
             ],
           ),
       ],
@@ -901,17 +890,37 @@ class _Group extends StatelessWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({super.key, required this.children, this.onRemove});
+  const _Line({super.key, required this.children, this.onRemove, this.index});
   final List<Widget> children;
   final VoidCallback? onRemove;
+  final int? index;
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(border: Border.all(color: C.line), borderRadius: BorderRadius.circular(8)),
-        child: Row(children: [
-          Expanded(child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.start, children: children)),
-          if (onRemove != null) IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: const Icon(Icons.close, size: 18, color: C.faint)),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.fromLTRB(12, 12, 6, 12),
+        decoration: BoxDecoration(color: C.bg, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(10)),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (index != null)
+            Container(
+              width: 28,
+              height: 28,
+              margin: const EdgeInsetsDirectional.only(end: 12, top: 8),
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: C.chip, shape: BoxShape.circle),
+              child: Mono('$index', size: 13, weight: FontWeight.w600, color: C.muted),
+            ),
+          Expanded(
+            // Wide: the fields share the row evenly and line up with the card edge. Narrow: two per row.
+            child: LayoutBuilder(builder: (context, box) {
+              final cols = box.maxWidth >= 560 ? children.length : 2;
+              final w = (box.maxWidth - 12 * (cols - 1)) / cols;
+              return Wrap(spacing: 12, runSpacing: 12, children: [for (final c in children) SizedBox(width: w - 0.01, child: c)]);
+            }),
+          ),
+          SizedBox(
+            width: 40,
+            child: onRemove == null ? null : IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: const Icon(Icons.close, size: 18, color: C.faint)),
+          ),
         ]),
       );
 }
