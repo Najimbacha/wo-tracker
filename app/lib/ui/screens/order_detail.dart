@@ -57,6 +57,7 @@ class OrderDetail extends StatelessWidget {
       children: [
         _Header(order: o, ev: ev),
         const SizedBox(height: 10),
+        if (_StageBar.applies(o)) ...[_StageBar(order: o, ev: ev), const SizedBox(height: 10)],
         if (o.deleted)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -169,6 +170,58 @@ class OrderDetail extends StatelessWidget {
 }
 
 String _num(double v) => v == v.truncateToDouble() ? '${v.toInt()}' : v.toStringAsFixed(1);
+
+/// The order's journey as a row: stages done (green tick), the one it is in (coloured),
+/// and what is still ahead (grey). Only the stages this kind of order goes through.
+class _StageBar extends StatelessWidget {
+  const _StageBar({required this.order, required this.ev});
+  final OrderInput order;
+  final Evaluation ev;
+
+  static bool applies(OrderInput o) => o.state != 'cancelled' && o.state != 'merged' && !o.deleted;
+
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final s = app.s;
+    final packages = {for (final x in ev.steps) x.step.package};
+    final keys = <String>[];
+    for (final st in (app.rules['stages'] as List).cast<Map<String, dynamic>>()) {
+      final key = st['key'] as String;
+      final pk = (st['packages'] as List?)?.cast<String>();
+      // "Starting soon" has no steps of its own: it sits between tasreeh and the field work.
+      if (pk == null ? packages.contains('tasreeh') : pk.any(packages.contains)) keys.add(key);
+    }
+    if (keys.length < 2) return const SizedBox.shrink();
+    final completed = ev.status == 'completed';
+    final at = completed ? keys.length : keys.indexOf(ev.stage ?? '');
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: [
+        for (var i = 0; i < keys.length; i++) ...[
+          if (i > 0) Container(width: 16, height: 2, color: i <= at ? C.success : C.line),
+          _chip(s.stage(keys[i]), i < at ? 'done' : (i == at ? 'now' : 'next'), stageColor(keys[i])),
+        ],
+      ]),
+    );
+  }
+
+  Widget _chip(String label, String state, Color color) {
+    final (bg, fg) = switch (state) {
+      'done' => (C.successSoft, C.success),
+      'now' => (color, Colors.white),
+      _ => (C.chip, C.faint),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (state == 'done') ...[Icon(Icons.check, size: 15, color: fg), const SizedBox(width: 4)],
+        Text(label, style: TextStyle(fontSize: 13, color: fg, fontWeight: state == 'now' ? FontWeight.w700 : FontWeight.w500)),
+      ]),
+    );
+  }
+}
 
 class _Header extends StatelessWidget {
   const _Header({required this.order, required this.ev});
