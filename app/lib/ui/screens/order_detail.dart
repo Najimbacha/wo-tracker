@@ -598,7 +598,8 @@ class _StepRow extends StatelessWidget {
             child: Text(s.t('common.markDoneToday')),
           ),
         ],
-        if (editable && !isPhone(context))
+        // On a step with the Mark done buttons the camera is in the ⋮ menu instead (no room for a third button).
+        if (editable && !ready && !isPhone(context))
           IconButton(
             tooltip: s.t('step.addPhoto'),
             visualDensity: VisualDensity.compact,
