@@ -57,8 +57,8 @@ Future<void> showReminderDialog(BuildContext context, OrderInput order) async {
       ),
     ),
   );
+  // The controller is not disposed here: the dialog is still fading out and would use it once more.
   final text = note.text;
-  note.dispose();
   if (ok != true || order.id == null) return;
   try {
     await app.repo.addReminder(orderId: order.id!, due: due, note: text);
@@ -111,14 +111,14 @@ class _ReminderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.app;
-    final late = !r.done && daysUntil(r.due, app.today) < 0;
+    final overdue = !r.done && daysUntil(r.due, app.today) < 0;
     return Row(children: [
       Checkbox(value: r.done, onChanged: canEdit ? (v) => app.repo.setReminderDone(r.id, v ?? false) : null),
       Expanded(
         child: Text(r.note, style: TextStyle(color: r.done ? C.faint : C.ink, decoration: r.done ? TextDecoration.lineThrough : null)),
       ),
       const SizedBox(width: 8),
-      Text(dueLabel(context, r.due), style: TextStyle(fontSize: 12.5, color: late ? C.critical : C.muted, fontWeight: late ? FontWeight.w600 : FontWeight.w400)),
+      Text(dueLabel(context, r.due), style: TextStyle(fontSize: 12.5, color: overdue ? C.critical : C.muted, fontWeight: overdue ? FontWeight.w600 : FontWeight.w400)),
       if (canEdit) IconButton(tooltip: app.s.t('common.remove'), visualDensity: VisualDensity.compact, onPressed: () => app.repo.removeReminder(r.id), icon: const Icon(Icons.close, size: 18, color: C.faint)),
     ]);
   }
