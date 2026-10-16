@@ -242,7 +242,7 @@ class PowerSyncRepository extends Repository {
     ];
     final attachments = [
       for (final r in await db.getAll("SELECT * FROM attachments WHERE deleted_at IS NULL AND kind = 'photo' ORDER BY taken_at, created_at"))
-        Attachment(
+        StepPhoto(
             id: r['id'] as String,
             orderId: r['work_order_id'] as String? ?? '',
             stepRowId: r['step_id'] as String?,
@@ -498,13 +498,13 @@ class PowerSyncRepository extends Repository {
   String _local(String id, String fileName) => '$photosDir/$id${_ext(fileName)}';
 
   @override
-  String? photoPath(Attachment a) {
+  String? photoPath(StepPhoto a) {
     final path = _local(a.id, a.fileName);
     return File(path).existsSync() ? path : null;
   }
 
   @override
-  Future<Attachment> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
+  Future<StepPhoto> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
     final orderId = order.id;
     if (orderId == null) throw const RepoException('photo.saveOrderFirst');
     final id = newId();
@@ -555,7 +555,7 @@ class PowerSyncRepository extends Repository {
       } catch (_) {}
       rethrow;
     }
-    return Attachment(id: id, orderId: orderId, fileName: fileName, takenAt: now);
+    return StepPhoto(id: id, orderId: orderId, fileName: fileName, takenAt: now);
   }
 
   @override

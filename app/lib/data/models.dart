@@ -49,14 +49,14 @@ class FollowUpRecord {
 
 /// A photo attached to a step. The picture itself is a file on the device that took it
 /// (the row, with its name and time, syncs); [driveFileId] is set once it is in Google Drive.
-class Attachment {
+class StepPhoto {
   final String id;
   final String orderId;
   final String? stepRowId; // the steps row it belongs to (see stepRowIdFor)
   final String fileName; // e.g. 402_2602... _excavation_2026-10-16.jpg
   final DateTime takenAt;
   final String? driveFileId;
-  const Attachment({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId});
+  const StepPhoto({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId});
 }
 
 const Object _keep = Object();

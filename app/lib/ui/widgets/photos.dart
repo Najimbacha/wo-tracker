@@ -17,7 +17,7 @@ import 'dialogs.dart';
 bool get _hasCamera => !kIsWeb && (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
 /// The photos of one step of [order].
-List<Attachment> photosOfStep(BuildContext context, OrderInput order, String stepKey) {
+List<StepPhoto> photosOfStep(BuildContext context, OrderInput order, String stepKey) {
   final app = context.app;
   final id = order.id;
   if (id == null) return const [];
@@ -106,12 +106,12 @@ class _Thumb extends StatelessWidget {
       );
 }
 
-Future<void> showPhotoViewer(BuildContext context, {required List<Attachment> photos, required int index, required bool canDelete}) =>
+Future<void> showPhotoViewer(BuildContext context, {required List<StepPhoto> photos, required int index, required bool canDelete}) =>
     showDialog<void>(context: context, barrierColor: Colors.black87, builder: (_) => _PhotoViewer(photos: photos, index: index, canDelete: canDelete));
 
 class _PhotoViewer extends StatefulWidget {
   const _PhotoViewer({required this.photos, required this.index, required this.canDelete});
-  final List<Attachment> photos;
+  final List<StepPhoto> photos;
   final int index;
   final bool canDelete;
   @override
@@ -120,7 +120,7 @@ class _PhotoViewer extends StatefulWidget {
 
 class _PhotoViewerState extends State<_PhotoViewer> {
   late final PageController _page = PageController(initialPage: widget.index);
-  late final List<Attachment> _list = [...widget.photos];
+  late final List<StepPhoto> _list = [...widget.photos];
   late int _at = widget.index;
 
   @override

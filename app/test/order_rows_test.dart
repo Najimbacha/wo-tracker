@@ -87,4 +87,13 @@ void main() {
     expect(o.segments.single.lengthM, 12.5); // numeric arrives as text from sync
     expect(o.steps.keys, ['kashfeya']); // a cleared step row is not a record
   });
+
+  test('a photo points at the same steps row the step is saved to', () {
+    const keys = {'compaction'};
+    expect(splitStepKey('kashfeya', keys), (stepKey: 'kashfeya', segmentId: null, meterId: null));
+    expect(splitStepKey('compaction@s1', keys), (stepKey: 'compaction', segmentId: 's1', meterId: null));
+    expect(splitStepKey('install@m1', keys), (stepKey: 'install', segmentId: null, meterId: 'm1'));
+    expect(stepRowIdFor('wo-1', 'compaction@s1', keys), StepIds.stepRowId('wo-1', 'compaction', segmentId: 's1'));
+    expect(stepRowIdFor('wo-1', 'install@m1', keys), StepIds.stepRowId('wo-1', 'install', meterId: 'm1'));
+  });
 }

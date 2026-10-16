@@ -58,7 +58,7 @@ class MemoryRepository extends Repository {
     List<CableSize>? cableSizes,
     List<SavedView>? views,
     List<FollowUpRecord>? followUps,
-    List<Attachment>? attachments,
+    List<StepPhoto>? attachments,
     AppSettings? settings,
   }) =>
       RepoData(
@@ -77,12 +77,12 @@ class MemoryRepository extends Repository {
   final Map<String, String> _photoFiles = {};
 
   @override
-  String? photoPath(Attachment a) => _photoFiles[a.id];
+  String? photoPath(StepPhoto a) => _photoFiles[a.id];
 
   @override
-  Future<Attachment> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
+  Future<StepPhoto> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
     final id = newId();
-    final a = Attachment(
+    final a = StepPhoto(
         id: id,
         orderId: order.id ?? '',
         stepRowId: stepKey == null ? null : stepRowIdFor(order.id ?? '', stepKey, segmentStepKeys),

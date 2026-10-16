@@ -17,7 +17,7 @@ class RepoData {
   final List<CableSize> cableSizes;
   final List<SavedView> views;
   final List<FollowUpRecord> followUps;
-  final List<Attachment> attachments; // live photos, oldest first
+  final List<StepPhoto> attachments; // live photos, oldest first
   final AppSettings settings;
   final bool loaded;
   const RepoData({
@@ -89,13 +89,13 @@ abstract class Repository {
   /// Attaches the picture at [sourcePath] to a step ([stepKey] like 'excavation' or
   /// 'compaction@<segment id>'). The file is copied into the app's own photo folder, so the
   /// original can be deleted afterwards. [label] starts the saved file name.
-  Future<Attachment> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label});
+  Future<StepPhoto> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label});
 
   /// Removes a photo from the list. The file stays on the device (nothing is lost).
   Future<void> removePhoto(String id);
 
   /// Where the picture is on this device, or null when it was taken on another device.
-  String? photoPath(Attachment a);
+  String? photoPath(StepPhoto a);
 
   Future<void> retryRefused(String id);
   Future<void> dismissRefused(String id);
