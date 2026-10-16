@@ -10,6 +10,7 @@ import '../nav.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/dialogs.dart';
+import '../widgets/photos.dart';
 import 'history_sheet.dart';
 import 'permit_dialog.dart';
 import 'status_dialog.dart';
@@ -528,6 +529,7 @@ class _StepRow extends StatelessWidget {
                   Flexible(child: Text(note, style: const TextStyle(fontSize: 12, color: C.muted))),
                 ]),
               ),
+            PhotoStrip(order: order, stepKey: st.id, canEdit: editable),
           ]),
         ),
         if (ready) ...[
@@ -540,6 +542,13 @@ class _StepRow extends StatelessWidget {
             child: Text(s.t('common.markDoneToday')),
           ),
         ],
+        if (editable && !isPhone(context))
+          IconButton(
+            tooltip: s.t('step.addPhoto'),
+            visualDensity: VisualDensity.compact,
+            onPressed: () => addPhotosToStep(context, order, st.id, name),
+            icon: const Icon(Icons.add_a_photo_outlined, size: 20, color: C.faint),
+          ),
         if (editable)
           PopupMenuButton<String>(
             tooltip: s.t('order.stepMenu'),
@@ -554,6 +563,8 @@ class _StepRow extends StatelessWidget {
                   _clear(context);
                 case 'note':
                   _note(context);
+                case 'photo':
+                  addPhotosToStep(context, order, st.id, name);
               }
             },
             itemBuilder: (_) => [
@@ -561,6 +572,7 @@ class _StepRow extends StatelessWidget {
               if (st.state != 'done' && st.state != 'na') PopupMenuItem(value: 'na', child: Text(s.t('action.markNA'))),
               if (st.closed) PopupMenuItem(value: 'clear', child: Text(s.t('action.clearStep'))),
               PopupMenuItem(value: 'note', child: Text(s.t(note == null ? 'step.addNote' : 'step.editNote'))),
+              PopupMenuItem(value: 'photo', child: Text(s.t('step.addPhoto'))),
             ],
           ),
       ]),

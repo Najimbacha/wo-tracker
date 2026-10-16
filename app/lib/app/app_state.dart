@@ -69,6 +69,7 @@ class AppState extends ChangeNotifier {
 
   Repository? _repo;
   Repository get repo => _repo!;
+  late final Set<String> segmentStepKeys = segmentStepKeysOf(rules);
   bool get ready => _repo != null && data.loaded;
   RepoData data = const RepoData();
   SyncInfo sync = const SyncInfo();
@@ -124,13 +125,14 @@ class AppState extends ChangeNotifier {
     Repository next;
     try {
       if (demoMode) {
-        next = MemoryRepository(DemoData.load(demoFile, today));
+        next = MemoryRepository(DemoData.load(demoFile, today), segmentStepKeys: segmentStepKeys);
       } else {
         final dir = await getApplicationSupportDirectory();
         next = await PowerSyncRepository.open(
           path: '${dir.path}/wo_tracker.db',
           config: syncConfig,
           segmentStepKeys: segmentStepKeysOf(rules),
+          photosDir: '${dir.path}/photos',
         );
       }
       startupError = null;
@@ -308,6 +310,7 @@ class AppState extends ChangeNotifier {
       cableSizes: data.cableSizes,
       views: data.views,
       followUps: data.followUps,
+      attachments: data.attachments,
       settings: data.settings,
       loaded: true,
     );

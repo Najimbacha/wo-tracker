@@ -8,7 +8,7 @@ import 'order_rows.dart';
 import 'repository.dart';
 
 class MemoryRepository extends Repository {
-  MemoryRepository(List<OrderInput> orders) {
+  MemoryRepository(List<OrderInput> orders, {this.segmentStepKeys = const {}}) {
     final names = <String>{};
     for (final o in orders) {
       if (o.contractor != null && o.contractor!.trim().isNotEmpty) names.add(o.contractor!.trim());
@@ -27,6 +27,7 @@ class MemoryRepository extends Repository {
     );
   }
 
+  final Set<String> segmentStepKeys;
   late RepoData _data;
   final _controller = StreamController<RepoData>.broadcast();
   final _refused = StreamController<List<RefusedChange>>.broadcast();
@@ -57,6 +58,7 @@ class MemoryRepository extends Repository {
     List<CableSize>? cableSizes,
     List<SavedView>? views,
     List<FollowUpRecord>? followUps,
+    List<Attachment>? attachments,
     AppSettings? settings,
   }) =>
       RepoData(
@@ -66,9 +68,33 @@ class MemoryRepository extends Repository {
         cableSizes: cableSizes ?? _data.cableSizes,
         views: views ?? _data.views,
         followUps: followUps ?? _data.followUps,
+        attachments: attachments ?? _data.attachments,
         settings: settings ?? _data.settings,
         loaded: true,
       );
+
+  // Demo mode keeps a photo where it is (nothing is copied or saved).
+  final Map<String, String> _photoFiles = {};
+
+  @override
+  String? photoPath(Attachment a) => _photoFiles[a.id];
+
+  @override
+  Future<Attachment> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
+    final id = newId();
+    final a = Attachment(
+        id: id,
+        orderId: order.id ?? '',
+        stepRowId: stepKey == null ? null : stepRowIdFor(order.id ?? '', stepKey, segmentStepKeys),
+        fileName: label,
+        takenAt: DateTime.now());
+    _photoFiles[id] = sourcePath;
+    _emit(_copy(attachments: [..._data.attachments, a]));
+    return a;
+  }
+
+  @override
+  Future<void> removePhoto(String id) async => _emit(_copy(attachments: [for (final a in _data.attachments) if (a.id != id) a]));
 
   @override
   Future<void> saveOrders(List<OrderChange> changes, OrderCache Function(OrderInput) cacheOf) async {

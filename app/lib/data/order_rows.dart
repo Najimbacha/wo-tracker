@@ -263,17 +263,13 @@ List<RowWrite> orderWrites(
     final a = after.steps[key];
     if (b != null && a != null && b.done == a.done && b.na == a.na && b.reason == a.reason && b.note == a.note) continue;
     if (b == null && a == null) continue;
-    final at = key.indexOf('@');
-    final stepKey = at < 0 ? key : key.substring(0, at);
-    final inst = at < 0 ? null : key.substring(at + 1);
-    final segmentId = inst != null && segmentStepKeys.contains(stepKey) ? inst : null;
-    final meterId = inst != null && segmentId == null ? inst : null;
+    final ref = splitStepKey(key, segmentStepKeys);
     final na = a?.na ?? false;
-    out.add(RowWrite('steps', StepIds.stepRowId(id, stepKey, segmentId: segmentId, meterId: meterId), 'upsert', {
+    out.add(RowWrite('steps', StepIds.stepRowId(id, ref.stepKey, segmentId: ref.segmentId, meterId: ref.meterId), 'upsert', {
       'work_order_id': id,
-      'step_key': stepKey,
-      'segment_id': segmentId,
-      'meter_id': meterId,
+      'step_key': ref.stepKey,
+      'segment_id': ref.segmentId,
+      'meter_id': ref.meterId,
       'done_date': (a == null || na) ? null : a.done,
       'not_applicable': na ? 1 : 0,
       'na_reason': na ? a!.reason : null,
@@ -282,6 +278,22 @@ List<RowWrite> orderWrites(
     }));
   }
   return out;
+}
+
+/// A step key like 'compaction@<id>' taken apart: the step, and the segment or meter it is for.
+({String stepKey, String? segmentId, String? meterId}) splitStepKey(String key, Set<String> segmentStepKeys) {
+  final at = key.indexOf('@');
+  final stepKey = at < 0 ? key : key.substring(0, at);
+  final inst = at < 0 ? null : key.substring(at + 1);
+  final segmentId = inst != null && segmentStepKeys.contains(stepKey) ? inst : null;
+  final meterId = inst != null && segmentId == null ? inst : null;
+  return (stepKey: stepKey, segmentId: segmentId, meterId: meterId);
+}
+
+/// The id of the steps row for [key] of an order (what a photo points at).
+String stepRowIdFor(String orderId, String key, Set<String> segmentStepKeys) {
+  final r = splitStepKey(key, segmentStepKeys);
+  return StepIds.stepRowId(orderId, r.stepKey, segmentId: r.segmentId, meterId: r.meterId);
 }
 
 /// Step keys recorded per surface segment, from rules.json.

@@ -2,6 +2,7 @@
 // no internet and syncs with Supabase when it can. See repository.dart.
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:powersync/powersync.dart';
 import 'package:powersync/sqlite_async.dart' show SqliteReadContext, SqliteWriteContext;
@@ -29,11 +30,12 @@ bool _supabaseStarted = false;
 bool get supabaseStarted => _supabaseStarted;
 
 class PowerSyncRepository extends Repository {
-  PowerSyncRepository._(this.db, this.config, this.segmentStepKeys);
+  PowerSyncRepository._(this.db, this.config, this.segmentStepKeys, this.photosDir);
 
   final PowerSyncDatabase db;
   final SyncConfig? config;
   final Set<String> segmentStepKeys;
+  final String photosDir; // the pictures taken or picked on this device
 
   final _data = StreamController<RepoData>.broadcast();
   final _sync = StreamController<SyncInfo>.broadcast();
@@ -55,10 +57,10 @@ class PowerSyncRepository extends Repository {
   String? _cloudError;
   bool get _online => config != null && config!.complete && _cloudReady;
 
-  static Future<PowerSyncRepository> open({required String path, SyncConfig? config, required Set<String> segmentStepKeys}) async {
+  static Future<PowerSyncRepository> open({required String path, SyncConfig? config, required Set<String> segmentStepKeys, required String photosDir}) async {
     final db = PowerSyncDatabase(schema: appSchema, path: path);
     await db.initialize();
-    final repo = PowerSyncRepository._(db, config, segmentStepKeys);
+    final repo = PowerSyncRepository._(db, config, segmentStepKeys, photosDir);
     await repo._start();
     return repo;
   }
@@ -238,6 +240,16 @@ class PowerSyncRepository extends Repository {
             followedAt: DateTime.tryParse(r['followed_at'] as String? ?? '') ?? DateTime.now(),
             note: r['note'] as String?),
     ];
+    final attachments = [
+      for (final r in await db.getAll("SELECT * FROM attachments WHERE deleted_at IS NULL AND kind = 'photo' ORDER BY taken_at, created_at"))
+        Attachment(
+            id: r['id'] as String,
+            orderId: r['work_order_id'] as String? ?? '',
+            stepRowId: r['step_id'] as String?,
+            fileName: r['file_name'] as String? ?? '',
+            takenAt: DateTime.tryParse(r['taken_at'] as String? ?? '') ?? DateTime.now(),
+            driveFileId: r['drive_file_id'] as String?),
+    ];
     final st = await db.getOptional('SELECT * FROM settings WHERE deleted_at IS NULL ORDER BY id = ? DESC LIMIT 1', [settingsId]);
     var settings = const AppSettings();
     if (st != null) {
@@ -256,6 +268,7 @@ class PowerSyncRepository extends Repository {
       cableSizes: sizes,
       views: views,
       followUps: followUps,
+      attachments: attachments,
       settings: settings,
       loaded: true,
     );
@@ -472,6 +485,81 @@ class PowerSyncRepository extends Repository {
   @override
   Future<void> markFollowedUp(String contractorId, {String? note}) =>
       db.execute('INSERT INTO followups (id, contractor_id, followed_at, note) VALUES (?, ?, ?, ?)', [newId(), contractorId, _now, note]);
+
+  // ---------------------------------------------------------------- photos
+
+  static String _ext(String path) {
+    final name = path.split(RegExp(r'[\\/]')).last;
+    final dot = name.lastIndexOf('.');
+    final e = dot <= 0 ? '' : name.substring(dot).toLowerCase();
+    return RegExp(r'^\.[a-z0-9]{1,5}$').hasMatch(e) ? e : '.jpg';
+  }
+
+  String _local(String id, String fileName) => '$photosDir/$id${_ext(fileName)}';
+
+  @override
+  String? photoPath(Attachment a) {
+    final path = _local(a.id, a.fileName);
+    return File(path).existsSync() ? path : null;
+  }
+
+  @override
+  Future<Attachment> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
+    final orderId = order.id;
+    if (orderId == null) throw const RepoException('photo.saveOrderFirst');
+    final id = newId();
+    final now = DateTime.now();
+    final stamp = now.toIso8601String().substring(0, 19).replaceAll(':', '').replaceAll('-', '').replaceAll('T', '-');
+    final fileName = '${label.replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_')}_$stamp${_ext(sourcePath)}';
+    // Copy first: if this fails nothing is written. The original is never touched.
+    await Directory(photosDir).create(recursive: true);
+    final dest = _local(id, fileName);
+    await File(sourcePath).copy(dest);
+    try {
+      await db.writeTransaction((tx) async {
+        String? stepId;
+        if (stepKey != null) {
+          final ref = splitStepKey(stepKey, segmentStepKeys);
+          stepId = StepIds.stepRowId(orderId, ref.stepKey, segmentId: ref.segmentId, meterId: ref.meterId);
+          // A photo may come before the step is marked: the step needs its row first (the
+          // server refuses a photo pointing at a step it has not got). An empty row means "not done".
+          final have = await tx.getOptional('SELECT id FROM steps WHERE id = ?', [stepId]);
+          if (have == null) {
+            await _insert(
+                tx,
+                RowWrite('steps', stepId, 'insert', {
+                  'work_order_id': orderId,
+                  'step_key': ref.stepKey,
+                  'segment_id': ref.segmentId,
+                  'meter_id': ref.meterId,
+                  'not_applicable': 0,
+                }));
+          } else {
+            // A cleared step may be hidden (deleted_at): a photo brings it back as an empty row.
+            await tx.execute('UPDATE steps SET deleted_at = NULL WHERE id = ? AND deleted_at IS NOT NULL', [stepId]);
+          }
+        }
+        await _insert(
+            tx,
+            RowWrite('attachments', id, 'insert', {
+              'work_order_id': orderId,
+              'step_id': stepId,
+              'kind': 'photo',
+              'file_name': fileName,
+              'taken_at': now.toUtc().toIso8601String(),
+            }));
+      });
+    } catch (_) {
+      try {
+        await File(dest).delete();
+      } catch (_) {}
+      rethrow;
+    }
+    return Attachment(id: id, orderId: orderId, fileName: fileName, takenAt: now);
+  }
+
+  @override
+  Future<void> removePhoto(String id) => db.execute('UPDATE attachments SET deleted_at = ? WHERE id = ?', [_now, id]);
 
   // ---------------------------------------------------------------- refused changes
 

@@ -17,6 +17,8 @@ dependencies:
   # Report PDF, preview, print and page images.
   pdf: ^3.13.1
   printing: ^5.15.1
+  # Taking or choosing photos for steps.
+  image_picker: ^1.1.2
   # Saving and sharing files.
   file_selector: ^1.0.3
   share_plus: ^13.3.1
