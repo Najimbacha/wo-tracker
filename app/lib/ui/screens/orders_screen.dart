@@ -377,7 +377,7 @@ class _RowFacts extends StatelessWidget {
         SizedBox(width: 70, child: Text(order.receivedDate == null ? '' : app.dateShort(order.receivedDate!), style: const TextStyle(color: C.muted, fontSize: 12.5))),
         SizedBox(width: 100, child: ProgressLine(ev.closed, ev.total)),
         const SizedBox(width: 8),
-        SizedBox(width: 96, child: Align(alignment: AlignmentDirectional.centerStart, child: StatusChip(ev.status))),
+        SizedBox(width: 124, child: FittedBox(fit: BoxFit.scaleDown, alignment: AlignmentDirectional.centerStart, child: StatusChip(ev.status))),
       ]),
     );
   }
