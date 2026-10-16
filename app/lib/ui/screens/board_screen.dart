@@ -145,7 +145,7 @@ class _Card extends StatelessWidget {
                 if (c.onHold)
                   Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft)
                 else if (c.startsOn == null)
-                  Text(s.t('board.waitingDays', {'count': c.daysWaiting}), style: TextStyle(fontSize: 13, color: c.severity == null ? C.faint : severityColor(c.severity))),
+                  Text(c.daysWaiting <= 0 ? s.t('board.waitingNew') : s.t('board.waitingDays', {'count': c.daysWaiting}), style: TextStyle(fontSize: 13, color: c.severity == null ? C.faint : severityColor(c.severity))),
               ]),
             ]),
           ),

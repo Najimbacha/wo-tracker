@@ -368,12 +368,13 @@ class _RowFacts extends StatelessWidget {
     final ev = app.evaluate(order);
     return Row(mainAxisSize: MainAxisSize.min, children: [
       // The contractor name gives way (with ...) when the row is narrow.
-      Flexible(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 150), child: Text(order.contractor ?? app.s.t('common.unassigned'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12.5)))),
+      Flexible(child: SizedBox(width: 150, child: Text(order.contractor ?? app.s.t('common.unassigned'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12.5)))),
       const SizedBox(width: 8),
       SizedBox(width: 70, child: Text(order.receivedDate == null ? '' : app.dateShort(order.receivedDate!), style: const TextStyle(color: C.muted, fontSize: 12.5))),
       SizedBox(width: 100, child: ProgressLine(ev.closed, ev.total)),
       const SizedBox(width: 8),
-      StatusChip(ev.status),
+      // Same width for every status, so the pills line up down the list.
+      SizedBox(width: 78, child: Align(alignment: AlignmentDirectional.centerStart, child: StatusChip(ev.status))),
     ]);
   }
 }

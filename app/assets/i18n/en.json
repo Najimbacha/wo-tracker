@@ -343,6 +343,7 @@
   "pipeline.bucket.lateStart": "Tasreeh started, not dug",
   "board.title": "Work in progress",
   "board.summary": "{count#order} with work under way · {late} late · {hold} on hold",
+  "board.waitingNew": "new today",
   "board.waitingDays": "{count}d waiting",
   "todo.kashfeya": "Do the kashfeya (site inspection)",
   "todo.tasreeh_applied": "Apply for tasreeh",

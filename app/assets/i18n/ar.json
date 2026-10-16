@@ -343,6 +343,7 @@
   "pipeline.bucket.lateStart": "بدأ التصريح ولم تتم الحفرية",
   "board.title": "الأعمال الجارية",
   "board.summary": "{count#order} قيد العمل · متأخر {late} · متوقف {hold}",
+  "board.waitingNew": "جديد اليوم",
   "board.waitingDays": "ينتظر {count#day}",
   "todo.kashfeya": "إجراء الكشفية",
   "todo.tasreeh_applied": "تقديم التصريح",
