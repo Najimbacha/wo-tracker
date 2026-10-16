@@ -5,7 +5,7 @@ do $$
 declare t text;
 begin
   foreach t in array array['contractors', 'districts', 'cable_sizes', 'work_orders', 'permits', 'segments', 'meters',
-                           'cable_runs', 'steps', 'hold_periods', 'attachments', 'followups', 'saved_views', 'settings'] loop
+                           'cable_runs', 'steps', 'hold_periods', 'attachments', 'followups', 'reminders', 'saved_views', 'settings'] loop
     execute format('revoke all on public.%I from anon', t);
     execute format('revoke delete, truncate on public.%I from authenticated', t);
     execute format('grant select, insert, update on public.%I to authenticated', t);

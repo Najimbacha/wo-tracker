@@ -14,7 +14,7 @@ declare
   moved bigint;
 begin
   foreach t in array array['contractors', 'districts', 'cable_sizes', 'work_orders', 'permits', 'segments', 'meters',
-                           'cable_runs', 'steps', 'hold_periods', 'attachments', 'followups', 'saved_views', 'settings',
+                           'cable_runs', 'steps', 'hold_periods', 'attachments', 'followups', 'reminders', 'saved_views', 'settings',
                            'activity_log'] loop
     -- The protections (no delete, no owner change, append-only history) are switched off
     -- only for this move and switched back on straight after.

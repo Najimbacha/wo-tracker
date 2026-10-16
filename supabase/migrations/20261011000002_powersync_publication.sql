@@ -9,5 +9,6 @@ begin
       public.contractors, public.districts, public.cable_sizes, public.work_orders, public.permits,
       public.segments, public.meters, public.cable_runs, public.steps, public.hold_periods,
       public.attachments, public.followups, public.saved_views, public.settings;
+    -- reminders joins it in 20261016000001_reminders.sql
   end if;
 end $$;

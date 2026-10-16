@@ -59,6 +59,16 @@ class StepPhoto {
   const StepPhoto({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId});
 }
 
+/// "Check tasreeh on Sunday": a note on one order with a day to look at it again.
+class Reminder {
+  final String id;
+  final String orderId;
+  final String due; // yyyy-mm-dd
+  final String note;
+  final bool done;
+  const Reminder({required this.id, required this.orderId, required this.due, required this.note, this.done = false});
+}
+
 const Object _keep = Object();
 
 /// The account's settings (one row per account, same id on every device).

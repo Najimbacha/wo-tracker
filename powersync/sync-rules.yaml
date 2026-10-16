@@ -17,5 +17,6 @@ bucket_definitions:
       - SELECT * FROM hold_periods WHERE owner_id = bucket.user_id
       - SELECT * FROM attachments WHERE owner_id = bucket.user_id
       - SELECT * FROM followups WHERE owner_id = bucket.user_id
+      - SELECT * FROM reminders WHERE owner_id = bucket.user_id
       - SELECT * FROM saved_views WHERE owner_id = bucket.user_id
       - SELECT * FROM settings WHERE owner_id = bucket.user_id

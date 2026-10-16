@@ -128,6 +128,12 @@ final Schema appSchema = Schema([
     ignoreEmptyUpdates: true,
   ),
   const Table('followups', [Column.text('contractor_id'), Column.text('followed_at'), Column.text('note'), ..._stamps], ignoreEmptyUpdates: true),
+  const Table(
+    'reminders',
+    [Column.text('work_order_id'), Column.text('due_date'), Column.text('note'), Column.text('done_at'), ..._stamps],
+    indexes: [Index('by_order', [IndexedColumn('work_order_id')])],
+    ignoreEmptyUpdates: true,
+  ),
   const Table('saved_views', [Column.text('name'), Column.text('filter'), Column.integer('sort_order'), ..._stamps], ignoreEmptyUpdates: true),
   const Table(
     'settings',

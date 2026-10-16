@@ -78,7 +78,7 @@ class SupabaseConnector extends PowerSyncBackendConnector {
         'SELECT DISTINCT table_name, row_id FROM refused_changes WHERE work_order_id = ? AND row_id <> ?', [rowId, rowId]);
     if (waiting.isEmpty) return;
     // Parents first: steps point at segments and meters.
-    const order = ['permits', 'segments', 'meters', 'cable_runs', 'hold_periods', 'steps', 'attachments'];
+    const order = ['permits', 'segments', 'meters', 'cable_runs', 'hold_periods', 'steps', 'attachments', 'reminders'];
     final rows = [...waiting]..sort((a, b) => order.indexOf(a['table_name'] as String).compareTo(order.indexOf(b['table_name'] as String)));
     for (final r in rows) {
       try {

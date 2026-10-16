@@ -9,6 +9,7 @@ import '../../domain/rules_engine.dart';
 import '../nav.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/reminders.dart';
 import 'order_detail.dart';
 
 class TodayScreen extends StatelessWidget {
@@ -92,6 +93,7 @@ class _Queue extends StatelessWidget {
           if (attention.isNotEmpty) TextSpan(text: ' · ${s.t('today.needAttention', {'count': attention.length})}', style: const TextStyle(color: C.critical, fontWeight: FontWeight.w500)),
         ])),
       ),
+      ..._dueReminders(context, selected),
       _Head(title: s.t('today.needsAttention'), count: attention.length, onTap: () => app.showOrders(const FilterCriteria(quick: ['needs_attention']), title: s.t('today.needsAttention'))),
       if (attention.isEmpty)
         Padding(
@@ -151,6 +153,28 @@ class _Queue extends StatelessWidget {
       const SizedBox(height: 80),
     ];
     return ListView(children: children);
+  }
+
+  /// Reminders whose day has come (or passed) and are not ticked off: a short list at the top.
+  static List<Widget> _dueReminders(BuildContext context, String? selected) {
+    final app = context.app;
+    final s = app.s;
+    final due = [
+      for (final r in app.data.reminders)
+        if (!r.done && r.due.compareTo(app.today) <= 0 && app.orderById(r.orderId) != null && !app.orderById(r.orderId)!.deleted) r
+    ];
+    if (due.isEmpty) return const [];
+    return [
+      _Head(title: s.t('today.reminders'), count: due.length),
+      for (final r in due.take(8))
+        OrderTile(
+          order: app.orderById(r.orderId)!,
+          selected: r.orderId == selected,
+          onTap: () => openOrder(context, r.orderId),
+          subtitle: r.note,
+          trailing: Text(dueLabel(context, r.due), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: r.due.compareTo(app.today) < 0 ? C.critical : C.muted, fontWeight: FontWeight.w600)),
+        ),
+    ];
   }
 
   static int _days(Evaluation ev) => ev.alerts.map((a) => (a['days'] as int?) ?? 0).fold<int>(0, (m, d) => d > m ? d : m);

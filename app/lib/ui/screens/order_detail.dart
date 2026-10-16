@@ -11,6 +11,7 @@ import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/photos.dart';
+import '../widgets/reminders.dart';
 import 'history_sheet.dart';
 import 'permit_dialog.dart';
 import 'status_dialog.dart';
@@ -71,6 +72,8 @@ class OrderDetail extends StatelessWidget {
           ),
         if (ev.alerts.isNotEmpty) ...[_Alerts(ev: ev), const SizedBox(height: 10)],
         _Facts(order: o, ev: ev),
+        const SizedBox(height: 10),
+        RemindersCard(order: o, canEdit: !o.deleted && o.state != 'cancelled' && o.state != 'merged'),
         const SizedBox(height: 10),
         if (twoCols) _twoColumns(_stepGroups(context, o, ev)) else ..._spaced(_stepGroups(context, o, ev)),
         const SizedBox(height: 10),

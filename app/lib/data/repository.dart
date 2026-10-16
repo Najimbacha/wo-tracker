@@ -18,6 +18,7 @@ class RepoData {
   final List<SavedView> views;
   final List<FollowUpRecord> followUps;
   final List<StepPhoto> attachments; // live photos, oldest first
+  final List<Reminder> reminders; // not removed ones (done ones too), by due date
   final AppSettings settings;
   final bool loaded;
   const RepoData({
@@ -28,6 +29,7 @@ class RepoData {
     this.views = const [],
     this.followUps = const [],
     this.attachments = const [],
+    this.reminders = const [],
     this.settings = const AppSettings(),
     this.loaded = false,
   });
@@ -90,6 +92,10 @@ abstract class Repository {
   /// 'compaction@<segment id>'). The file is copied into the app's own photo folder, so the
   /// original can be deleted afterwards. [label] starts the saved file name.
   Future<StepPhoto> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label});
+
+  Future<void> addReminder({required String orderId, required String due, required String note});
+  Future<void> setReminderDone(String id, bool done);
+  Future<void> removeReminder(String id);
 
   /// Removes a photo from the list. The file stays on the device (nothing is lost).
   Future<void> removePhoto(String id);

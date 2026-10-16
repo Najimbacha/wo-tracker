@@ -18,7 +18,7 @@ import 'schema.dart';
 
 const _syncedTables = [
   'contractors', 'districts', 'cable_sizes', 'work_orders', 'permits', 'segments', 'meters', 'cable_runs',
-  'steps', 'hold_periods', 'attachments', 'followups', 'saved_views', 'settings',
+  'steps', 'hold_periods', 'attachments', 'reminders', 'followups', 'saved_views', 'settings',
 ];
 
 /// The one settings row (same id on every device; this app has one user).
@@ -250,6 +250,15 @@ class PowerSyncRepository extends Repository {
             takenAt: DateTime.tryParse(r['taken_at'] as String? ?? '') ?? DateTime.now(),
             driveFileId: r['drive_file_id'] as String?),
     ];
+    final reminders = [
+      for (final r in await db.getAll('SELECT * FROM reminders WHERE deleted_at IS NULL ORDER BY due_date, created_at'))
+        Reminder(
+            id: r['id'] as String,
+            orderId: r['work_order_id'] as String? ?? '',
+            due: (r['due_date'] as String? ?? '').split('T').first,
+            note: r['note'] as String? ?? '',
+            done: r['done_at'] != null),
+    ];
     final st = await db.getOptional('SELECT * FROM settings WHERE deleted_at IS NULL ORDER BY id = ? DESC LIMIT 1', [settingsId]);
     var settings = const AppSettings();
     if (st != null) {
@@ -269,6 +278,7 @@ class PowerSyncRepository extends Repository {
       views: views,
       followUps: followUps,
       attachments: attachments,
+      reminders: reminders,
       settings: settings,
       loaded: true,
     );
@@ -557,6 +567,16 @@ class PowerSyncRepository extends Repository {
     }
     return StepPhoto(id: id, orderId: orderId, fileName: fileName, takenAt: now);
   }
+
+  @override
+  Future<void> addReminder({required String orderId, required String due, required String note}) =>
+      db.execute('INSERT INTO reminders (id, work_order_id, due_date, note) VALUES (?, ?, ?, ?)', [newId(), orderId, due, note.trim()]);
+
+  @override
+  Future<void> setReminderDone(String id, bool done) => db.execute('UPDATE reminders SET done_at = ? WHERE id = ?', [done ? _now : null, id]);
+
+  @override
+  Future<void> removeReminder(String id) => db.execute('UPDATE reminders SET deleted_at = ? WHERE id = ?', [_now, id]);
 
   @override
   Future<void> removePhoto(String id) => db.execute('UPDATE attachments SET deleted_at = ? WHERE id = ?', [_now, id]);

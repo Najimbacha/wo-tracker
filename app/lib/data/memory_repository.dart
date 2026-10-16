@@ -59,6 +59,7 @@ class MemoryRepository extends Repository {
     List<SavedView>? views,
     List<FollowUpRecord>? followUps,
     List<StepPhoto>? attachments,
+    List<Reminder>? reminders,
     AppSettings? settings,
   }) =>
       RepoData(
@@ -69,6 +70,7 @@ class MemoryRepository extends Repository {
         views: views ?? _data.views,
         followUps: followUps ?? _data.followUps,
         attachments: attachments ?? _data.attachments,
+        reminders: reminders ?? _data.reminders,
         settings: settings ?? _data.settings,
         loaded: true,
       );
@@ -92,6 +94,18 @@ class MemoryRepository extends Repository {
     _emit(_copy(attachments: [..._data.attachments, a]));
     return a;
   }
+
+  @override
+  Future<void> addReminder({required String orderId, required String due, required String note}) async =>
+      _emit(_copy(reminders: [..._data.reminders, Reminder(id: newId(), orderId: orderId, due: due, note: note.trim())]));
+
+  @override
+  Future<void> setReminderDone(String id, bool done) async => _emit(_copy(reminders: [
+        for (final r in _data.reminders) r.id == id ? Reminder(id: r.id, orderId: r.orderId, due: r.due, note: r.note, done: done) : r
+      ]));
+
+  @override
+  Future<void> removeReminder(String id) async => _emit(_copy(reminders: [for (final r in _data.reminders) if (r.id != id) r]));
 
   @override
   Future<void> removePhoto(String id) async => _emit(_copy(attachments: [for (final a in _data.attachments) if (a.id != id) a]));

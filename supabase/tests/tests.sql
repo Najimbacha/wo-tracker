@@ -138,6 +138,8 @@ select pg_temp.ok((select count(*) = 0 from activity_log), 'user B sees none of 
 update work_orders set notes = 'hacked' where id = 'aaaaaaaa-0000-0000-0000-000000000010';
 select pg_temp.expect_error($$insert into steps (work_order_id, step_key, done_date) values ('aaaaaaaa-0000-0000-0000-000000000010', 'excavation', date '2026-10-06')$$,
   'user B cannot add a step to user A''s order');
+select pg_temp.expect_error($$insert into reminders (work_order_id, due_date, note) values ('aaaaaaaa-0000-0000-0000-000000000010', date '2026-10-20', 'check tasreeh')$$,
+  'user B cannot add a reminder to user A''s order');
 insert into work_orders (wo_number, category, type_code, received_date) values ('441782012', 'extension', '402', date '2026-10-02');
 select pg_temp.ok(true, 'user B can use the same work order number in their own account');
 
@@ -160,6 +162,7 @@ select pg_temp.expect_error($$delete from activity_log$$, 'administrator cannot 
 select pg_temp.expect_error($$truncate steps$$, 'administrator cannot truncate steps');
 select pg_temp.expect_error($$truncate cable_runs$$, 'administrator cannot truncate a table nothing else points to');
 select pg_temp.expect_error($$truncate saved_views$$, 'administrator cannot truncate saved views');
+select pg_temp.expect_error($$truncate reminders$$, 'administrator cannot truncate reminders');
 
 -- Two devices mark the same step while offline. With random row ids the second upload is
 -- refused by the one-row-per-step rule (that would block the sync queue)...
@@ -182,7 +185,7 @@ select pg_temp.ok((select count(*) = 1 and max(done_date) = date '2026-10-07' fr
 reset role;
 
 -- PowerSync can only sync tables in its publication; history stays on the server.
-select pg_temp.ok((select count(*) = 14 from pg_publication_tables where pubname = 'powersync'), 'PowerSync publication lists the 14 synced tables');
+select pg_temp.ok((select count(*) = 15 from pg_publication_tables where pubname = 'powersync'), 'PowerSync publication lists the 15 synced tables');
 select pg_temp.ok(not exists (select 1 from pg_publication_tables where pubname = 'powersync' and tablename = 'activity_log'), 'history is not published to devices');
 
 -- Data health: database size against the free plan's 500 MB.

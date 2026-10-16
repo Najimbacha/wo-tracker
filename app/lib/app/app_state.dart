@@ -311,6 +311,7 @@ class AppState extends ChangeNotifier {
       views: data.views,
       followUps: data.followUps,
       attachments: data.attachments,
+      reminders: data.reminders,
       settings: data.settings,
       loaded: true,
     );
