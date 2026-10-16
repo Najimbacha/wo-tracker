@@ -12,6 +12,7 @@ import '../theme.dart';
 import '../widgets/common.dart';
 import '../nav.dart';
 import '../widgets/dialogs.dart';
+import '../widgets/scan.dart';
 
 class OrderFormPage extends StatefulWidget {
   const OrderFormPage({super.key, this.editing});
@@ -40,6 +41,7 @@ class _MeterDraft {
   final String id;
   String number, oldNumber, amps;
   String? type;
+  int scans = 0; // bumped when a scan fills a number, so its field shows the new text
 }
 
 class _CableDraft {
@@ -742,6 +744,21 @@ class _OrderFormPageState extends State<OrderFormPage> {
     );
   }
 
+  /// Camera button inside a meter number field: reads the code and puts it in the field.
+  Widget _scanButton(BuildContext context, void Function(String) set, _MeterDraft m) => IconButton(
+        tooltip: context.t('scan.button'),
+        icon: const Icon(Icons.qr_code_scanner, size: 20),
+        onPressed: () async {
+          final code = await scanCode(context);
+          if (code == null || !mounted) return;
+          setState(() {
+            set(code);
+            m.scans++;
+            _dirty = true;
+          });
+        },
+      );
+
   Widget _metersEditor(BuildContext context, FormSpec spec) {
     final s = context.s;
     if (_meters.isEmpty) _meters.add(_MeterDraft(id: context.appRead.repo.newId()));
@@ -789,23 +806,31 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   },
             children: [
               TextFormField(
+                  key: ValueKey('mn-${m.id}-${m.scans}'),
                   initialValue: m.number,
                   textDirection: TextDirection.ltr,
                   onChanged: (v) {
                     m.number = v;
                     _touch();
                   },
-                  decoration: InputDecoration(labelText: s.t('order.meterNumber')),
+                  decoration: InputDecoration(
+                    labelText: s.t('order.meterNumber'),
+                    suffixIcon: canScanCodes ? _scanButton(context, (v) => m.number = v, m) : null,
+                  ),
                 ),
               if (spec.oldMeterNumber)
                 TextFormField(
+                    key: ValueKey('mo-${m.id}-${m.scans}'),
                     initialValue: m.oldNumber,
                     textDirection: TextDirection.ltr,
                     onChanged: (v) {
                       m.oldNumber = v;
                       _touch();
                     },
-                    decoration: InputDecoration(labelText: s.t('order.oldMeterNumber')),
+                    decoration: InputDecoration(
+                      labelText: s.t('order.oldMeterNumber'),
+                      suffixIcon: canScanCodes ? _scanButton(context, (v) => m.oldNumber = v, m) : null,
+                    ),
                   ),
               DropdownButtonFormField<String?>(
                   style: Theme.of(context).textTheme.bodyLarge,

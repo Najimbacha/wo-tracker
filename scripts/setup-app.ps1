@@ -50,11 +50,14 @@ $sample = Join-Path $app 'test\widget_test.dart'
 if ((Test-Path $sample) -and (Select-String -Path $sample -Pattern 'MyApp' -Quiet)) { Remove-Item $sample }
 
 if (Test-Path (Join-Path $app 'android')) {
-  Step 'Android: internet permission and app name'
+  Step 'Android: internet and camera permissions, app name'
   $manifest = Join-Path $app 'android\app\src\main\AndroidManifest.xml'
   $xml = Get-Content $manifest -Raw
   if ($xml -notmatch 'android.permission.INTERNET') {
     $xml = $xml -replace '(<manifest[^>]*>)', "`$1`n    <uses-permission android:name=`"android.permission.INTERNET`"/>"
+  }
+  if ($xml -notmatch 'android.permission.CAMERA') {
+    $xml = $xml -replace '(<manifest[^>]*>)', "`$1`n    <uses-permission android:name=`"android.permission.CAMERA`"/>"
   }
   $xml = $xml -replace 'android:label="[^"]*"', 'android:label="WO Tracker"'
   [IO.File]::WriteAllText($manifest, $xml, (New-Object Text.UTF8Encoding $false))

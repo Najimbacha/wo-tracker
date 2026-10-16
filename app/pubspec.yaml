@@ -19,6 +19,8 @@ dependencies:
   printing: ^5.15.1
   # Taking or choosing photos for steps.
   image_picker: ^1.1.2
+  # Reading a meter's barcode with the phone camera.
+  mobile_scanner: ^6.0.0
   # Saving and sharing files.
   file_selector: ^1.0.3
   share_plus: ^13.3.1
