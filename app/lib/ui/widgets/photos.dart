@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../app/scope.dart';
 import '../../data/models.dart';
-import '../../data/order_rows.dart';
+import '../../data/order_rows.dart' show stepRowIdFor;
 import '../../data/repository.dart';
 import '../../domain/order_input.dart';
 import '../theme.dart';

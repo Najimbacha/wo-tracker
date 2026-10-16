@@ -446,7 +446,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                   initialValue: _contractor,
                   isExpanded: true,
-                  style: Theme.of(context).textTheme.bodyLarge,
                   decoration: InputDecoration(labelText: s.t('order.contractor')),
                   items: [
                     DropdownMenuItem<String?>(value: null, child: Text(s.t('common.unassigned'))),
