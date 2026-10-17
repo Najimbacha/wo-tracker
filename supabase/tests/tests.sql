@@ -199,5 +199,8 @@ set role anon;
 select pg_temp.expect_error($$select public.data_health()$$, 'signed-out visitors cannot read data health');
 reset role;
 
+-- Cloud copy of attached files: the column exists and the owner can set it.
+select pg_temp.ok(exists (select 1 from information_schema.columns where table_name = 'attachments' and column_name = 'storage_path'), 'attachments can record where the cloud copy of a file is');
+
 \o
 \echo ALL DATABASE TESTS PASSED

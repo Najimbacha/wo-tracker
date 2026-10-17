@@ -56,7 +56,8 @@ class StepPhoto {
   final String fileName; // e.g. 402_2602... _excavation_2026-10-16.jpg
   final DateTime takenAt;
   final String? driveFileId;
-  const StepPhoto({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId});
+  final String? storagePath; // set once the file is in the cloud (see the attachment_storage migration)
+  const StepPhoto({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId, this.storagePath});
 
   /// Pictures show as thumbnails; everything else (PDF, Word, Excel...) opens in its own program.
   bool get isImage => isImageName(fileName);

@@ -100,6 +100,9 @@ abstract class Repository {
   /// Removes a photo from the list. The file stays on the device (nothing is lost).
   Future<void> removePhoto(String id);
 
+  /// True when attached files are backed up to the cloud and shared with other devices.
+  bool get filesInCloud => false;
+
   /// Where the picture is on this device, or null when it was taken on another device.
   String? photoPath(StepPhoto a);
 

@@ -48,6 +48,8 @@ class PowerSyncRepository extends Repository {
   Timer? _reloadTimer;
   bool _reloading = false;
   bool _reloadAgain = false;
+  Timer? _filesTimer;
+  bool _filesBusy = false;
 
   // Name → id for contractors and districts (rows include deleted ones).
   Map<String, String> _contractorIds = {};
@@ -118,6 +120,9 @@ class PowerSyncRepository extends Repository {
       }
     }
     await _refreshSync();
+    // Files that could not go up (no internet) or come down are tried again every few minutes.
+    _filesTimer = Timer.periodic(const Duration(minutes: 3), (_) => unawaited(_syncFiles()));
+    unawaited(_syncFiles());
   }
 
   Future<void> _connect() async {
@@ -158,6 +163,7 @@ class PowerSyncRepository extends Repository {
       _reloading = false;
     }
     unawaited(_refreshSync());
+    unawaited(_syncFiles());
   }
 
   Future<RepoData> _load() async {
@@ -248,7 +254,8 @@ class PowerSyncRepository extends Repository {
             stepRowId: r['step_id'] as String?,
             fileName: r['file_name'] as String? ?? '',
             takenAt: DateTime.tryParse(r['taken_at'] as String? ?? '') ?? DateTime.now(),
-            driveFileId: r['drive_file_id'] as String?),
+            driveFileId: r['drive_file_id'] as String?,
+            storagePath: r['storage_path'] as String?),
     ];
     final reminders = [
       for (final r in await db.getAll('SELECT * FROM reminders WHERE deleted_at IS NULL ORDER BY due_date, created_at'))
@@ -517,6 +524,7 @@ class PowerSyncRepository extends Repository {
   Future<StepPhoto> addPhoto({required OrderInput order, required String? stepKey, required String sourcePath, required String label}) async {
     final orderId = order.id;
     if (orderId == null) throw const RepoException('photo.saveOrderFirst');
+    if (await File(sourcePath).length() > maxFileBytes) throw const RepoException('photo.tooBig');
     final id = newId();
     final now = DateTime.now();
     final stamp = now.toIso8601String().substring(0, 19).replaceAll(':', '').replaceAll('-', '').replaceAll('T', '-');
@@ -565,6 +573,7 @@ class PowerSyncRepository extends Repository {
       } catch (_) {}
       rethrow;
     }
+    unawaited(_syncFiles());
     return StepPhoto(id: id, orderId: orderId, fileName: fileName, takenAt: now);
   }
 
@@ -577,6 +586,47 @@ class PowerSyncRepository extends Repository {
 
   @override
   Future<void> removeReminder(String id) => db.execute('UPDATE reminders SET deleted_at = ? WHERE id = ?', [_now, id]);
+
+  static const maxFileBytes = 25 * 1024 * 1024; // the bucket's limit
+  static const _bucket = 'attachments';
+
+  @override
+  bool get filesInCloud => _online;
+
+  /// Sends files that are only on this device to the cloud bucket, and fetches files other
+  /// devices attached. Failures (no internet, signed out) are quietly retried later.
+  Future<void> _syncFiles() async {
+    if (_filesBusy || !_online) return;
+    final client = Supabase.instance.client;
+    final uid = client.auth.currentUser?.id;
+    if (uid == null) return;
+    _filesBusy = true;
+    var downloaded = false;
+    try {
+      final store = client.storage.from(_bucket);
+      for (final a in _current.attachments) {
+        final local = _local(a.id, a.fileName);
+        final have = File(local).existsSync();
+        try {
+          if (have && a.storagePath == null) {
+            final path = '$uid/${a.id}${_ext(a.fileName)}';
+            await store.upload(path, File(local), fileOptions: const FileOptions(upsert: true));
+            await db.execute('UPDATE attachments SET storage_path = ? WHERE id = ?', [path, a.id]);
+          } else if (!have && a.storagePath != null) {
+            final bytes = await store.download(a.storagePath!);
+            await Directory(photosDir).create(recursive: true);
+            await File(local).writeAsBytes(bytes, flush: true);
+            downloaded = true;
+          }
+        } catch (_) {
+          // Try again on the next round; one bad file must not stop the others.
+        }
+      }
+    } finally {
+      _filesBusy = false;
+    }
+    if (downloaded) _scheduleReload();
+  }
 
   @override
   Future<void> removePhoto(String id) => db.execute('UPDATE attachments SET deleted_at = ? WHERE id = ?', [_now, id]);
@@ -730,6 +780,7 @@ class PowerSyncRepository extends Repository {
   @override
   Future<void> dispose() async {
     _reloadTimer?.cancel();
+    _filesTimer?.cancel();
     for (final s in _subs) {
       await s.cancel();
     }

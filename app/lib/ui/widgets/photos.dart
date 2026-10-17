@@ -109,19 +109,32 @@ class PhotoStrip extends StatelessWidget {
             InkWell(
               borderRadius: BorderRadius.circular(6),
               onTap: () => showPhotoViewer(context, photos: images, index: images.indexOf(a), canDelete: canEdit),
-              child: _Thumb(path: repo.photoPath(a)),
+              child: _Thumb(path: repo.photoPath(a), cloud: repo.filesInCloud ? a.storagePath != null : null),
             )
           else
-            _FileTile(file: a, canRemove: canEdit),
+            _FileTile(file: a, canRemove: canEdit, cloud: repo.filesInCloud ? a.storagePath != null : null),
       ]),
     );
   }
 }
 
+/// A small cloud mark: saved in the cloud (true) or waiting to go up (false). Null = no cloud on this install.
+class _CloudMark extends StatelessWidget {
+  const _CloudMark(this.saved, {this.size = 14});
+  final bool saved;
+  final double size;
+  @override
+  Widget build(BuildContext context) => Tooltip(
+        message: context.s.t(saved ? 'photo.inCloud' : 'photo.waitingCloud'),
+        child: Icon(saved ? Icons.cloud_done_outlined : Icons.cloud_upload_outlined, size: size, color: saved ? C.success : C.locked),
+      );
+}
+
 class _FileTile extends StatelessWidget {
-  const _FileTile({required this.file, required this.canRemove});
+  const _FileTile({required this.file, required this.canRemove, this.cloud});
   final StepPhoto file;
   final bool canRemove;
+  final bool? cloud;
 
   Future<void> _remove(BuildContext context) async {
     final app = context.appRead;
@@ -149,7 +162,10 @@ class _FileTile extends StatelessWidget {
               Flexible(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                   Text(file.fileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5)),
-                  if (file.extension.isNotEmpty) Text(file.extension, style: const TextStyle(fontSize: 11, color: C.faint)),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    if (file.extension.isNotEmpty) Text(file.extension, style: const TextStyle(fontSize: 11, color: C.faint)),
+                    if (cloud != null) ...[const SizedBox(width: 6), _CloudMark(cloud!, size: 13)],
+                  ]),
                 ]),
               ),
               if (canRemove)
@@ -169,19 +185,36 @@ class _FileTile extends StatelessWidget {
 }
 
 class _Thumb extends StatelessWidget {
-  const _Thumb({required this.path});
+  const _Thumb({required this.path, this.cloud});
   final String? path;
+  final bool? cloud;
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(color: C.chip, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
-          child: path == null
-              ? const Icon(Icons.cloud_outlined, size: 20, color: C.locked)
-              : Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 20, color: C.locked)),
-        ),
+  Widget build(BuildContext context) => SizedBox(
+        width: 52,
+        height: 52,
+        child: Stack(children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                decoration: BoxDecoration(color: C.chip, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
+                child: path == null
+                    ? const Icon(Icons.cloud_download_outlined, size: 20, color: C.locked)
+                    : Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 20, color: C.locked)),
+              ),
+            ),
+          ),
+          if (cloud != null && path != null)
+            PositionedDirectional(
+              end: 2,
+              bottom: 2,
+              child: Container(
+                padding: const EdgeInsets.all(1.5),
+                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                child: _CloudMark(cloud!, size: 12),
+              ),
+            ),
+        ]),
       );
 }
 

@@ -119,6 +119,7 @@ final Schema appSchema = Schema([
       Column.text('step_id'),
       Column.text('kind'),
       Column.text('drive_file_id'),
+      Column.text('storage_path'),
       Column.text('file_name'),
       Column.text('sha256'),
       Column.text('taken_at'),
