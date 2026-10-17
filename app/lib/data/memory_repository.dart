@@ -88,7 +88,7 @@ class MemoryRepository extends Repository {
         id: id,
         orderId: order.id ?? '',
         stepRowId: stepKey == null ? null : stepRowIdFor(order.id ?? '', stepKey, segmentStepKeys),
-        fileName: label,
+        fileName: '$label${RegExp(r'\.[A-Za-z0-9]{1,5}$').firstMatch(sourcePath)?.group(0) ?? '.bin'}',
         takenAt: DateTime.now());
     _photoFiles[id] = sourcePath;
     _emit(_copy(attachments: [..._data.attachments, a]));

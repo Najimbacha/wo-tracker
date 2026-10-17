@@ -2,6 +2,7 @@
 // deleted_at, and Undo can bring a removed part back on the same row.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wo_tracker/data/ids.dart';
+import 'package:wo_tracker/data/models.dart' show attachmentKindOf, isImageName;
 import 'package:wo_tracker/data/order_rows.dart';
 import 'package:wo_tracker/domain/order_input.dart';
 
@@ -95,5 +96,13 @@ void main() {
     expect(splitStepKey('install@m1', keys), (stepKey: 'install', segmentId: null, meterId: 'm1'));
     expect(stepRowIdFor('wo-1', 'compaction@s1', keys), StepIds.stepRowId('wo-1', 'compaction', segmentId: 's1'));
     expect(stepRowIdFor('wo-1', 'install@m1', keys), StepIds.stepRowId('wo-1', 'install', meterId: 'm1'));
+  });
+
+  test('any file can be attached: pictures, PDFs and the rest get the right kind', () {
+    expect(attachmentKindOf('402_kashfeya.JPG'), 'photo');
+    expect(attachmentKindOf('tasreeh.pdf'), 'sec_pdf');
+    expect(attachmentKindOf('sketch.dwg'), 'other');
+    expect(isImageName('a.heic'), isTrue);
+    expect(isImageName('a.pdf'), isFalse);
   });
 }

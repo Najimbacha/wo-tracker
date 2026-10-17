@@ -1,10 +1,12 @@
-// Photos on a step: pick or take them, see them as small pictures under the step,
+// Attachments on a step (pictures, PDFs, any file): pick or take them, see them as small pictures under the step,
 // tap one to see it big. A photo is never deleted from the device; "remove" only hides it.
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform, kIsWeb;
 import 'package:flutter/material.dart' hide Actions;
+import 'package:file_selector/file_selector.dart' as fs;
 import 'package:image_picker/image_picker.dart';
+import 'package:open_filex/open_filex.dart';
 
 import '../../app/scope.dart';
 import '../../data/models.dart';
@@ -25,45 +27,68 @@ List<StepPhoto> photosOfStep(BuildContext context, OrderInput order, String step
   return [for (final a in app.data.attachments) if (a.orderId == id && a.stepRowId == row) a];
 }
 
-/// Asks where the picture comes from (camera or files; on a PC just files) and attaches it.
+/// Asks where the file comes from (camera, pictures or any file; on a PC just files) and attaches it.
+/// Anything can be attached: pictures show as thumbnails, PDFs and other files open in their own program.
 Future<void> addPhotosToStep(BuildContext context, OrderInput order, String stepKey, String stepName) async {
   final app = context.appRead;
   final s = app.s;
-  final picker = ImagePicker();
   try {
-    var files = <XFile>[];
-    var fromCamera = false;
+    var choice = 'files';
     if (_hasCamera) {
-      final choice = await showModalBottomSheet<String>(
+      final c = await showModalBottomSheet<String>(
         context: context,
         builder: (c) => SafeArea(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             ListTile(leading: const Icon(Icons.photo_camera_outlined), title: Text(s.t('photo.camera')), onTap: () => Navigator.pop(c, 'camera')),
             ListTile(leading: const Icon(Icons.photo_library_outlined), title: Text(s.t('photo.gallery')), onTap: () => Navigator.pop(c, 'gallery')),
+            ListTile(leading: const Icon(Icons.attach_file), title: Text(s.t('photo.file')), onTap: () => Navigator.pop(c, 'files')),
           ]),
         ),
       );
-      if (choice == null) return;
-      fromCamera = choice == 'camera';
+      if (c == null) return;
+      choice = c;
     }
-    if (fromCamera) {
-      final f = await picker.pickImage(source: ImageSource.camera, maxWidth: 2400, imageQuality: 85);
-      if (f != null) files = [f];
+    final picked = <({String path, String name})>[];
+    if (choice == 'camera') {
+      final f = await ImagePicker().pickImage(source: ImageSource.camera, maxWidth: 2400, imageQuality: 85);
+      if (f != null) picked.add((path: f.path, name: ''));
+    } else if (choice == 'gallery') {
+      for (final f in await ImagePicker().pickMultiImage(maxWidth: 2400, imageQuality: 85)) {
+        picked.add((path: f.path, name: ''));
+      }
     } else {
-      files = await picker.pickMultiImage(maxWidth: 2400, imageQuality: 85);
+      for (final f in await fs.openFiles()) {
+        picked.add((path: f.path, name: f.name));
+      }
     }
-    if (files.isEmpty) return;
-    final label = '${order.woNumber ?? 'WO'}_${stepKey.split('@').first}';
-    for (final f in files) {
+    if (picked.isEmpty) return;
+    final base = '${order.woNumber ?? 'WO'}_${stepKey.split('@').first}';
+    for (final f in picked) {
+      // A picture is named after the order and step; any other file keeps its own name too.
+      final own = f.name.contains('.') ? f.name.substring(0, f.name.lastIndexOf('.')) : f.name;
+      final label = isImageName(f.name.isEmpty ? f.path : f.name) || own.isEmpty ? base : '${base}_$own';
       await app.repo.addPhoto(order: order, stepKey: stepKey, sourcePath: f.path, label: label);
     }
-    app.showToast(s.t('photo.added', {'count': files.length, 'step': stepName}));
+    app.showToast(s.t('photo.added', {'count': picked.length, 'step': stepName}));
   } on Object catch (e) {
     app.showToast(s.t('photo.failed', {'error': e is RepoException ? s.t(e.key, e.params) : '$e'}), error: true);
   }
 }
 
-/// Small pictures of a step, tap one to open it big. Draws nothing when there are none.
+/// Opens a non-picture attachment in the program the system has for it (PDF reader, Word...).
+Future<void> openAttachment(BuildContext context, StepPhoto a) async {
+  final app = context.appRead;
+  final s = app.s;
+  final path = app.repo.photoPath(a);
+  if (path == null) {
+    app.showToast(s.t('photo.otherDevice'), error: true);
+    return;
+  }
+  final r = await OpenFilex.open(path);
+  if (r.type != ResultType.done) app.showToast(s.t('photo.openFailed', {'error': r.message}), error: true);
+}
+
+/// Small pictures and file tiles of a step. Draws nothing when there are none.
 class PhotoStrip extends StatelessWidget {
   const PhotoStrip({super.key, required this.order, required this.stepKey, required this.canEdit});
   final OrderInput order;
@@ -72,19 +97,73 @@ class PhotoStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final photos = photosOfStep(context, order, stepKey);
-    if (photos.isEmpty) return const SizedBox.shrink();
+    final all = photosOfStep(context, order, stepKey);
+    if (all.isEmpty) return const SizedBox.shrink();
     final repo = context.app.repo;
+    final images = [for (final a in all) if (a.isImage) a];
     return Padding(
       padding: const EdgeInsets.only(top: 6, bottom: 2),
       child: Wrap(spacing: 6, runSpacing: 6, children: [
-        for (var i = 0; i < photos.length; i++)
-          InkWell(
-            borderRadius: BorderRadius.circular(6),
-            onTap: () => showPhotoViewer(context, photos: photos, index: i, canDelete: canEdit),
-            child: _Thumb(path: repo.photoPath(photos[i])),
-          ),
+        for (final a in all)
+          if (a.isImage)
+            InkWell(
+              borderRadius: BorderRadius.circular(6),
+              onTap: () => showPhotoViewer(context, photos: images, index: images.indexOf(a), canDelete: canEdit),
+              child: _Thumb(path: repo.photoPath(a)),
+            )
+          else
+            _FileTile(file: a, canRemove: canEdit),
       ]),
+    );
+  }
+}
+
+class _FileTile extends StatelessWidget {
+  const _FileTile({required this.file, required this.canRemove});
+  final StepPhoto file;
+  final bool canRemove;
+
+  Future<void> _remove(BuildContext context) async {
+    final app = context.appRead;
+    final s = app.s;
+    final ok = await confirmDialog(context, title: s.t('photo.removeTitle'), body: s.t('photo.removeBody'), confirm: s.t('photo.remove'), danger: true);
+    if (ok) await app.repo.removePhoto(file.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pdf = file.extension == 'PDF';
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 230),
+      child: Material(
+        color: C.chip,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6), side: const BorderSide(color: C.line)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(6),
+          onTap: () => openAttachment(context, file),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 8, end: 2, top: 4, bottom: 4),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(pdf ? Icons.picture_as_pdf_outlined : Icons.insert_drive_file_outlined, size: 22, color: pdf ? C.critical : C.muted),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                  Text(file.fileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5)),
+                  if (file.extension.isNotEmpty) Text(file.extension, style: const TextStyle(fontSize: 11, color: C.faint)),
+                ]),
+              ),
+              if (canRemove)
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: IconButton(padding: EdgeInsets.zero, iconSize: 16, tooltip: context.s.t('photo.remove'), onPressed: () => _remove(context), icon: const Icon(Icons.close)),
+                )
+              else
+                const SizedBox(width: 8),
+            ]),
+          ),
+        ),
+      ),
     );
   }
 }

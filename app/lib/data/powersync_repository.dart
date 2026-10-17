@@ -241,7 +241,7 @@ class PowerSyncRepository extends Repository {
             note: r['note'] as String?),
     ];
     final attachments = [
-      for (final r in await db.getAll("SELECT * FROM attachments WHERE deleted_at IS NULL AND kind = 'photo' ORDER BY taken_at, created_at"))
+      for (final r in await db.getAll("SELECT * FROM attachments WHERE deleted_at IS NULL ORDER BY taken_at, created_at"))
         StepPhoto(
             id: r['id'] as String,
             orderId: r['work_order_id'] as String? ?? '',
@@ -502,7 +502,7 @@ class PowerSyncRepository extends Repository {
     final name = path.split(RegExp(r'[\\/]')).last;
     final dot = name.lastIndexOf('.');
     final e = dot <= 0 ? '' : name.substring(dot).toLowerCase();
-    return RegExp(r'^\.[a-z0-9]{1,5}$').hasMatch(e) ? e : '.jpg';
+    return RegExp(r'^\.[a-z0-9]{1,5}$').hasMatch(e) ? e : '.bin';
   }
 
   String _local(String id, String fileName) => '$photosDir/$id${_ext(fileName)}';
@@ -554,7 +554,7 @@ class PowerSyncRepository extends Repository {
             RowWrite('attachments', id, 'insert', {
               'work_order_id': orderId,
               'step_id': stepId,
-              'kind': 'photo',
+              'kind': attachmentKindOf(fileName),
               'file_name': fileName,
               'taken_at': now.toUtc().toIso8601String(),
             }));

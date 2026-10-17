@@ -57,7 +57,19 @@ class StepPhoto {
   final DateTime takenAt;
   final String? driveFileId;
   const StepPhoto({required this.id, required this.orderId, this.stepRowId, required this.fileName, required this.takenAt, this.driveFileId});
+
+  /// Pictures show as thumbnails; everything else (PDF, Word, Excel...) opens in its own program.
+  bool get isImage => isImageName(fileName);
+  String get extension {
+    final dot = fileName.lastIndexOf('.');
+    return dot < 0 ? '' : fileName.substring(dot + 1).toUpperCase();
+  }
 }
+
+bool isImageName(String name) => RegExp(r'\.(jpe?g|png|gif|webp|bmp|heic|heif)$', caseSensitive: false).hasMatch(name);
+
+/// The attachments.kind a file gets on the server: photo, sec_pdf or other.
+String attachmentKindOf(String name) => isImageName(name) ? 'photo' : (name.toLowerCase().endsWith('.pdf') ? 'sec_pdf' : 'other');
 
 /// "Check tasreeh on Sunday": a note on one order with a day to look at it again.
 class Reminder {
