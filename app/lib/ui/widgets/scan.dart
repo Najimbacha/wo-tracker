@@ -5,7 +5,6 @@ import 'package:flutter/material.dart' hide Actions;
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../app/scope.dart';
-import '../dark.dart';
 
 bool get canScanCodes => !kIsWeb && (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
@@ -24,8 +23,7 @@ class _ScanPageState extends State<_ScanPage> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return UndoDark(
-      child: Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white, title: Text(s.t('scan.title'))),
       body: Stack(children: [
@@ -44,6 +42,6 @@ class _ScanPageState extends State<_ScanPage> {
           child: Padding(padding: const EdgeInsets.all(24), child: Text(s.t('scan.hint'), style: const TextStyle(color: Colors.white70))),
         ),
       ]),
-    ));
+    );
   }
 }

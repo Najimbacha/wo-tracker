@@ -34,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
       SectionCard(
         title: s.t('settings.dataHealth'),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(s.t('settings.dataHealthNote'), style: const TextStyle(color: C.muted, fontSize: 13)),
+          Text(s.t('settings.dataHealthNote'), style: TextStyle(color: C.muted, fontSize: 13)),
           const SizedBox(height: 10),
           Wrap(spacing: 8, runSpacing: 8, children: [
             FilledButton.icon(onPressed: () => openDataHealth(context), icon: const Icon(Icons.health_and_safety_outlined, size: 18), label: Text(s.t('settings.openDataHealth'))),
@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
           for (var i = 0; i < columns.length; i++) ...[if (i > 0) const SizedBox(width: 16), Expanded(child: column(columns[i]))],
         ]),
         const SizedBox(height: 20),
-        Text(s.t('settings.version', {'version': '1.0.0'}), style: const TextStyle(color: C.faint, fontSize: 12)),
+        Text(s.t('settings.version', {'version': '1.0.0'}), style: TextStyle(color: C.faint, fontSize: 12)),
       ]);
     });
   }
@@ -177,7 +177,7 @@ class _AlertsCardState extends State<_AlertsCard> {
     return SectionCard(
       title: s.t('settings.alerts'),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(s.t('settings.alertsNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text(s.t('settings.alertsNote'), style: TextStyle(color: C.muted, fontSize: 12.5)),
         const SizedBox(height: 8),
         for (final k in _keys)
           Padding(
@@ -195,7 +195,7 @@ class _AlertsCardState extends State<_AlertsCard> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(s.t('settings.days'), style: const TextStyle(color: C.muted)),
+              Text(s.t('settings.days'), style: TextStyle(color: C.muted)),
             ]),
           ),
         Align(alignment: AlignmentDirectional.centerEnd, child: TextButton(onPressed: () => _save(app), child: Text(s.t('common.save')))),
@@ -228,9 +228,9 @@ class _ContractorsCard extends StatelessWidget {
     }
     return SectionCard(
       title: s.t('settings.contractors'),
-      trailing: Text(s.t('settings.activeCount', {'count': list.where((c) => c.active).length}), style: const TextStyle(color: C.faint, fontSize: 12.5)),
+      trailing: Text(s.t('settings.activeCount', {'count': list.where((c) => c.active).length}), style: TextStyle(color: C.faint, fontSize: 12.5)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(s.t('settings.contractorsNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text(s.t('settings.contractorsNote'), style: TextStyle(color: C.muted, fontSize: 12.5)),
         for (final c in list)
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -326,7 +326,7 @@ class _DistrictsCard extends StatelessWidget {
       title: s.t('settings.districts'),
       trailing: Mono('${list.length}', color: C.faint),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(s.t('settings.districtsNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text(s.t('settings.districtsNote'), style: TextStyle(color: C.muted, fontSize: 12.5)),
         const SizedBox(height: 8),
         Wrap(spacing: 6, runSpacing: 6, children: [
           for (final d in list)
@@ -370,7 +370,7 @@ class _CableCard extends StatelessWidget {
     return SectionCard(
       title: s.t('settings.cableSizes'),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(s.t('settings.cableNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text(s.t('settings.cableNote'), style: TextStyle(color: C.muted, fontSize: 12.5)),
         const SizedBox(height: 8),
         Wrap(spacing: 6, runSpacing: 6, children: [
           for (final c in app.data.cableSizes) InputChip(label: Text('${c.sizeMm2} mm²'), onDeleted: () async {
@@ -478,10 +478,10 @@ class _SyncCardState extends State<_SyncCard> {
     return SectionCard(
       title: s.t('settings.sync'),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(status, style: const TextStyle(color: C.muted)),
+        Text(status, style: TextStyle(color: C.muted)),
         if (sy.lastSyncedAt != null)
-          Text(s.t('data.syncedAgo', {'when': _ago(app, sy.lastSyncedAt!)}), style: const TextStyle(color: C.faint, fontSize: 12.5)),
-        if (sy.pendingChanges > 0) Text(s.t('toast.waitingSync', {'count': sy.pendingChanges}), style: const TextStyle(color: C.warning, fontSize: 12.5)),
+          Text(s.t('data.syncedAgo', {'when': _ago(app, sy.lastSyncedAt!)}), style: TextStyle(color: C.faint, fontSize: 12.5)),
+        if (sy.pendingChanges > 0) Text(s.t('toast.waitingSync', {'count': sy.pendingChanges}), style: TextStyle(color: C.warning, fontSize: 12.5)),
         const SizedBox(height: 10),
         if (sy.configured && !sy.signedIn && !app.repo.isDemo) ...[
           TextField(controller: _email, keyboardType: TextInputType.emailAddress, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: s.t('sync.email'))),
@@ -509,7 +509,7 @@ class _SyncCardState extends State<_SyncCard> {
         const SizedBox(height: 6),
         TextButton(onPressed: () => setState(() => _showSetup = !_showSetup), child: Text(s.t(_showSetup ? 'sync.hideSetup' : 'sync.showSetup'))),
         if (_showSetup) ...[
-          Text(s.t('sync.setupNote'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+          Text(s.t('sync.setupNote'), style: TextStyle(color: C.muted, fontSize: 12.5)),
           const SizedBox(height: 8),
           TextField(controller: _url, textDirection: TextDirection.ltr, decoration: const InputDecoration(labelText: 'Supabase URL', hintText: 'https://xxxx.supabase.co')),
           const SizedBox(height: 8),

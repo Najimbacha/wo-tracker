@@ -89,7 +89,7 @@ class _PermitDialogState extends State<_PermitDialog> {
       dirty: _dirty,
       child: AlertDialog(
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${s.t('order.woNumber')} ${o.woNumber ?? ''} · ${o.type}', style: const TextStyle(fontSize: 12, color: C.faint)),
+          Text('${s.t('order.woNumber')} ${o.woNumber ?? ''} · ${o.type}', style: TextStyle(fontSize: 12, color: C.faint)),
           const SizedBox(height: 4),
           Text(widget.index == null ? s.t('tasreeh.add') : s.t('tasreeh.title'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
         ]),
@@ -111,10 +111,10 @@ class _PermitDialogState extends State<_PermitDialog> {
                 const SizedBox(width: 12),
                 Expanded(child: DateField(label: s.t('tasreeh.end'), value: _end, allowFuture: true, suggest: _plus(_start ?? app.today, 15), quick: [for (final n in const [15, 30]) (s.t('date.afterDays', {'count': n}), _plus(_start ?? app.today, n))], optional: true, first: _start, onChanged: (v) => setState(() => _end = v))),
               ]),
-              if (info != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(info, style: const TextStyle(color: C.muted, fontSize: 13))),
+              if (info != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(info, style: TextStyle(color: C.muted, fontSize: 13))),
               if (o.permits.length > 1 || (widget.index == null && o.permits.isNotEmpty)) ...[
                 const SizedBox(height: 16),
-                Text(s.t('tasreeh.others'), style: const TextStyle(fontSize: 12, color: C.faint)),
+                Text(s.t('tasreeh.others'), style: TextStyle(fontSize: 12, color: C.faint)),
                 for (var i = 0; i < o.permits.length; i++)
                   if (i != widget.index)
                     Padding(
@@ -125,18 +125,18 @@ class _PermitDialogState extends State<_PermitDialog> {
                         Flexible(
                           child: Text(
                             [o.permits[i].startDate, o.permits[i].endDate].whereType<String>().map(app.dateShort).join(' – '),
-                            style: const TextStyle(color: C.muted, fontSize: 12.5),
+                            style: TextStyle(color: C.muted, fontSize: 12.5),
                           ),
                         ),
                       ]),
                     ),
               ],
-              for (final e in _errors) Padding(padding: const EdgeInsets.only(top: 8), child: Text(e, style: const TextStyle(color: C.critical))),
+              for (final e in _errors) Padding(padding: const EdgeInsets.only(top: 8), child: Text(e, style: TextStyle(color: C.critical))),
             ]),
           ),
         ),
         actions: [
-          if (widget.index != null) TextButton(onPressed: _saving ? null : _remove, child: Text(s.t('common.delete'), style: const TextStyle(color: C.critical))),
+          if (widget.index != null) TextButton(onPressed: _saving ? null : _remove, child: Text(s.t('common.delete'), style: TextStyle(color: C.critical))),
           TextButton(onPressed: () => Navigator.maybePop(context), child: Text(s.t('common.cancel'))),
           FilledButton(onPressed: _saving ? null : _save, child: Text(s.t('tasreeh.save'))),
         ],

@@ -80,7 +80,7 @@ class _StatusDialogState extends State<_StatusDialog> {
       titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('${s.t('order.woNumber')} ${o.woNumber ?? ''} · ${o.type}${o.district == null ? '' : ' · ${o.district}'}',
-            style: const TextStyle(fontSize: 12, color: C.faint)),
+            style: TextStyle(fontSize: 12, color: C.faint)),
         const SizedBox(height: 4),
         Text(s.t('hold.title'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ]),
@@ -101,7 +101,7 @@ class _StatusDialogState extends State<_StatusDialog> {
               }),
             ),
             const SizedBox(height: 6),
-            Text(s.t('hold.hint.$_kind'), style: const TextStyle(fontSize: 12.5, color: C.muted)),
+            Text(s.t('hold.hint.$_kind'), style: TextStyle(fontSize: 12.5, color: C.muted)),
             const SizedBox(height: 16),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final r in _reasons(context))
@@ -134,11 +134,11 @@ class _StatusDialogState extends State<_StatusDialog> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Row(children: [
-                    const Icon(Icons.check_circle, color: C.success, size: 18),
+                    Icon(Icons.check_circle, color: C.success, size: 18),
                     const SizedBox(width: 6),
                     Mono(_target!.woNumber ?? ''),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_target!.district ?? '', style: const TextStyle(color: C.muted))),
+                    Expanded(child: Text(_target!.district ?? '', style: TextStyle(color: C.muted))),
                   ]),
                 ),
               for (final c in candidates)
@@ -162,11 +162,11 @@ class _StatusDialogState extends State<_StatusDialog> {
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
-              child: Text(s.t('hold.note.$_kind'), style: const TextStyle(fontSize: 13, color: C.muted, height: 1.45)),
+              decoration: BoxDecoration(color: C.panel, borderRadius: BorderRadius.circular(8)),
+              child: Text(s.t('hold.note.$_kind'), style: TextStyle(fontSize: 13, color: C.muted, height: 1.45)),
             ),
             for (final e in _errors)
-              Padding(padding: const EdgeInsets.only(top: 8), child: Text(e, style: const TextStyle(color: C.critical))),
+              Padding(padding: const EdgeInsets.only(top: 8), child: Text(e, style: TextStyle(color: C.critical))),
           ]),
         ),
       ),

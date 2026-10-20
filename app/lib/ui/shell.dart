@@ -108,10 +108,10 @@ class _TopBar extends StatelessWidget {
     final wide = MediaQuery.sizeOf(context).width >= 1180;
     return Container(
       height: 56,
-      decoration: const BoxDecoration(color: C.card, border: Border(bottom: BorderSide(color: C.line))),
+      decoration: BoxDecoration(color: C.card, border: Border(bottom: BorderSide(color: C.line))),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(children: [
-        const Icon(Icons.bolt, color: C.accent, size: 22),
+        Icon(Icons.bolt, color: C.accent, size: 22),
         const SizedBox(width: 8),
         Text(app.s.t('app.name'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
         const SizedBox(width: 20),
@@ -145,15 +145,15 @@ class _TopBar extends StatelessWidget {
             width: wide ? 260 : 180,
             height: 34,
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: const Color(0xFFF8F9F7), border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
+            decoration: BoxDecoration(color: C.panel, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
             child: Row(children: [
-              const Icon(Icons.search, size: 17, color: C.faint),
+              Icon(Icons.search, size: 17, color: C.faint),
               const SizedBox(width: 8),
-              Expanded(child: Text(app.s.t('nav.search'), style: const TextStyle(color: C.faint, fontSize: 13), overflow: TextOverflow.ellipsis)),
+              Expanded(child: Text(app.s.t('nav.search'), style: TextStyle(color: C.faint, fontSize: 13), overflow: TextOverflow.ellipsis)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                 decoration: BoxDecoration(border: Border.all(color: C.field), borderRadius: BorderRadius.circular(4)),
-                child: const Text('Ctrl K', textDirection: TextDirection.ltr, style: TextStyle(fontSize: 11, color: C.faint, fontFamily: mono)),
+                child: Text('Ctrl K', textDirection: TextDirection.ltr, style: TextStyle(fontSize: 11, color: C.faint, fontFamily: mono)),
               ),
             ]),
           ),

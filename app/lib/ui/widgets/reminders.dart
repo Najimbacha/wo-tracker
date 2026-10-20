@@ -98,7 +98,7 @@ class RemindersCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
       trailing: canEdit ? TextButton.icon(onPressed: () => showReminderDialog(context, order), icon: const Icon(Icons.add, size: 18), label: Text(s.t('reminder.addShort'))) : null,
       child: list.isEmpty
-          ? Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(s.t('reminder.none'), style: const TextStyle(color: C.faint, fontSize: 13)))
+          ? Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(s.t('reminder.none'), style: TextStyle(color: C.faint, fontSize: 13)))
           : Column(children: [for (final r in list) _ReminderRow(r: r, canEdit: canEdit)]),
     );
   }
@@ -119,7 +119,7 @@ class _ReminderRow extends StatelessWidget {
       ),
       const SizedBox(width: 8),
       Text(dueLabel(context, r.due), style: TextStyle(fontSize: 12.5, color: overdue ? C.critical : C.muted, fontWeight: overdue ? FontWeight.w600 : FontWeight.w400)),
-      if (canEdit) IconButton(tooltip: app.s.t('common.remove'), visualDensity: VisualDensity.compact, onPressed: () => app.repo.removeReminder(r.id), icon: const Icon(Icons.close, size: 18, color: C.faint)),
+      if (canEdit) IconButton(tooltip: app.s.t('common.remove'), visualDensity: VisualDensity.compact, onPressed: () => app.repo.removeReminder(r.id), icon: Icon(Icons.close, size: 18, color: C.faint)),
     ]);
   }
 }

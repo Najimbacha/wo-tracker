@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 import '../../app/scope.dart';
 import '../../domain/insights.dart';
 import '../nav.dart';
-import '../dark.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
 Future<void> showSearchDialog(BuildContext context) => showDialog<void>(
       context: context,
-      barrierColor: isDark(context) ? null : const Color(0x6115181C),
+      barrierColor: C.dark ? const Color(0x99000000) : const Color(0x6115181C),
       builder: (_) => const _Search(),
     );
 
@@ -119,14 +118,14 @@ class _SearchState extends State<_Search> {
               ),
               Flexible(
                 child: _ctl.text.trim().isEmpty
-                    ? Padding(padding: const EdgeInsets.all(20), child: Text(s.t('search.footer'), style: const TextStyle(color: C.faint)))
+                    ? Padding(padding: const EdgeInsets.all(20), child: Text(s.t('search.footer'), style: TextStyle(color: C.faint)))
                     : flat.isEmpty
-                        ? Padding(padding: const EdgeInsets.all(20), child: Text(s.t('empty.noResults', {'query': _ctl.text.trim()}), style: const TextStyle(color: C.muted)))
+                        ? Padding(padding: const EdgeInsets.all(20), child: Text(s.t('empty.noResults', {'query': _ctl.text.trim()}), style: TextStyle(color: C.muted)))
                         : ListView(shrinkWrap: true, padding: const EdgeInsets.only(bottom: 8), children: [
                             for (final e in kinds.entries) ...[
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                                child: Text(s.t('search.kind.${e.key}').toUpperCase(), style: const TextStyle(fontSize: 11, letterSpacing: 0.5, color: C.faint, fontWeight: FontWeight.w600)),
+                                child: Text(s.t('search.kind.${e.key}').toUpperCase(), style: TextStyle(fontSize: 11, letterSpacing: 0.5, color: C.faint, fontWeight: FontWeight.w600)),
                               ),
                               for (final h in e.value)
                                 _HitTile(hit: h, active: flat.indexOf(h) == _cursor, onTap: () => _open(h)),
@@ -169,10 +168,10 @@ class _HitTile extends StatelessWidget {
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 hit.kind == 'workOrder' || hit.kind == 'tasreeh' || hit.kind == 'meter' || hit.kind == 'network' ? Mono(hit.value) : Text(hit.value, maxLines: 1, overflow: TextOverflow.ellipsis),
-                Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12)),
+                Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: C.faint, fontSize: 12)),
               ]),
             ),
-            if (active) const Text('Enter', style: TextStyle(fontSize: 11, color: C.faint, fontFamily: mono)),
+            if (active) Text('Enter', style: TextStyle(fontSize: 11, color: C.faint, fontFamily: mono)),
           ]),
         ),
       ),

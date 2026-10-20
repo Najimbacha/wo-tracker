@@ -13,7 +13,6 @@ import '../../data/models.dart';
 import '../../data/order_rows.dart' show stepRowIdFor;
 import '../../data/repository.dart';
 import '../../domain/order_input.dart';
-import '../dark.dart';
 import '../theme.dart';
 import 'dialogs.dart';
 
@@ -151,7 +150,7 @@ class _FileTile extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 230),
       child: Material(
         color: C.chip,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6), side: const BorderSide(color: C.line)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6), side: BorderSide(color: C.line)),
         child: InkWell(
           borderRadius: BorderRadius.circular(6),
           onTap: () => openAttachment(context, file),
@@ -164,7 +163,7 @@ class _FileTile extends StatelessWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                   Text(file.fileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5)),
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    if (file.extension.isNotEmpty) Text(file.extension, style: const TextStyle(fontSize: 11, color: C.faint)),
+                    if (file.extension.isNotEmpty) Text(file.extension, style: TextStyle(fontSize: 11, color: C.faint)),
                     if (cloud != null) ...[const SizedBox(width: 6), _CloudMark(cloud!, size: 13)],
                   ]),
                 ]),
@@ -200,8 +199,8 @@ class _Thumb extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(color: C.chip, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
                 child: path == null
-                    ? const Icon(Icons.cloud_download_outlined, size: 20, color: C.locked)
-                    : UndoDark(child: Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 20, color: C.locked))),
+                    ? Icon(Icons.cloud_download_outlined, size: 20, color: C.locked)
+                    : Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => Icon(Icons.broken_image_outlined, size: 20, color: C.locked)),
               ),
             ),
           ),
@@ -211,7 +210,7 @@ class _Thumb extends StatelessWidget {
               bottom: 2,
               child: Container(
                 padding: const EdgeInsets.all(1.5),
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: C.card, shape: BoxShape.circle),
                 child: _CloudMark(cloud!, size: 12),
               ),
             ),
@@ -220,7 +219,7 @@ class _Thumb extends StatelessWidget {
 }
 
 Future<void> showPhotoViewer(BuildContext context, {required List<StepPhoto> photos, required int index, required bool canDelete}) =>
-    showDialog<void>(context: context, barrierColor: Colors.transparent, builder: (_) => UndoDark(child: _PhotoViewer(photos: photos, index: index, canDelete: canDelete)));
+    showDialog<void>(context: context, barrierColor: Colors.transparent, builder: (_) => _PhotoViewer(photos: photos, index: index, canDelete: canDelete));
 
 class _PhotoViewer extends StatefulWidget {
   const _PhotoViewer({required this.photos, required this.index, required this.canDelete});

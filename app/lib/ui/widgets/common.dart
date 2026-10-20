@@ -9,22 +9,22 @@ import '../../domain/rules_engine.dart';
 import '../theme.dart';
 
 class Mono extends StatelessWidget {
-  const Mono(this.text, {super.key, this.size = 13, this.weight = FontWeight.w500, this.color = C.ink});
+  const Mono(this.text, {super.key, this.size = 13, this.weight = FontWeight.w500, this.color});
   final String text;
   final double size;
   final FontWeight weight;
-  final Color color;
+  final Color? color; // null = the normal text colour
   @override
   Widget build(BuildContext context) => Text(text,
-      textDirection: TextDirection.ltr, style: monoStyle.copyWith(fontSize: size, fontWeight: weight, color: color));
+      textDirection: TextDirection.ltr, style: monoStyle.copyWith(fontSize: size, fontWeight: weight, color: color ?? C.ink));
 }
 
 /// Colours by the kind of work: meter only (violet), underground / excavation (blue),
 /// overhead line (teal). Any other code is grey. Returns (background, text).
 (Color, Color) typeColors(String type) => switch (type) {
-      '401' || '409' || '801' => (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E)),
+      '401' || '409' || '801' => C.dark ? (const Color(0xFF2B2145), const Color(0xFFCDB6FF)) : (const Color(0xFFF1EAFB), const Color(0xFF5B2A9E)),
       '402' || '404' || '802' || '804' => (C.accentSoft, C.accentDark),
-      '403' || '803' || '805' => (const Color(0xFFE0F3F3), const Color(0xFF0B5F64)),
+      '403' || '803' || '805' => C.dark ? (const Color(0xFF123436), const Color(0xFF7FE0E4)) : (const Color(0xFFE0F3F3), const Color(0xFF0B5F64)),
       _ => (C.chip, C.muted),
     };
 
@@ -44,19 +44,22 @@ class TypeTag extends StatelessWidget {
 }
 
 class Pill extends StatelessWidget {
-  const Pill(this.text, {super.key, this.color = C.muted, this.background = C.chip, this.icon});
+  const Pill(this.text, {super.key, this.color, this.background, this.icon});
   final String text;
-  final Color color, background;
+  final Color? color, background;
   final IconData? icon;
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(999)),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (icon != null) ...[Icon(icon, size: 13, color: color), const SizedBox(width: 4)],
-          Text(text, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w500)),
-        ]),
-      );
+  Widget build(BuildContext context) {
+    final fg = color ?? C.muted;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: background ?? C.chip, borderRadius: BorderRadius.circular(999)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (icon != null) ...[Icon(icon, size: 13, color: fg), const SizedBox(width: 4)],
+        Text(text, style: TextStyle(fontSize: 12, color: fg, fontWeight: FontWeight.w500)),
+      ]),
+    );
+  }
 }
 
 Color severityColor(String? severity) => severity == 'critical' ? C.critical : (severity == 'warning' ? C.warning : C.faint);
@@ -166,12 +169,12 @@ class EmptyState extends StatelessWidget {
             Container(
               width: 52,
               height: 52,
-              decoration: const BoxDecoration(color: C.chip, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: C.chip, shape: BoxShape.circle),
               child: Icon(icon, color: C.muted, size: 26),
             ),
             const SizedBox(height: 14),
             Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-            if (body != null) ...[const SizedBox(height: 6), Text(body!, textAlign: TextAlign.center, style: const TextStyle(color: C.muted))],
+            if (body != null) ...[const SizedBox(height: 6), Text(body!, textAlign: TextAlign.center, style: TextStyle(color: C.muted))],
             if (action != null) ...[const SizedBox(height: 16), action!],
           ]),
         ),
@@ -208,22 +211,25 @@ class _DelayedLoaderState extends State<DelayedLoader> {
 
 /// A coloured strip across the top of a screen (offline, needs decision, demo...).
 class Banner2 extends StatelessWidget {
-  const Banner2({super.key, required this.text, this.icon = Icons.info_outline, this.color = C.muted, this.background = C.chip, this.action});
+  const Banner2({super.key, required this.text, this.icon = Icons.info_outline, this.color, this.background, this.action});
   final String text;
   final IconData icon;
-  final Color color, background;
+  final Color? color, background;
   final Widget? action;
   @override
-  Widget build(BuildContext context) => Container(
-        color: background,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(children: [
-          Icon(icon, size: 17, color: color),
-          const SizedBox(width: 10),
-          Expanded(child: Text(text, style: TextStyle(color: color, fontSize: 13))),
-          if (action != null) action!,
-        ]),
-      );
+  Widget build(BuildContext context) {
+    final fg = color ?? C.muted;
+    return Container(
+      color: background ?? C.chip,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(children: [
+        Icon(icon, size: 17, color: fg),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: TextStyle(color: fg, fontSize: 13))),
+        if (action != null) action!,
+      ]),
+    );
+  }
 }
 
 /// One order in a list: number, type, place, contractor, next step, and the worst alert.
@@ -281,10 +287,10 @@ class Labeled extends StatelessWidget {
   final String? sub;
   @override
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: C.faint)),
+        Text(label, style: TextStyle(fontSize: 12, color: C.faint)),
         const SizedBox(height: 3),
         value,
-        if (sub != null) ...[const SizedBox(height: 2), Text(sub!, style: const TextStyle(fontSize: 12, color: C.muted))],
+        if (sub != null) ...[const SizedBox(height: 2), Text(sub!, style: TextStyle(fontSize: 12, color: C.muted))],
       ]);
 }
 

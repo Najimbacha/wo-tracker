@@ -82,20 +82,20 @@ class _PipelineScreenState extends State<PipelineScreen> {
 
     return ListView(padding: EdgeInsets.all(phone ? 12 : 16), children: [
       Text(s.t('pipeline.title'), style: Theme.of(context).textTheme.titleLarge),
-      Text(s.t('pipeline.subtitle', {'count': p.activeCount}), style: const TextStyle(color: C.muted, fontSize: 13)),
+      Text(s.t('pipeline.subtitle', {'count': p.activeCount}), style: TextStyle(color: C.muted, fontSize: 13)),
       const SizedBox(height: 10),
       SectionCard(
         title: s.t('pipeline.doNow'),
-        trailing: Text(s.t('pipeline.doNowNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12)),
+        trailing: Text(s.t('pipeline.doNowNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: C.faint, fontSize: 12)),
         child: doNow.isEmpty
-            ? Text(s.t('pipeline.doNowNone'), style: const TextStyle(color: C.faint))
+            ? Text(s.t('pipeline.doNowNone'), style: TextStyle(color: C.faint))
             : Wrap(spacing: 8, runSpacing: 8, children: [
                 for (final e in doNow)
                   ActionChip(
                     backgroundColor: C.accentSoft,
-                    side: const BorderSide(color: C.accent, width: 0.8),
+                    side: BorderSide(color: C.accent, width: 0.8),
                     onPressed: () => list('${s.t('pipeline.readyNow')}: ${s.step(e.key)}', FilterCriteria(status: active, steps: [StepCondition(e.key, 'ready')])),
-                    avatar: CircleAvatar(backgroundColor: C.accent, child: Text('${e.value}', style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w600))),
+                    avatar: CircleAvatar(backgroundColor: C.accent, child: Text('${e.value}', style: TextStyle(color: C.onSolid, fontSize: 11.5, fontWeight: FontWeight.w600))),
                     label: Text(s.step(e.key), style: const TextStyle(fontWeight: FontWeight.w500)),
                   ),
               ]),
@@ -103,7 +103,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
       const SizedBox(height: 10),
       SectionCard(
         title: s.t('pipeline.startsNext7', {'count': startTotal}),
-        trailing: Text(s.t('pipeline.startsNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12)),
+        trailing: Text(s.t('pipeline.startsNote'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: C.faint, fontSize: 12)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -121,7 +121,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
           ),
           const SizedBox(height: 4),
           if (day.orders.isEmpty)
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6), child: Text(s.t('pipeline.noStarts'), style: const TextStyle(color: C.faint)))
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6), child: Text(s.t('pipeline.noStarts'), style: TextStyle(color: C.faint)))
           else
             for (final id in day.orders)
               if (app.orderById(id) != null) OrderTile(order: app.orderById(id)!, dense: true, onTap: () => openOrder(context, id)),
@@ -129,7 +129,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
       ),
       const SizedBox(height: 14),
       Text(s.t('pipeline.notDoneTitle'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-      Text(s.t('pipeline.notDoneNote'), style: const TextStyle(color: C.faint, fontSize: 12.5)),
+      Text(s.t('pipeline.notDoneNote'), style: TextStyle(color: C.faint, fontSize: 12.5)),
       const SizedBox(height: 10),
       LayoutBuilder(builder: (context, c) {
         final per = c.maxWidth >= 1000 ? 4 : (c.maxWidth >= 640 ? 2 : 1);
@@ -137,7 +137,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
         return Wrap(spacing: 14, runSpacing: 14, children: [for (final sec in sections) SizedBox(width: w, child: sec)]);
       }),
       const SizedBox(height: 10),
-      Text(s.t('pipeline.footer'), style: const TextStyle(color: C.faint, fontSize: 12)),
+      Text(s.t('pipeline.footer'), style: TextStyle(color: C.faint, fontSize: 12)),
     ]);
   }
 }
@@ -173,8 +173,8 @@ class _Section extends StatelessWidget {
               // Column heads: blue number = can be done today, grey = every open order not done yet.
               Row(children: [
                 const Expanded(child: SizedBox()),
-                SizedBox(width: 56, child: Text(context.t('pipeline.readyNow'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: C.accent, fontWeight: FontWeight.w600))),
-                SizedBox(width: 56, child: Text(context.t('pipeline.totalNotDone'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: C.faint))),
+                SizedBox(width: 56, child: Text(context.t('pipeline.readyNow'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: C.accent, fontWeight: FontWeight.w600))),
+                SizedBox(width: 56, child: Text(context.t('pipeline.totalNotDone'), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: C.faint))),
               ]),
               ...children,
             ]),
@@ -188,7 +188,7 @@ class _SubHead extends StatelessWidget {
   final String text;
   @override
   Widget build(BuildContext context) =>
-      Padding(padding: const EdgeInsets.only(top: 10, bottom: 2), child: Text(text, style: const TextStyle(fontSize: 12, color: C.faint, fontWeight: FontWeight.w500)));
+      Padding(padding: const EdgeInsets.only(top: 10, bottom: 2), child: Text(text, style: TextStyle(fontSize: 12, color: C.faint, fontWeight: FontWeight.w500)));
 }
 
 class _CountRow extends StatelessWidget {
@@ -202,7 +202,7 @@ class _CountRow extends StatelessWidget {
     final st = _RowStyle.of(context);
     final frac = st == null || st.max <= 0 ? 0.0 : (total / st.max).clamp(0.0, 1.0);
     return Container(
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
       child: Stack(children: [
         // The bar behind the row shows how many of the open orders are still at this step.
         if (st != null)
@@ -229,7 +229,7 @@ class _CountRow extends StatelessWidget {
                         : Container(
                             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 1),
                             decoration: BoxDecoration(color: C.accent, borderRadius: BorderRadius.circular(999)),
-                            child: Mono('$ready', size: 13, color: Colors.white, weight: FontWeight.w600),
+                            child: Mono('$ready', size: 13, color: C.onSolid, weight: FontWeight.w600),
                           ),
                   ),
                 ),

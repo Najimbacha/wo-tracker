@@ -387,7 +387,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
           if ((app.rules['types'] as Map).keys.any((t) => !_commonTypes.contains(t))) ...[
             const SizedBox(height: 14),
             Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(s.t('order.typesRare'), style: const TextStyle(fontSize: 12.5, color: C.faint)),
+              Text(s.t('order.typesRare'), style: TextStyle(fontSize: 12.5, color: C.faint)),
               for (final t in (app.rules['types'] as Map).keys.cast<String>().where((t) => !_commonTypes.contains(t)))
                 Tooltip(
                   message: s.type(t),
@@ -405,7 +405,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
             if (!_commonTypes.contains(_type))
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text('$_type · ${s.type(_type)}', style: const TextStyle(fontSize: 13, color: C.accentDark, fontWeight: FontWeight.w500)),
+                child: Text('$_type · ${s.type(_type)}', style: TextStyle(fontSize: 13, color: C.accentDark, fontWeight: FontWeight.w500)),
               ),
           ],
           if (spec.excavationSwitch)
@@ -486,13 +486,13 @@ class _OrderFormPageState extends State<OrderFormPage> {
       if (spec.meters) _metersEditor(context, spec),
       Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: C.panel, borderRadius: BorderRadius.circular(8)),
         child: Text(
           s.t('order.stepsFor', {
             'type': _type,
             'steps': app.engine.generate(OrderInput(type: _type, category: _category, needsExcavation: _excavation, meters: const [Meter('m')])).map((x) => s.step(x.key)).toSet().join(' · '),
           }),
-          style: const TextStyle(fontSize: 12.5, color: C.muted, height: 1.45),
+          style: TextStyle(fontSize: 12.5, color: C.muted, height: 1.45),
         ),
       ),
     ];
@@ -503,9 +503,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Row(children: [
-              const Icon(Icons.error_outline, size: 16, color: C.critical),
+              Icon(Icons.error_outline, size: 16, color: C.critical),
               const SizedBox(width: 6),
-              Expanded(child: Text(s.error(e), style: const TextStyle(color: C.critical))),
+              Expanded(child: Text(s.error(e), style: TextStyle(color: C.critical))),
             ]),
           ),
       ],
@@ -527,7 +527,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               if (_isNew)
                 Padding(
                   padding: const EdgeInsetsDirectional.only(end: 16),
-                  child: Center(child: Text(s.t('order.addedToday', {'count': todayAdded}), style: const TextStyle(color: C.faint, fontSize: 13))),
+                  child: Center(child: Text(s.t('order.addedToday', {'count': todayAdded}), style: TextStyle(color: C.faint, fontSize: 13))),
                 ),
             ],
           ),
@@ -553,7 +553,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
           }),
           bottomNavigationBar: SafeArea(
             child: Container(
-              decoration: const BoxDecoration(color: Color(0xFFFBFBFA), border: Border(top: BorderSide(color: C.lineSoft))),
+              decoration: BoxDecoration(color: C.panel2, border: Border(top: BorderSide(color: C.lineSoft))),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               // On a phone: two wide buttons (back arrow cancels). On the PC: the hint can wrap.
               child: phone
@@ -572,7 +572,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                   : Row(children: [
                       Expanded(
                         child: _isNew
-                            ? Text(s.t('order.keptForNext'), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.faint, fontSize: 12.5))
+                            ? Text(s.t('order.keptForNext'), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: C.faint, fontSize: 12.5))
                             : const SizedBox.shrink(),
                       ),
                       const SizedBox(width: 12),
@@ -617,7 +617,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               ),
               Text(s.t('order.tiled')),
               const SizedBox(width: 16),
-              Expanded(child: Text(_recipe(context, g), style: const TextStyle(fontSize: 12, color: C.faint))),
+              Expanded(child: Text(_recipe(context, g), style: TextStyle(fontSize: 12, color: C.faint))),
             ]),
             onRemove: () => setState(() {
               _segs.remove(g);
@@ -911,7 +911,7 @@ class _Group extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          if (hint != null) Text(hint!, style: const TextStyle(fontSize: 12.5, color: C.faint)),
+          if (hint != null) Text(hint!, style: TextStyle(fontSize: 12.5, color: C.faint)),
           const SizedBox(height: 10),
           if (header != null) ...[header!, const SizedBox(height: 12)],
           ...children,
@@ -939,7 +939,7 @@ class _Line extends StatelessWidget {
               height: 28,
               margin: const EdgeInsetsDirectional.only(end: 12, top: 8),
               alignment: Alignment.center,
-              decoration: const BoxDecoration(color: C.chip, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: C.chip, shape: BoxShape.circle),
               child: Mono('$index', size: 13, weight: FontWeight.w600, color: C.muted),
             ),
           Expanded(
@@ -953,7 +953,7 @@ class _Line extends StatelessWidget {
           ),
           SizedBox(
             width: 40,
-            child: onRemove == null ? null : IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: const Icon(Icons.close, size: 18, color: C.faint)),
+            child: onRemove == null ? null : IconButton(tooltip: context.t('common.remove'), onPressed: onRemove, icon: Icon(Icons.close, size: 18, color: C.faint)),
           ),
         ]),
       );

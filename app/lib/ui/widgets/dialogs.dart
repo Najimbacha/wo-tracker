@@ -15,7 +15,7 @@ Future<bool> confirmDialog(BuildContext context,
       title: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460),
-        child: content ?? (body == null ? null : Text(body, style: const TextStyle(color: C.muted, height: 1.45))),
+        child: content ?? (body == null ? null : Text(body, style: TextStyle(color: C.muted, height: 1.45))),
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(c, false), child: Text(cancel ?? c.t('common.cancel'))),
@@ -76,7 +76,7 @@ class _ReasonDialogState extends State<_ReasonDialog> {
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 460, minWidth: 320),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            if (widget.body != null) ...[Text(widget.body!, style: const TextStyle(color: C.muted, height: 1.45)), const SizedBox(height: 12)],
+            if (widget.body != null) ...[Text(widget.body!, style: TextStyle(color: C.muted, height: 1.45)), const SizedBox(height: 12)],
             if (widget.suggestions.isNotEmpty) ...[
               Wrap(spacing: 8, runSpacing: 8, children: [
                 for (final sgt in widget.suggestions)

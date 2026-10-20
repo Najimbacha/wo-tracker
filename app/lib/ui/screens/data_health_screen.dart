@@ -43,7 +43,7 @@ class _DataHealthScreenState extends State<DataHealthScreen> {
                     if (sy.pendingChanges > 0) s.t('toast.waitingSync', {'count': sy.pendingChanges}),
                     if (!sy.configured && !app.repo.isDemo) s.t('health.onlyThisDevice'),
                   ].join(' · '),
-                  style: const TextStyle(color: C.muted),
+                  style: TextStyle(color: C.muted),
                 ),
               ]),
             ),
@@ -70,7 +70,7 @@ class _DataHealthScreenState extends State<DataHealthScreen> {
               final h = snap.data;
               if (h == null) {
                 return Row(children: [
-                  Expanded(child: Text(s.t('health.sizeOffline'), style: const TextStyle(color: C.muted))),
+                  Expanded(child: Text(s.t('health.sizeOffline'), style: TextStyle(color: C.muted))),
                   TextButton(onPressed: () => setState(() => _health = app.repo.dataHealth()), child: Text(s.t('common.retry'))),
                 ]);
               }
@@ -81,7 +81,7 @@ class _DataHealthScreenState extends State<DataHealthScreen> {
                 Text(s.t('health.sizeLine', {'mb': mb.toStringAsFixed(1), 'percent': pct.toStringAsFixed(1)})),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(value: (pct / 100).clamp(0, 1), minHeight: 8, color: pct >= warn ? C.critical : C.accent, backgroundColor: C.chip),
-                if (pct >= warn) Padding(padding: const EdgeInsets.only(top: 8), child: Text(s.t('health.sizeWarn'), style: const TextStyle(color: C.critical))),
+                if (pct >= warn) Padding(padding: const EdgeInsets.only(top: 8), child: Text(s.t('health.sizeWarn'), style: TextStyle(color: C.critical))),
               ]);
             },
           ),
@@ -90,20 +90,20 @@ class _DataHealthScreenState extends State<DataHealthScreen> {
         SectionCard(
           title: '${s.t('refused.title')} · ${app.refused.length}',
           child: app.refused.isEmpty
-              ? Text(s.t('health.noRefused'), style: const TextStyle(color: C.muted))
+              ? Text(s.t('health.noRefused'), style: TextStyle(color: C.muted))
               : Column(children: [for (final r in app.refused) _Refused(r: r)]),
         ),
         const SizedBox(height: 16),
         SectionCard(
           title: '${s.t('settings.deletedOrders')} · ${deleted.length}',
           child: deleted.isEmpty
-              ? Text(s.t('health.noDeleted'), style: const TextStyle(color: C.muted))
+              ? Text(s.t('health.noDeleted'), style: TextStyle(color: C.muted))
               : Column(children: [
-                  Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(s.t('health.deletedNote'), style: const TextStyle(color: C.muted, fontSize: 12.5))),
+                  Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(s.t('health.deletedNote'), style: TextStyle(color: C.muted, fontSize: 12.5))),
                   for (final o in deleted)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Row(children: [Mono(o.woNumber ?? ''), const SizedBox(width: 8), TypeTag(o.type), const SizedBox(width: 8), Flexible(child: Text(o.district ?? '', overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted)))]),
+                      title: Row(children: [Mono(o.woNumber ?? ''), const SizedBox(width: 8), TypeTag(o.type), const SizedBox(width: 8), Flexible(child: Text(o.district ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(color: C.muted)))]),
                       subtitle: Text(o.deletedReason ?? ''),
                       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => OrderPage(orderId: o.id!))),
                       trailing: OutlinedButton(
@@ -125,14 +125,14 @@ class _Line extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 9),
-        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
         child: Row(children: [
           Icon(ok ? Icons.check_circle : Icons.error_outline, size: 18, color: ok ? C.success : C.warning),
           const SizedBox(width: 10),
           Expanded(child: Text(label)),
           const SizedBox(width: 8),
           // Long descriptions wrap instead of running off a phone screen.
-          Flexible(child: Text(meta, textAlign: TextAlign.end, style: const TextStyle(color: C.faint, fontSize: 12.5))),
+          Flexible(child: Text(meta, textAlign: TextAlign.end, style: TextStyle(color: C.faint, fontSize: 12.5))),
         ]),
       );
 }
@@ -147,7 +147,7 @@ class _Refused extends StatelessWidget {
     final order = app.orderById(r.workOrderId);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: C.lineSoft))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(s.t('refused.${r.code}', {'value': r.value ?? '', 'message': r.message ?? ''}), style: const TextStyle(fontWeight: FontWeight.w500)),
         Text(
@@ -156,9 +156,9 @@ class _Refused extends StatelessWidget {
             s.t('history.table.${r.table}'),
             app.dateShort(r.at.toIso8601String().substring(0, 10)),
           ].join(' · '),
-          style: const TextStyle(color: C.faint, fontSize: 12),
+          style: TextStyle(color: C.faint, fontSize: 12),
         ),
-        if (r.message != null && r.message!.isNotEmpty) Text(s.t('refused.details', {'message': r.message}), style: const TextStyle(color: C.faint, fontSize: 11.5)),
+        if (r.message != null && r.message!.isNotEmpty) Text(s.t('refused.details', {'message': r.message}), style: TextStyle(color: C.faint, fontSize: 11.5)),
         const SizedBox(height: 6),
         Wrap(spacing: 8, children: [
           if (order != null)

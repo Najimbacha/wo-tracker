@@ -1,62 +1,91 @@
 // Colours, type and spacing from the design canvas ("Work Order Tracker Screens").
 import 'package:flutter/material.dart';
 
+/// The colour palette. `C.dark` picks the light or the dark set; it is switched once per
+/// build in main.dart, and every screen reads these getters, so nothing is hard-coded per screen.
 class C {
-  static const ink = Color(0xFF15181C);
-  static const muted = Color(0xFF4F5861);
-  static const faint = Color(0xFF6B747C);
-  static const line = Color(0xFFE2E5E1);
-  static const lineSoft = Color(0xFFECEEEB);
-  static const field = Color(0xFFD5D9D4);
-  static const bg = Color(0xFFF4F5F3);
-  static const card = Color(0xFFFFFFFF);
-  static const chip = Color(0xFFEEF0ED);
-  static const accent = Color(0xFF2152C4);
-  static const accentDark = Color(0xFF173C94);
-  static const accentSoft = Color(0xFFEAF0FC);
-  static const critical = Color(0xFFB3261E);
-  static const criticalSoft = Color(0xFFFBECEA);
-  static const warning = Color(0xFF9A5B00);
-  static const warningEdge = Color(0xFFC98A1B);
-  static const warningSoft = Color(0xFFFCF2E1);
-  static const success = Color(0xFF23784A);
-  static const successSoft = Color(0xFFE7F4EC);
-  static const locked = Color(0xFF9AA19B);
+  static bool dark = false;
+  static Color _p(int light, int night) => Color(dark ? night : light);
+
+  static Color get ink => _p(0xFF15181C, 0xFFE8EBEF);
+  static Color get muted => _p(0xFF4F5861, 0xFFB0B8C2);
+  static Color get faint => _p(0xFF6B747C, 0xFF8E98A4);
+  static Color get line => _p(0xFFE2E5E1, 0xFF2C333C);
+  static Color get lineSoft => _p(0xFFECEEEB, 0xFF232A32);
+  static Color get field => _p(0xFFD5D9D4, 0xFF3B4550);
+  static Color get bg => _p(0xFFF4F5F3, 0xFF0F1216);
+  static Color get card => _p(0xFFFFFFFF, 0xFF171B21);
+  static Color get chip => _p(0xFFEEF0ED, 0xFF212830);
+  static Color get panel => _p(0xFFF8F9F7, 0xFF13171C); // a quiet box inside a card
+  static Color get panel2 => _p(0xFFFBFBFA, 0xFF13171C);
+  static Color get accent => _p(0xFF2152C4, 0xFF7BA3FF);
+  static Color get accentDark => _p(0xFF173C94, 0xFFA9C2FF);
+  static Color get accentSoft => _p(0xFFEAF0FC, 0xFF1C2A47);
+  static Color get critical => _p(0xFFB3261E, 0xFFFF8F86);
+  static Color get criticalSoft => _p(0xFFFBECEA, 0xFF3B2020);
+  static Color get warning => _p(0xFF9A5B00, 0xFFF0B450);
+  static Color get warningEdge => _p(0xFFC98A1B, 0xFFD99A2B);
+  static Color get warningSoft => _p(0xFFFCF2E1, 0xFF382D17);
+  static Color get success => _p(0xFF23784A, 0xFF62CC91);
+  static Color get successSoft => _p(0xFFE7F4EC, 0xFF16301F);
+  static Color get locked => _p(0xFF9AA19B, 0xFF5F6975);
+  // Text on a solid coloured fill (accent, stage colours, the done tick).
+  static Color get onSolid => _p(0xFFFFFFFF, 0xFF0B0F14);
+  // The dark bar (selection bar, toasts, tooltips): near-black on light, a raised grey on dark.
+  static Color get inverse => _p(0xFF15181C, 0xFF2B323B);
+  static Color get onInverse => _p(0xFFFFFFFF, 0xFFE8EBEF);
+  static Color get onInverseSoft => _p(0xFFC4C9C3, 0xFFB0B8C2);
 }
 
 /// One colour per board stage, so a column (and the card in it) is known at a glance.
-Color stageColor(String key) => switch (key) {
-      'kashfeya' => const Color(0xFF5A6B7B),
-      'tasreeh' => const Color(0xFFB36B00),
-      'starting' => const Color(0xFF0F7F85),
-      'civil' => const Color(0xFF2152C4),
-      'restoration' => const Color(0xFFB5481C),
-      'meter' => const Color(0xFF6A3FB5),
-      'closeout' => const Color(0xFF23784A),
-      _ => C.accent,
-    };
+Color stageColor(String key) => C.dark
+    ? switch (key) {
+        'kashfeya' => const Color(0xFFA3B1C0),
+        'tasreeh' => const Color(0xFFF0B450),
+        'starting' => const Color(0xFF4FD0D6),
+        'civil' => const Color(0xFF7BA3FF),
+        'restoration' => const Color(0xFFFF9A6B),
+        'meter' => const Color(0xFFBE9CFF),
+        'closeout' => const Color(0xFF62CC91),
+        _ => C.accent,
+      }
+    : switch (key) {
+        'kashfeya' => const Color(0xFF5A6B7B),
+        'tasreeh' => const Color(0xFFB36B00),
+        'starting' => const Color(0xFF0F7F85),
+        'civil' => const Color(0xFF2152C4),
+        'restoration' => const Color(0xFFB5481C),
+        'meter' => const Color(0xFF6A3FB5),
+        'closeout' => const Color(0xFF23784A),
+        _ => C.accent,
+      };
 
 const sansEn = 'IBMPlexSans';
 const sansAr = 'IBMPlexSansArabic';
 const mono = 'IBMPlexMono';
 
 ThemeData appTheme({required bool arabic, bool dark = false}) {
+  C.dark = dark;
   final family = arabic ? sansAr : sansEn;
   final base = ThemeData(
     useMaterial3: true,
     fontFamily: family,
     fontFamilyFallback: const [sansAr, sansEn],
-    colorScheme: ColorScheme.fromSeed(seedColor: C.accent, surface: C.card, primary: C.accent, error: C.critical),
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: C.accent,
+      brightness: dark ? Brightness.dark : Brightness.light,
+      surface: C.card,
+      primary: C.accent,
+      error: C.critical,
+    ),
     scaffoldBackgroundColor: C.bg,
     // Compact on PC (more on screen), normal touch sizes on the phone.
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
   final text = base.textTheme.apply(bodyColor: C.ink, displayColor: C.ink);
-  // The whole app is turned dark by a colour filter (dark.dart), so what the filter flips must
-  // be set the other way round here: a dark screen behind a dialog is a white 54% veil, shadows are white.
-  final veil = dark ? Colors.white54 : Colors.black54;
+  final veil = dark ? const Color(0x99000000) : Colors.black54;
   return base.copyWith(
-    shadowColor: dark ? Colors.white : Colors.black,
+    shadowColor: Colors.black,
     bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: veil),
     drawerTheme: DrawerThemeData(scrimColor: veil),
     textTheme: text.copyWith(
@@ -65,14 +94,14 @@ ThemeData appTheme({required bool arabic, bool dark = false}) {
       bodyMedium: text.bodyMedium?.copyWith(fontSize: 13.5),
       bodySmall: text.bodySmall?.copyWith(fontSize: 12, color: C.faint),
     ),
-    dividerTheme: const DividerThemeData(color: C.lineSoft, thickness: 1, space: 1),
-    cardTheme: const CardThemeData(
+    dividerTheme: DividerThemeData(color: C.lineSoft, thickness: 1, space: 1),
+    cardTheme: CardThemeData(
       color: C.card,
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)), side: BorderSide(color: C.line)),
     ),
-    inputDecorationTheme: const InputDecorationTheme(
+    inputDecorationTheme: InputDecorationTheme(
       isDense: true,
       filled: true,
       fillColor: C.card,
@@ -91,7 +120,7 @@ ThemeData appTheme({required bool arabic, bool dark = false}) {
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: C.accent,
-        foregroundColor: Colors.white,
+        foregroundColor: C.onSolid,
         textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
@@ -100,7 +129,7 @@ ThemeData appTheme({required bool arabic, bool dark = false}) {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: C.ink,
-        side: const BorderSide(color: C.field),
+        side: BorderSide(color: C.field),
         textStyle: const TextStyle(fontSize: 13.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
@@ -114,19 +143,20 @@ ThemeData appTheme({required bool arabic, bool dark = false}) {
       style: ButtonStyle(visualDensity: VisualDensity.compact, textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 13))),
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: C.ink,
-      actionTextColor: const Color(0xFF9DB8F5),
+      backgroundColor: C.inverse,
+      contentTextStyle: TextStyle(color: C.onInverse, fontSize: 13.5),
+      actionTextColor: dark ? C.accentDark : const Color(0xFF9DB8F5),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
     chipTheme: ChipThemeData(
-      side: const BorderSide(color: C.field),
+      side: BorderSide(color: C.field),
       backgroundColor: C.card,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
     tooltipTheme: TooltipThemeData(
-      decoration: BoxDecoration(color: C.ink, borderRadius: BorderRadius.circular(6)),
-      textStyle: const TextStyle(color: Colors.white, fontSize: 12.5),
+      decoration: BoxDecoration(color: C.inverse, borderRadius: BorderRadius.circular(6)),
+      textStyle: TextStyle(color: C.onInverse, fontSize: 12.5),
       waitDuration: const Duration(milliseconds: 400),
     ),
     dialogTheme: DialogThemeData(backgroundColor: C.card, barrierColor: veil, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),

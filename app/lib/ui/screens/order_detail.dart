@@ -146,9 +146,9 @@ class OrderDetail extends StatelessWidget {
       out.add(SectionCard(
         title: s.t('order.segments'),
         child: Row(children: [
-          const Icon(Icons.info_outline, size: 18, color: C.warning),
+          Icon(Icons.info_outline, size: 18, color: C.warning),
           const SizedBox(width: 8),
-          Expanded(child: Text(s.t('lock.missing_segments'), style: const TextStyle(color: C.warning))),
+          Expanded(child: Text(s.t('lock.missing_segments'), style: TextStyle(color: C.warning))),
           TextButton(onPressed: () => editOrder(context, o), child: Text(s.t('order.addSegment'))),
         ]),
       ));
@@ -212,7 +212,7 @@ class _StageBar extends StatelessWidget {
   Widget _chip(String label, String state, Color color) {
     final (bg, fg) = switch (state) {
       'done' => (C.successSoft, C.success),
-      'now' => (color, Colors.white),
+      'now' => (color, C.onSolid),
       _ => (C.chip, C.faint),
     };
     return Container(
@@ -255,13 +255,13 @@ class _Header extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
               Pill(s.category(o.category), color: o.category == 'emergency' ? C.critical : C.muted, background: o.category == 'emergency' ? C.criticalSoft : C.chip),
-              Text('${s.t('order.type')} ${o.type} · ${s.type(o.type)}', style: const TextStyle(color: C.muted, fontSize: 13)),
+              Text('${s.t('order.type')} ${o.type} · ${s.type(o.type)}', style: TextStyle(color: C.muted, fontSize: 13)),
               StatusChip(ev.status),
             ]),
             const SizedBox(height: 6),
             SelectableText(o.woNumber ?? '—', style: monoStyle.copyWith(fontSize: 26, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
-            Text(line, style: const TextStyle(color: C.muted, fontSize: 13)),
+            Text(line, style: TextStyle(color: C.muted, fontSize: 13)),
             if (o.state == 'cancelled' || o.state == 'merged')
               Padding(
                 padding: const EdgeInsets.only(top: 6),
@@ -269,7 +269,7 @@ class _Header extends StatelessWidget {
                   o.state == 'merged'
                       ? s.t('order.mergedInfo', {'wo': app.orderById(o.mergedInto)?.woNumber ?? '—', 'reason': o.stateReason ?? '', 'date': o.stateDate == null ? '' : app.dateShort(o.stateDate!)})
                       : s.t('order.cancelledInfo', {'reason': o.stateReason ?? '', 'date': o.stateDate == null ? '' : app.dateShort(o.stateDate!)}),
-                  style: const TextStyle(color: C.muted, fontSize: 13),
+                  style: TextStyle(color: C.muted, fontSize: 13),
                 ),
               ),
           ]),
@@ -303,7 +303,7 @@ class _Header extends StatelessWidget {
               if (active && !o.deleted) PopupMenuItem(value: 'status', child: Text(s.t('order.changeStatus'))),
               if (!o.deleted && app.engine.orderPackages(o).contains('tasreeh')) PopupMenuItem(value: 'permit', child: Text(s.t('tasreeh.add'))),
               PopupMenuItem(value: 'history', child: Text(s.t('order.history'))),
-              if (!o.deleted) PopupMenuItem(value: 'delete', child: Text(s.t('common.delete'), style: const TextStyle(color: C.critical))),
+              if (!o.deleted) PopupMenuItem(value: 'delete', child: Text(s.t('common.delete'), style: TextStyle(color: C.critical))),
               if (o.deleted) PopupMenuItem(value: 'restore', child: Text(s.t('common.restore'))),
             ],
           ),
@@ -447,9 +447,9 @@ class _Facts extends StatelessWidget {
 }
 
 class _Fact extends StatelessWidget {
-  const _Fact({required this.label, required this.value, this.sub, this.onTap, this.child, this.accent = C.faint});
+  const _Fact({required this.label, required this.value, this.sub, this.onTap, this.child, this.accent});
   final String label, value;
-  final Color accent;
+  final Color? accent; // null = grey
   final String? sub;
   final VoidCallback? onTap;
   final Widget? child;
@@ -462,12 +462,12 @@ class _Fact extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                Container(width: 8, height: 8, margin: const EdgeInsetsDirectional.only(end: 6), decoration: BoxDecoration(color: accent, shape: BoxShape.circle)),
-                Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: accent, fontWeight: FontWeight.w500))),
+                Container(width: 8, height: 8, margin: const EdgeInsetsDirectional.only(end: 6), decoration: BoxDecoration(color: accent ?? C.faint, shape: BoxShape.circle)),
+                Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: accent ?? C.faint, fontWeight: FontWeight.w500))),
               ]),
               const SizedBox(height: 4),
               Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-              if (sub != null) ...[const SizedBox(height: 2), Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, color: C.muted))],
+              if (sub != null) ...[const SizedBox(height: 2), Text(sub!, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: C.muted))],
               if (child != null) ...[const SizedBox(height: 8), child!],
             ]),
           ),
@@ -478,9 +478,9 @@ class _Fact extends StatelessWidget {
 /// A group of steps. A group whose steps are all done starts folded to one line, so
 /// the steps still to do are what fills the screen; tap it to see the dates.
 class _StepGroup extends StatefulWidget {
-  _StepGroup({required this.title, required this.order, required this.steps, this.color = C.accent}) : super(key: ValueKey('${order.id}|$title'));
+  _StepGroup({required this.title, required this.order, required this.steps, this.color}) : super(key: ValueKey('${order.id}|$title'));
   final String title;
-  final Color color;
+  final Color? color; // null = the accent
   final OrderInput order;
   final List<StepState> steps;
   @override
@@ -502,7 +502,7 @@ class _StepGroupState extends State<_StepGroup> {
       child: Padding(
         padding: EdgeInsets.fromLTRB(14, 10, 10, (_open || !allDone) ? 2 : 10),
         child: Row(children: [
-          if (allDone) ...[const Icon(Icons.check_circle, size: 18, color: C.success), const SizedBox(width: 8)],
+          if (allDone) ...[Icon(Icons.check_circle, size: 18, color: C.success), const SizedBox(width: 8)],
           Expanded(child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 14))),
           const SizedBox(width: 8),
           count,
@@ -513,7 +513,7 @@ class _StepGroupState extends State<_StepGroup> {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Container(
-        decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: allDone ? C.success : widget.color, width: 4))),
+        decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: allDone ? C.success : (widget.color ?? C.accent), width: 4))),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
         head,
         if (_open || !allDone)
@@ -547,13 +547,13 @@ class _StepRow extends StatelessWidget {
         icon = const _Tick(done: true);
         sub = app.dateShort(st.doneDate!);
       case 'na':
-        icon = const Icon(Icons.remove_circle_outline, size: 22, color: C.locked);
+        icon = Icon(Icons.remove_circle_outline, size: 22, color: C.locked);
         sub = '${s.t('common.notApplicable')} · ${st.naReason ?? ''}';
         color = C.muted;
       case 'ready':
         icon = const _Tick(done: false);
       default:
-        icon = const Icon(Icons.lock_outline, size: 20, color: C.locked);
+        icon = Icon(Icons.lock_outline, size: 20, color: C.locked);
         sub = st.reasons.map(s.reason).join(' · ');
         color = C.faint;
     }
@@ -561,7 +561,7 @@ class _StepRow extends StatelessWidget {
     // A done step shows its date on the same line, so each finished step takes one short row.
     final inline = st.state == 'done';
     return Container(
-      decoration: BoxDecoration(color: ready ? C.accentSoft : null, border: const Border(bottom: BorderSide(color: C.lineSoft))),
+      decoration: BoxDecoration(color: ready ? C.accentSoft : null, border: Border(bottom: BorderSide(color: C.lineSoft))),
       padding: EdgeInsets.symmetric(vertical: ready ? 5 : 4, horizontal: ready ? 6 : 0),
       constraints: const BoxConstraints(minHeight: 36),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -572,17 +572,17 @@ class _StepRow extends StatelessWidget {
             Text.rich(
               TextSpan(children: [
                 TextSpan(text: name, style: TextStyle(color: color, fontWeight: ready ? FontWeight.w600 : FontWeight.w400, fontSize: 14)),
-                if (inline && sub != null) TextSpan(text: '   $sub', style: const TextStyle(fontSize: 12, color: C.faint)),
+                if (inline && sub != null) TextSpan(text: '   $sub', style: TextStyle(fontSize: 12, color: C.faint)),
               ]),
             ),
-            if (!inline && sub != null && sub.isNotEmpty) Text(sub, style: const TextStyle(fontSize: 12, color: C.faint)),
+            if (!inline && sub != null && sub.isNotEmpty) Text(sub, style: TextStyle(fontSize: 12, color: C.faint)),
             if (note != null && note.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Row(children: [
-                  const Icon(Icons.sticky_note_2_outlined, size: 13, color: C.muted),
+                  Icon(Icons.sticky_note_2_outlined, size: 13, color: C.muted),
                   const SizedBox(width: 4),
-                  Flexible(child: Text(note, style: const TextStyle(fontSize: 12, color: C.muted))),
+                  Flexible(child: Text(note, style: TextStyle(fontSize: 12, color: C.muted))),
                 ]),
               ),
             PhotoStrip(order: order, stepKey: st.id, canEdit: editable),
@@ -604,12 +604,12 @@ class _StepRow extends StatelessWidget {
             tooltip: s.t('step.addPhoto'),
             visualDensity: VisualDensity.compact,
             onPressed: () => addPhotosToStep(context, order, st.id, name),
-            icon: const Icon(Icons.add_a_photo_outlined, size: 20, color: C.faint),
+            icon: Icon(Icons.add_a_photo_outlined, size: 20, color: C.faint),
           ),
         if (editable)
           PopupMenuButton<String>(
             tooltip: s.t('order.stepMenu'),
-            icon: const Icon(Icons.more_vert, size: 20, color: C.faint),
+            icon: Icon(Icons.more_vert, size: 20, color: C.faint),
             onSelected: (v) {
               switch (v) {
                 case 'other':
@@ -727,7 +727,7 @@ class _Tick extends StatelessWidget {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           transitionBuilder: (c, a) => ScaleTransition(scale: a, child: c),
-          child: done ? const Icon(Icons.check, key: ValueKey('t'), size: 14, color: Colors.white) : const SizedBox(key: ValueKey('o')),
+          child: done ? Icon(Icons.check, key: const ValueKey('t'), size: 14, color: C.onSolid) : const SizedBox(key: ValueKey('o')),
         ),
       );
 }

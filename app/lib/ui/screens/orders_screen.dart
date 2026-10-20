@@ -155,7 +155,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [
           Expanded(child: Text(_title ?? s.t('nav.allOrders'), style: Theme.of(context).textTheme.titleLarge)),
-          Text(s.t('filter.matches', {'count': rows.length}), style: const TextStyle(color: C.muted)),
+          Text(s.t('filter.matches', {'count': rows.length}), style: TextStyle(color: C.muted)),
           // Deleted orders are kept for good; this is the way back to them.
           if (app.deletedOrders.isNotEmpty)
             phone
@@ -267,7 +267,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ]);
     if (!wide) return body;
     return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(width: 300, child: DecoratedBox(decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: filters)),
+      SizedBox(width: 300, child: DecoratedBox(decoration: BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: filters)),
       Expanded(child: body),
     ]);
   }
@@ -372,9 +372,9 @@ class _RowFacts extends StatelessWidget {
       fit: BoxFit.scaleDown,
       alignment: AlignmentDirectional.centerEnd,
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(width: 130, child: Text(order.contractor ?? app.s.t('common.unassigned'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12.5))),
+        SizedBox(width: 130, child: Text(order.contractor ?? app.s.t('common.unassigned'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: C.muted, fontSize: 12.5))),
         const SizedBox(width: 8),
-        SizedBox(width: 70, child: Text(order.receivedDate == null ? '' : app.dateShort(order.receivedDate!), style: const TextStyle(color: C.muted, fontSize: 12.5))),
+        SizedBox(width: 70, child: Text(order.receivedDate == null ? '' : app.dateShort(order.receivedDate!), style: TextStyle(color: C.muted, fontSize: 12.5))),
         SizedBox(width: 100, child: ProgressLine(ev.closed, ev.total)),
         const SizedBox(width: 8),
         SizedBox(width: 124, child: FittedBox(fit: BoxFit.scaleDown, alignment: AlignmentDirectional.centerStart, child: StatusChip(ev.status))),
@@ -391,16 +391,16 @@ class _BulkBar extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(color: C.ink, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: C.inverse, borderRadius: BorderRadius.circular(8)),
         child: Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
-          Text(context.t('common.selected', {'count': count}), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+          Text(context.t('common.selected', {'count': count}), style: TextStyle(color: C.onInverse, fontWeight: FontWeight.w500)),
           FilledButton(onPressed: onMark, child: Text(context.t('bulk.markStep'))),
           OutlinedButton(
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: C.muted)),
+            style: OutlinedButton.styleFrom(foregroundColor: C.onInverse, side: BorderSide(color: C.muted)),
             onPressed: onExport,
             child: Text(context.t('bulk.exportSelected')),
           ),
-          TextButton(onPressed: onClear, child: Text(context.t('common.clearAll'), style: const TextStyle(color: Color(0xFFC4C9C3)))),
+          TextButton(onPressed: onClear, child: Text(context.t('common.clearAll'), style: TextStyle(color: C.onInverseSoft))),
         ]),
       );
 }

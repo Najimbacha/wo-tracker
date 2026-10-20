@@ -21,7 +21,10 @@ void main() {
   const sizes = [Size(1920, 1080), Size(1440, 900), Size(1000, 760), Size(390, 844)];
   for (final lang in const ['en', 'ar']) {
     for (final size in sizes) {
-      testWidgets('every screen draws: $lang ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+     // The dark palette is drawn on the PC and phone sizes (English); light on every size.
+     for (final dark in const [false, true]) {
+      if (dark && !(lang == 'en' && (size.width == 1440 || size.width == 390))) continue;
+      testWidgets('every screen draws: $lang ${size.width.toInt()}x${size.height.toInt()}${dark ? ' dark' : ''}', (tester) async {
         final problems = <String>[];
         var where = 'start';
         final previous = FlutterError.onError;
@@ -44,7 +47,7 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
 
-        SharedPreferences.setMockInitialValues({'demoMode': true, 'language': lang});
+        SharedPreferences.setMockInitialValues({'demoMode': true, 'language': lang, if (dark) 'themeMode': 'dark'});
         final app = (await tester.runAsync(AppState.load))!;
         await tester.pumpWidget(AppScope(app: app, child: const WoTrackerApp()));
 
@@ -161,6 +164,7 @@ void main() {
           fail('${problems.toSet().length} problem(s); see the list above');
         }
       }, timeout: const Timeout(Duration(minutes: 3)));
+     }
     }
   }
 }

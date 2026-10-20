@@ -11,7 +11,6 @@ import '../../domain/order_input.dart';
 import '../../report/files.dart';
 import '../../report/pdf_report.dart';
 import '../../report/xlsx_writer.dart';
-import '../dark.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/dialogs.dart';
@@ -132,7 +131,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       const SizedBox(height: 14),
       DateField(label: s.t('report.date'), value: _date, onChanged: (v) => setState(() => _date = v ?? app.today)),
       const SizedBox(height: 6),
-      Text(s.t('report.periodHint.$_kind'), style: const TextStyle(color: C.faint, fontSize: 12)),
+      Text(s.t('report.periodHint.$_kind'), style: TextStyle(color: C.faint, fontSize: 12)),
       const SizedBox(height: 14),
       DropdownButtonFormField<String?>(
         style: Theme.of(context).textTheme.bodyLarge,
@@ -147,7 +146,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         onChanged: (v) => setState(() => _contractor = v),
       ),
       const SizedBox(height: 14),
-      Text(s.t('report.language'), style: const TextStyle(fontSize: 12.5, color: C.muted)),
+      Text(s.t('report.language'), style: TextStyle(fontSize: 12.5, color: C.muted)),
       const SizedBox(height: 6),
       SegmentedButton<String>(
         segments: const [ButtonSegment(value: 'en', label: Text('English')), ButtonSegment(value: 'ar', label: Text('العربية'))],
@@ -174,7 +173,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       ),
       if (_busy) const Padding(padding: EdgeInsets.only(top: 14), child: LinearProgressIndicator()),
       const SizedBox(height: 16),
-      Text(s.t('report.preparedByNote', {'name': app.data.settings.preparedBy}), style: const TextStyle(color: C.faint, fontSize: 12)),
+      Text(s.t('report.preparedByNote', {'name': app.data.settings.preparedBy}), style: TextStyle(color: C.faint, fontSize: 12)),
     ]);
     final preview = FutureBuilder<Uint8List>(
       future: _pdf,
@@ -184,8 +183,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         }
         if (!snap.hasData) return const DelayedLoader();
         final bytes = snap.data!;
-        return UndoDark(
-            child: PdfPreview(
+        return PdfPreview(
           key: ValueKey(_pdfKey),
           build: (_) async => bytes,
           canChangeOrientation: false,
@@ -195,8 +193,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
           allowPrinting: true,
           pdfFileName: '${_fileStem()}.pdf',
           maxPageWidth: 760,
-          scrollViewDecoration: const BoxDecoration(color: C.bg),
-        ));
+          scrollViewDecoration: BoxDecoration(color: C.bg),
+        );
       },
     );
     if (phone) {
@@ -206,7 +204,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       ]);
     }
     return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(width: 340, child: DecoratedBox(decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: controls)),
+      SizedBox(width: 340, child: DecoratedBox(decoration: BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))), child: controls)),
       Expanded(child: preview),
     ]);
   }

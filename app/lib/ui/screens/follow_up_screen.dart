@@ -35,7 +35,7 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 2),
         child: Text(s.t('followUp.title'), style: Theme.of(context).textTheme.titleLarge),
       ),
-      Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(s.t('followUp.subtitle'), style: const TextStyle(color: C.muted, fontSize: 13))),
+      Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 8), child: Text(s.t('followUp.subtitle'), style: TextStyle(color: C.muted, fontSize: 13))),
       for (final c in list)
         ListTile(
           dense: true,
@@ -45,7 +45,7 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
           title: Text(_name(s, c.contractor), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5)),
           // late count and total on the same line as the name
           trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-            if (c.late > 0) Text(s.t('followUp.late', {'count': c.late}), style: const TextStyle(color: C.critical, fontSize: 12)),
+            if (c.late > 0) Text(s.t('followUp.late', {'count': c.late}), style: TextStyle(color: C.critical, fontSize: 12)),
             const SizedBox(width: 10),
             Mono('${c.orders}', color: C.muted),
           ]),
@@ -64,7 +64,7 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
         width: 300,
         child: Material(
           color: C.card,
-          child: DecoratedBox(decoration: const BoxDecoration(border: BorderDirectional(end: BorderSide(color: C.line))), child: side),
+          child: DecoratedBox(decoration: BoxDecoration(border: BorderDirectional(end: BorderSide(color: C.line))), child: side),
         ),
       ),
       Expanded(child: _Detail(key: ValueKey(cur.contractor), con: cur)),
@@ -126,9 +126,9 @@ class _DetailState extends State<_Detail> {
       Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, runSpacing: 8, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(_name(s, con.contractor), style: Theme.of(context).textTheme.titleLarge),
-          Text(s.t('followUp.inProgress', {'count': con.orders}), style: const TextStyle(color: C.muted)),
+          Text(s.t('followUp.inProgress', {'count': con.orders}), style: TextStyle(color: C.muted)),
         ]),
-        if (last != null) Text(s.t('followUp.lastFollowedUp', {'when': last}), style: const TextStyle(color: C.faint, fontSize: 12.5)),
+        if (last != null) Text(s.t('followUp.lastFollowedUp', {'when': last}), style: TextStyle(color: C.faint, fontSize: 12.5)),
       ]),
       const SizedBox(height: 16),
       for (final g in con.sortedGroups) ...[
@@ -167,7 +167,7 @@ class _DetailState extends State<_Detail> {
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFFF8F9F7), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: C.panel, borderRadius: BorderRadius.circular(8)),
             child: Directionality(
               textDirection: lang == 'ar' ? TextDirection.rtl : TextDirection.ltr,
               child: SelectableText(message(app, con, lang), style: const TextStyle(fontSize: 13, height: 1.5)),

@@ -123,7 +123,9 @@ class WoTrackerApp extends StatelessWidget {
     final app = AppScope.of(context);
     final ar = app.rtl;
     final dark = isDark(context);
+    C.dark = dark; // every colour below reads the palette for this mode
     return MaterialApp(
+      key: ValueKey(dark), // changing mode redraws everything with the new palette
       debugShowCheckedModeBanner: false,
       title: app.s.t('app.name'),
       theme: appTheme(arabic: ar, dark: dark),
@@ -141,11 +143,8 @@ class WoTrackerApp extends StatelessWidget {
       // on top of any size the user set in Windows.
       builder: (context, child) {
         final mq = MediaQuery.of(context);
-        var page = child!;
-        if (mq.size.width >= 1280) {
-          page = MediaQuery(data: mq.copyWith(textScaler: TextScaler.linear(mq.textScaler.scale(14) / 14 * 1.07)), child: page);
-        }
-        return dark ? ColorFiltered(colorFilter: darkFilter, child: page) : page;
+        if (mq.size.width < 1280) return child!;
+        return MediaQuery(data: mq.copyWith(textScaler: TextScaler.linear(mq.textScaler.scale(14) / 14 * 1.07)), child: child!);
       },
     );
   }

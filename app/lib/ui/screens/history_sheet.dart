@@ -98,7 +98,7 @@ class _HistoryState extends State<_History> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(s.t('history.title', {'wo': widget.order.woNumber ?? ''}), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Text(s.t('history.note'), style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text(s.t('history.note'), style: TextStyle(color: C.muted, fontSize: 12.5)),
         const SizedBox(height: 12),
         Expanded(
           child: FutureBuilder<List<HistoryEntry>>(
@@ -135,7 +135,7 @@ class _HistoryState extends State<_History> {
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(_describe(context, e, labels)),
-                          Text([when, if (values.isNotEmpty) values].join(' · '), style: const TextStyle(fontSize: 12, color: C.faint)),
+                          Text([when, if (values.isNotEmpty) values].join(' · '), style: TextStyle(fontSize: 12, color: C.faint)),
                         ]),
                       ),
                     ]),

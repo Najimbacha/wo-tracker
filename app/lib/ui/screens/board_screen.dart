@@ -44,7 +44,7 @@ class _BoardScreenState extends State<BoardScreen> {
         child: Wrap(spacing: 12, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, alignment: WrapAlignment.spaceBetween, children: [
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(s.t('board.title'), style: Theme.of(context).textTheme.titleLarge),
-            Text(s.t('board.summary', {'count': total, 'late': late, 'hold': hold}), style: const TextStyle(color: C.muted, fontSize: 13)),
+            Text(s.t('board.summary', {'count': total, 'late': late, 'hold': hold}), style: TextStyle(color: C.muted, fontSize: 13)),
           ]),
           Wrap(spacing: 8, runSpacing: 8, children: [
             _Pick(label: s.t('order.contractor'), value: _contractor, all: s.t('filter.all'), options: contractors, show: (v) => v == unassignedContractor ? s.t('common.unassigned') : v, onChanged: (v) => setState(() => _contractor = v)),
@@ -75,17 +75,17 @@ class _BoardScreenState extends State<BoardScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                               decoration: BoxDecoration(color: stageColor(stage), borderRadius: BorderRadius.circular(999)),
-                              child: Mono('${cards.length}', size: 14, color: Colors.white),
+                              child: Mono('${cards.length}', size: 14, color: C.onSolid),
                             ),
                           ]),
                         ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-                          child: Text(s.t('board.hint.$stage'), style: const TextStyle(fontSize: 13, color: C.muted)),
+                          child: Text(s.t('board.hint.$stage'), style: TextStyle(fontSize: 13, color: C.muted)),
                         ),
                         Expanded(
                           child: cards.isEmpty
-                              ? Center(child: Text(s.t('board.none'), style: const TextStyle(color: C.faint, fontSize: 12.5)))
+                              ? Center(child: Text(s.t('board.none'), style: TextStyle(color: C.faint, fontSize: 12.5)))
                               : ListView.separated(
                                   itemCount: cards.length,
                                   separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -99,7 +99,7 @@ class _BoardScreenState extends State<BoardScreen> {
       ),
       Padding(
         padding: EdgeInsets.fromLTRB(phone ? 12 : 16, 0, phone ? 12 : 16, 12),
-        child: Text(s.t('board.footer'), style: const TextStyle(fontSize: 12, color: C.faint)),
+        child: Text(s.t('board.footer'), style: TextStyle(fontSize: 12, color: C.faint)),
       ),
     ]);
   }
@@ -131,7 +131,7 @@ class _Card extends StatelessWidget {
               Row(children: [Expanded(child: Mono(c.woNumber ?? '—', size: 15, weight: FontWeight.w600)), TypeTag(c.type ?? '')]),
               const SizedBox(height: 3),
               Text([c.district, c.contractor ?? s.t('common.unassigned')].whereType<String>().join(' · '),
-                  maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, color: C.muted)),
+                  maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, color: C.muted)),
               const SizedBox(height: 6),
               Row(children: [
                 Expanded(
@@ -175,9 +175,9 @@ class _Pick extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(border: Border.all(color: C.field), borderRadius: BorderRadius.circular(6), color: C.card),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Text('$label ', style: const TextStyle(color: C.faint, fontSize: 13)),
+            Text('$label ', style: TextStyle(color: C.faint, fontSize: 13)),
             Text(value == null ? all : (show?.call(value!) ?? value!), style: const TextStyle(fontSize: 13)),
-            const Icon(Icons.arrow_drop_down, size: 18, color: C.faint),
+            Icon(Icons.arrow_drop_down, size: 18, color: C.faint),
           ]),
         ),
       );

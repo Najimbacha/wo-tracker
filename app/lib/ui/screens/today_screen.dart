@@ -26,7 +26,7 @@ class TodayScreen extends StatelessWidget {
       SizedBox(
         width: MediaQuery.sizeOf(context).width >= 1600 ? 480 : 420, // more room for the reason on a big monitor
         child: DecoratedBox(
-          decoration: const BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))),
+          decoration: BoxDecoration(color: C.card, border: BorderDirectional(end: BorderSide(color: C.line))),
           child: queue,
         ),
       ),
@@ -82,15 +82,15 @@ class _Queue extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text('${s.weekday(app.today)} ${app.dateShort(app.today)}${app.showHijri ? ' · ${s.hijri(app.today, app.calendar)}' : ''}',
-                style: const TextStyle(color: C.muted, fontSize: 13)),
+                style: TextStyle(color: C.muted, fontSize: 13)),
           ),
         ]),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-        child: Text.rich(TextSpan(style: const TextStyle(color: C.muted, fontSize: 13), children: [
+        child: Text.rich(TextSpan(style: TextStyle(color: C.muted, fontSize: 13), children: [
           TextSpan(text: s.t('today.summary', {'open': active.length, 'received': receivedToday})),
-          if (attention.isNotEmpty) TextSpan(text: ' · ${s.t('today.needAttention', {'count': attention.length})}', style: const TextStyle(color: C.critical, fontWeight: FontWeight.w500)),
+          if (attention.isNotEmpty) TextSpan(text: ' · ${s.t('today.needAttention', {'count': attention.length})}', style: TextStyle(color: C.critical, fontWeight: FontWeight.w500)),
         ])),
       ),
       ..._dueReminders(context, selected),
@@ -99,9 +99,9 @@ class _Queue extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
           child: Row(children: [
-            const Icon(Icons.check_circle_outline, color: C.success, size: 18),
+            Icon(Icons.check_circle_outline, color: C.success, size: 18),
             const SizedBox(width: 8),
-            Expanded(child: Text('${s.t('empty.nothingAttention')} — ${s.t('empty.nothingAttentionBody', {'count': active.length})}', style: const TextStyle(color: C.muted))),
+            Expanded(child: Text('${s.t('empty.nothingAttention')} — ${s.t('empty.nothingAttentionBody', {'count': active.length})}', style: TextStyle(color: C.muted))),
           ]),
         ),
       if (lateStarts.length > 1)
@@ -129,7 +129,7 @@ class _Queue extends StatelessWidget {
               dense: true,
               onTap: () => openOrder(context, id),
               trailing: Text(d.date == app.today ? s.t('today.startsToday') : s.t('board.startsOn', {'date': '${s.weekday(d.date)} ${app.dateShort(d.date)}'}),
-                  maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: C.muted)),
+                  maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: C.muted)),
             ),
       for (final col in board)
         if (col.cards.isNotEmpty && col.stage != 'starting') ...[
@@ -211,7 +211,7 @@ class _Head extends StatelessWidget {
           child: Row(children: [
             Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5))),
             Mono('$count', size: 12.5, color: C.muted),
-            if (onTap != null) const Icon(Icons.chevron_right, size: 18, color: C.faint),
+            if (onTap != null) Icon(Icons.chevron_right, size: 18, color: C.faint),
           ]),
         ),
       );
@@ -232,7 +232,7 @@ class _GroupLink extends StatelessWidget {
             SeverityDot(severity),
             const SizedBox(width: 10),
             Expanded(child: Text(text, style: TextStyle(color: severityColor(severity), fontWeight: FontWeight.w500))),
-            const Icon(Icons.chevron_right, size: 18, color: C.faint),
+            Icon(Icons.chevron_right, size: 18, color: C.faint),
           ]),
         ),
       );
