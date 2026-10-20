@@ -139,7 +139,21 @@ class PageHeader extends StatelessWidget {
     final phone = isPhone(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(phone ? 14 : 24, phone ? 16 : 24, phone ? 14 : 24, 16),
-      child: Wrap(spacing: 16, runSpacing: 12, crossAxisAlignment: WrapCrossAlignment.end, alignment: WrapAlignment.spaceBetween, children: [
+      child: phone
+          ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: TextStyle(fontSize: 24, height: 1.2, fontWeight: FontWeight.w600, letterSpacing: -0.2, color: C.ink)),
+              if (chips.isNotEmpty) ...[const SizedBox(height: 10), Wrap(spacing: 8, runSpacing: 6, children: chips)],
+              // One scrolling line, so the filters never push the page down.
+              if (actions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(children: [for (final a in actions) Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: a)]),
+                  ),
+                ),
+            ])
+          : Wrap(spacing: 16, runSpacing: 12, crossAxisAlignment: WrapCrossAlignment.end, alignment: WrapAlignment.spaceBetween, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
           Text(title, style: TextStyle(fontSize: phone ? 24 : 28, height: 1.2, fontWeight: FontWeight.w600, letterSpacing: -0.2, color: C.ink)),
           if (chips.isNotEmpty) ...[const SizedBox(height: 10), Wrap(spacing: 8, runSpacing: 6, children: chips)],
