@@ -40,7 +40,7 @@ const sansEn = 'IBMPlexSans';
 const sansAr = 'IBMPlexSansArabic';
 const mono = 'IBMPlexMono';
 
-ThemeData appTheme({required bool arabic}) {
+ThemeData appTheme({required bool arabic, bool dark = false}) {
   final family = arabic ? sansAr : sansEn;
   final base = ThemeData(
     useMaterial3: true,
@@ -52,7 +52,13 @@ ThemeData appTheme({required bool arabic}) {
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
   final text = base.textTheme.apply(bodyColor: C.ink, displayColor: C.ink);
+  // The whole app is turned dark by a colour filter (dark.dart), so what the filter flips must
+  // be set the other way round here: a dark screen behind a dialog is a white 54% veil, shadows are white.
+  final veil = dark ? Colors.white54 : Colors.black54;
   return base.copyWith(
+    shadowColor: dark ? Colors.white : Colors.black,
+    bottomSheetTheme: BottomSheetThemeData(modalBarrierColor: veil),
+    drawerTheme: DrawerThemeData(scrimColor: veil),
     textTheme: text.copyWith(
       titleLarge: text.titleLarge?.copyWith(fontSize: 20, fontWeight: FontWeight.w600),
       titleMedium: text.titleMedium?.copyWith(fontSize: 15, fontWeight: FontWeight.w600),
@@ -123,7 +129,7 @@ ThemeData appTheme({required bool arabic}) {
       textStyle: const TextStyle(color: Colors.white, fontSize: 12.5),
       waitDuration: const Duration(milliseconds: 400),
     ),
-    dialogTheme: const DialogThemeData(backgroundColor: C.card, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
+    dialogTheme: DialogThemeData(backgroundColor: C.card, barrierColor: veil, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
   );
 }
 

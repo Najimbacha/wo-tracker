@@ -220,6 +220,16 @@ class AppState extends ChangeNotifier {
   }
 
   bool get rtl => lang == 'ar';
+
+  // ---------------------------------------------------------------- appearance (per device)
+
+  /// 'system' (follow Windows / the phone), 'light' or 'dark'.
+  String get themeMode => prefs.getString('themeMode') ?? 'system';
+
+  Future<void> setThemeMode(String m) async {
+    await prefs.setString('themeMode', m);
+    notifyListeners();
+  }
   bool get showHijri => data.settings.showHijri;
 
   Future<void> setLanguage(String l) async {

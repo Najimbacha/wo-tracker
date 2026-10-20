@@ -11,6 +11,7 @@ import '../../domain/order_input.dart';
 import '../../report/files.dart';
 import '../../report/pdf_report.dart';
 import '../../report/xlsx_writer.dart';
+import '../dark.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/dialogs.dart';
@@ -183,7 +184,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
         }
         if (!snap.hasData) return const DelayedLoader();
         final bytes = snap.data!;
-        return PdfPreview(
+        return UndoDark(
+            child: PdfPreview(
           key: ValueKey(_pdfKey),
           build: (_) async => bytes,
           canChangeOrientation: false,
@@ -194,7 +196,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           pdfFileName: '${_fileStem()}.pdf',
           maxPageWidth: 760,
           scrollViewDecoration: const BoxDecoration(color: C.bg),
-        );
+        ));
       },
     );
     if (phone) {

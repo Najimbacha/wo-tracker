@@ -13,6 +13,7 @@ import '../../data/models.dart';
 import '../../data/order_rows.dart' show stepRowIdFor;
 import '../../data/repository.dart';
 import '../../domain/order_input.dart';
+import '../dark.dart';
 import '../theme.dart';
 import 'dialogs.dart';
 
@@ -200,7 +201,7 @@ class _Thumb extends StatelessWidget {
                 decoration: BoxDecoration(color: C.chip, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
                 child: path == null
                     ? const Icon(Icons.cloud_download_outlined, size: 20, color: C.locked)
-                    : Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 20, color: C.locked)),
+                    : UndoDark(child: Image.file(File(path!), fit: BoxFit.cover, cacheWidth: 160, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 20, color: C.locked))),
               ),
             ),
           ),
@@ -219,7 +220,7 @@ class _Thumb extends StatelessWidget {
 }
 
 Future<void> showPhotoViewer(BuildContext context, {required List<StepPhoto> photos, required int index, required bool canDelete}) =>
-    showDialog<void>(context: context, barrierColor: Colors.black87, builder: (_) => _PhotoViewer(photos: photos, index: index, canDelete: canDelete));
+    showDialog<void>(context: context, barrierColor: Colors.transparent, builder: (_) => UndoDark(child: _PhotoViewer(photos: photos, index: index, canDelete: canDelete)));
 
 class _PhotoViewer extends StatefulWidget {
   const _PhotoViewer({required this.photos, required this.index, required this.canDelete});

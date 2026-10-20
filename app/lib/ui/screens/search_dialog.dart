@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import '../../app/scope.dart';
 import '../../domain/insights.dart';
 import '../nav.dart';
+import '../dark.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
 Future<void> showSearchDialog(BuildContext context) => showDialog<void>(
       context: context,
-      barrierColor: const Color(0x6115181C),
+      barrierColor: isDark(context) ? null : const Color(0x6115181C),
       builder: (_) => const _Search(),
     );
 

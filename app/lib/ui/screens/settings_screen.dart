@@ -25,6 +25,7 @@ class SettingsScreen extends StatelessWidget {
     final cards = <Widget>[
       const _SyncCard(),
       const _LanguageCard(),
+      const _AppearanceCard(),
       const _AlertsCard(),
       const _ContractorsCard(),
       const _DistrictsCard(),
@@ -88,6 +89,28 @@ Future<void> exportEverything(BuildContext context) async {
     if (saved != null && !saved.shared) app.showToast(app.s.t('toast.fileSaved', {'path': saved.path}));
   } catch (e) {
     app.showToast(app.s.t('toast.exportFailed', {'reason': fileErrorReason(e, app.s.t)}), error: true);
+  }
+}
+
+/// Light, dark, or follow Windows / the phone. Kept on this device only.
+class _AppearanceCard extends StatelessWidget {
+  const _AppearanceCard();
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final s = app.s;
+    return SectionCard(
+      title: s.t('settings.appearance'),
+      child: SegmentedButton<String>(
+        segments: [
+          ButtonSegment(value: 'system', icon: const Icon(Icons.brightness_auto_outlined, size: 18), label: Text(s.t('theme.system'))),
+          ButtonSegment(value: 'light', icon: const Icon(Icons.light_mode_outlined, size: 18), label: Text(s.t('theme.light'))),
+          ButtonSegment(value: 'dark', icon: const Icon(Icons.dark_mode_outlined, size: 18), label: Text(s.t('theme.dark'))),
+        ],
+        selected: {app.themeMode},
+        onSelectionChanged: (v) => app.setThemeMode(v.first),
+      ),
+    );
   }
 }
 

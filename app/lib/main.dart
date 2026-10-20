@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app/app_state.dart';
 import 'app/scope.dart';
 import 'ui/shell.dart';
+import 'ui/dark.dart';
 import 'ui/theme.dart';
 
 /// The running app, once loaded (for reporting unexpected errors).
@@ -121,10 +122,11 @@ class WoTrackerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
     final ar = app.rtl;
+    final dark = isDark(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: app.s.t('app.name'),
-      theme: appTheme(arabic: ar),
+      theme: appTheme(arabic: ar, dark: dark),
       locale: Locale(ar ? 'ar' : 'en'),
       supportedLocales: const [Locale('en'), Locale('ar')],
       localizationsDelegates: const [
@@ -139,8 +141,11 @@ class WoTrackerApp extends StatelessWidget {
       // on top of any size the user set in Windows.
       builder: (context, child) {
         final mq = MediaQuery.of(context);
-        if (mq.size.width < 1280) return child!;
-        return MediaQuery(data: mq.copyWith(textScaler: TextScaler.linear(mq.textScaler.scale(14) / 14 * 1.07)), child: child!);
+        var page = child!;
+        if (mq.size.width >= 1280) {
+          page = MediaQuery(data: mq.copyWith(textScaler: TextScaler.linear(mq.textScaler.scale(14) / 14 * 1.07)), child: page);
+        }
+        return dark ? ColorFiltered(colorFilter: darkFilter, child: page) : page;
       },
     );
   }
