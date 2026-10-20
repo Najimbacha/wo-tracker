@@ -124,9 +124,9 @@ class _TopBar extends StatelessWidget {
                   padding: const EdgeInsetsDirectional.only(end: 2),
                   child: TextButton.icon(
                     style: TextButton.styleFrom(
-                      foregroundColor: app.screen == d ? C.ink : C.muted,
-                      backgroundColor: app.screen == d ? C.chip : Colors.transparent,
-                      textStyle: TextStyle(fontWeight: app.screen == d ? FontWeight.w600 : FontWeight.w400, fontSize: 14),
+                      foregroundColor: app.screen == d ? C.accentDark : C.muted,
+                      backgroundColor: app.screen == d ? C.accentSoft : Colors.transparent,
+                      textStyle: TextStyle(fontWeight: app.screen == d ? FontWeight.w500 : FontWeight.w400, fontSize: 14),
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
                     onPressed: () => app.go(d),
@@ -140,12 +140,12 @@ class _TopBar extends StatelessWidget {
         const SizedBox(width: 12),
         InkWell(
           onTap: () => showSearchDialog(context),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(8),
           child: Container(
             width: wide ? 260 : 180,
-            height: 34,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: C.panel, border: Border.all(color: C.line), borderRadius: BorderRadius.circular(6)),
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(color: C.card, border: Border.all(color: C.field), borderRadius: BorderRadius.circular(8)),
             child: Row(children: [
               Icon(Icons.search, size: 17, color: C.faint),
               const SizedBox(width: 8),
@@ -159,7 +159,7 @@ class _TopBar extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        OutlinedButton.icon(
+        FilledButton.icon(
           onPressed: () => newOrder(context),
           icon: const Icon(Icons.add, size: 18),
           label: Text(app.s.t('nav.newOrder')),
@@ -229,18 +229,27 @@ class _SyncBadge extends StatelessWidget {
             _ => (Icons.computer_outlined, C.muted, 'sync.badge.local'),
           };
     final pending = sy.pendingChanges;
+    final soft = app.repo.isDemo
+        ? C.warningSoft
+        : switch (sy.state) {
+            'synced' => C.successSoft,
+            'syncing' => C.accentSoft,
+            'offline' => C.warningSoft,
+            _ => C.chip,
+          };
     return Tooltip(
       message: app.s.t('$key.tip', {'count': pending}),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
         onTap: () => app.go('settings'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Container(
+          height: 30,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(color: soft, borderRadius: BorderRadius.circular(999)),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 18, color: color),
-            const SizedBox(width: 5),
-            Text(app.s.t(key), style: TextStyle(color: color, fontSize: 12.5, fontWeight: FontWeight.w500)),
-            if (pending > 0) ...[const SizedBox(width: 4), Mono('$pending', size: 11.5, color: color)],
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 6),
+            Text(pending > 0 ? '${app.s.t(key)} · ${app.s.t('sync.badge.waiting', {'count': pending})}' : app.s.t(key), style: TextStyle(color: color, fontSize: 12.5, fontWeight: FontWeight.w500)),
           ]),
         ),
       ),

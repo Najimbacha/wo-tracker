@@ -15,6 +15,7 @@ class C {
   static Color get field => _p(0xFFD5D9D4, 0xFF3B4550);
   static Color get bg => _p(0xFFF4F5F3, 0xFF0F1216);
   static Color get card => _p(0xFFFFFFFF, 0xFF171B21);
+  static Color get col => _p(0xFFECEEEA, 0xFF14181D); // a board column / quiet area behind cards
   static Color get chip => _p(0xFFEEF0ED, 0xFF212830);
   static Color get panel => _p(0xFFF8F9F7, 0xFF13171C); // a quiet box inside a card
   static Color get panel2 => _p(0xFFFBFBFA, 0xFF13171C);

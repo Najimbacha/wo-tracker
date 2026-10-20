@@ -164,6 +164,8 @@ class Insights {
       startsOn: ev.stage == 'starting' ? _firstPermitStart(o) : null,
       severity: _maxSeverity(ev.alerts),
       onHold: ev.status == 'on_hold',
+      closed: ev.closed,
+      total: ev.total,
     );
   }
 
@@ -667,6 +669,7 @@ class DayStarts {
 class BoardCard {
   final String? id, woNumber, type, district, contractor, next, nextKey, startsOn, severity;
   final int daysWaiting;
+  final int closed, total; // steps done / all steps
   final bool onHold;
   const BoardCard({
     this.id,
@@ -680,6 +683,8 @@ class BoardCard {
     this.startsOn,
     this.severity,
     this.onHold = false,
+    this.closed = 0,
+    this.total = 0,
   });
 }
 

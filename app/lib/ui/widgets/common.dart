@@ -128,6 +128,53 @@ class ProgressLine extends StatelessWidget {
   }
 }
 
+/// The top of a screen: a proper title, small count chips under it, and actions on the right.
+class PageHeader extends StatelessWidget {
+  const PageHeader({super.key, required this.title, this.chips = const [], this.actions = const []});
+  final String title;
+  final List<Widget> chips;
+  final List<Widget> actions;
+  @override
+  Widget build(BuildContext context) {
+    final phone = isPhone(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(phone ? 14 : 24, phone ? 16 : 24, phone ? 14 : 24, 16),
+      child: Wrap(spacing: 16, runSpacing: 12, crossAxisAlignment: WrapCrossAlignment.end, alignment: WrapAlignment.spaceBetween, children: [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          Text(title, style: TextStyle(fontSize: phone ? 24 : 28, height: 1.2, fontWeight: FontWeight.w600, letterSpacing: -0.2, color: C.ink)),
+          if (chips.isNotEmpty) ...[const SizedBox(height: 10), Wrap(spacing: 8, runSpacing: 6, children: chips)],
+        ]),
+        if (actions.isNotEmpty) Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: actions),
+      ]),
+    );
+  }
+}
+
+/// A small count with its word: "2 open", "1 late". [tone] colours it: null = neutral, 'critical', 'warning', 'success'.
+class StatChip extends StatelessWidget {
+  const StatChip(this.count, this.label, {super.key, this.tone});
+  final int count;
+  final String label;
+  final String? tone;
+  @override
+  Widget build(BuildContext context) {
+    final (fg, bg, strong) = switch (tone) {
+      'critical' => (C.critical, C.criticalSoft, C.critical),
+      'warning' => (C.warning, C.warningSoft, C.warning),
+      'success' => (C.success, C.successSoft, C.success),
+      _ => (C.muted, C.chip, C.ink),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      child: Text.rich(TextSpan(children: [
+        TextSpan(text: '$count', style: TextStyle(fontWeight: FontWeight.w600, color: strong)),
+        TextSpan(text: ' $label', style: TextStyle(color: fg)),
+      ]), style: const TextStyle(fontSize: 13)),
+    );
+  }
+}
+
 /// White card with a title row.
 class SectionCard extends StatelessWidget {
   const SectionCard({super.key, this.title, this.trailing, required this.child, this.padding = const EdgeInsets.all(14)});
