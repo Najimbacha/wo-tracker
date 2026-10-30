@@ -175,6 +175,16 @@ class AppState extends ChangeNotifier {
     if (Platform.environment['FLUTTER_TEST'] == 'true') {
       return Directory.systemTemp.createTempSync('wo_tracker').path;
     }
+    final exe = File(Platform.resolvedExecutable).parent;
+    // NOT 'data': the Flutter Windows runner keeps its own assets and app.so in
+    // `<exe dir>/data`, and creating our own there breaks the engine on next start.
+    final beside = Directory('${exe.path}${Platform.pathSeparator}wo_tracker_data');
+    // A copy of the program that carries its own database beside it is used as it stands.
+    // This is how the folder is copied to another place (or another computer) with its data,
+    // and without this the copy would silently open an empty database in the profile folder.
+    if (await File('${beside.path}${Platform.pathSeparator}wo_tracker.db').exists()) {
+      return beside.path;
+    }
     Directory? preferred;
     try {
       preferred = await getApplicationSupportDirectory();
@@ -183,11 +193,7 @@ class AppState extends ChangeNotifier {
     }
     if (preferred != null && await _usable(preferred)) return preferred.path;
 
-    final exe = File(Platform.resolvedExecutable).parent;
-    // NOT 'data': the Flutter Windows runner keeps its own assets and app.so in
-    // `<exe dir>/data`, and creating our own there breaks the engine on next start.
-    final fallback = Directory('${exe.path}${Platform.pathSeparator}wo_tracker_data');
-    if (await _usable(fallback)) return fallback.path;
+    if (await _usable(beside)) return beside.path;
 
     // Neither works: report the original problem rather than a confusing later one.
     return (preferred ?? await getApplicationSupportDirectory()).path;
