@@ -4,9 +4,15 @@
 #   SUPABASE_DB_URL    Postgres connection string (Supabase > Connect > Session pooler)
 #   BACKUP_PASSPHRASE  Long random passphrase used to encrypt backups. Keep a copy somewhere safe.
 #   RCLONE_CONFIG      rclone config text with a Google Drive remote named "gdrive"
-# Optional (keeps the free project's API counted as active even in weeks the app isn't opened):
+#   BACKUP_PASSPHRASE_ESCROW  The same passphrase again, stored separately. The run fails if it
+#                      is missing or differs, so a lost BACKUP_PASSPHRASE cannot quietly make
+#                      every backup unreadable.
+# Optional:
 #   SUPABASE_URL       https://<project>.supabase.co
 #   SUPABASE_ANON_KEY  the project's public "anon" key (Settings > API)
+#   SUPABASE_SERVICE_KEY  service role key (Settings > API). Required to copy the attachment
+#                      FILES out of the Supabase Storage bucket. Without it the nightly backup
+#                      warns loudly: rows are saved, but photos and PDFs are not.
 name: Nightly backup
 
 on:
@@ -47,10 +53,59 @@ jobs:
               select 'permits', count(*) from public.permits union all
               select 'segments', count(*) from public.segments union all
               select 'meters', count(*) from public.meters union all
+              select 'attachments', count(*) from public.attachments union all
               select 'activity_log', count(*) from public.activity_log
             ) x" > "wo-$stamp.counts.json"
           cat "wo-$stamp.counts.json"
           test -s "wo-$stamp.dump"
+          # The list of attachment files the rows point at. The files themselves live in the
+          # Supabase Storage bucket, which is NOT part of the database dump, so without this
+          # list (and the files) a restore brings back rows with photos that no longer exist.
+          psql "$DB_URL" -At -c "select storage_path from public.attachments where storage_path is not null order by storage_path" > "wo-$stamp.storage-files.txt"
+          echo "Attachment files listed: $(grep -c . "wo-$stamp.storage-files.txt" || true)"
+
+      - name: Back up the attachment files from Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_KEY" ] || [ -z "$SUPABASE_URL" ]; then
+            # No service key: the nightly backup still runs, but photo and PDF files are not
+            # copied. Say so loudly so this does not pass silently.
+            echo "::warning::SUPABASE_SERVICE_KEY (or SUPABASE_URL) not set: attachment FILES are not being backed up, only their rows. Restoring into a new project would lose every photo and PDF."
+            echo "SKIPPED" > "wo-$STAMP.storage-SKIPPED.txt"
+            shred -u "wo-$STAMP.storage-files.txt" || rm -f "wo-$STAMP.storage-files.txt"
+            exit 0
+          fi
+          # A trailing slash on the URL would produce a double slash in the request path.
+          SUPABASE_URL="${SUPABASE_URL%/}"
+          mkdir -p "storage/attachments"
+          copied=0; missing=0
+          # storage_path is always '<user id>/<attachment id>.<ext>' - two UUIDs plus an
+          # extension the app limits to [a-z0-9]{1,5} - so it is already URL-safe and is used
+          # as-is. Percent-encoding it would turn '/' into '%2F', which the storage endpoint
+          # may not decode, breaking every download.
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            dest="storage/attachments/$path"
+            mkdir -p "$(dirname "$dest")"
+            # '|| echo 000' keeps a network failure from aborting the whole run under 'set -e';
+            # it is counted as a missing file and reported below.
+            code=$(curl -sS -o "$dest" -w '%{http_code}' --retry 3 --retry-delay 2 \
+              "$SUPABASE_URL/storage/v1/object/attachments/$path" \
+              -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" -H "apikey: $SUPABASE_SERVICE_KEY" || echo "000")
+            if [ "$code" = "200" ]; then copied=$((copied+1)); else missing=$((missing+1)); rm -f "$dest"; echo "::warning::Could not download $path (HTTP $code)"; fi
+          done < "wo-$STAMP.storage-files.txt"
+          echo "Attachment files copied: $copied, missing: $missing"
+          # A row with no file is a broken pointer that a restore cannot repair. Fail the run
+          # (GitHub emails you) while there is still a copy on Drive and in the source bucket.
+          if [ "$missing" -gt 0 ]; then echo "::error::$missing attachment file(s) could not be downloaded from the bucket."; exit 1; fi
+          # Always produce an archive, even when empty: an empty run still marks the backup as
+          # having been verified, so the weekly restore test knows files were checked.
+          tar -czf "wo-$STAMP.storage.tar.gz" -C storage attachments
+          shred -u "wo-$STAMP.storage-files.txt" || rm -f "wo-$STAMP.storage-files.txt"
+          test -s "wo-$STAMP.storage.tar.gz"
 
       - name: Encrypt
         env:
@@ -59,6 +114,11 @@ jobs:
           gpg --batch --yes --pinentry-mode loopback --passphrase "$PASS" --symmetric --cipher-algo AES256 \
             --output "wo-$STAMP.dump.gpg" "wo-$STAMP.dump"
           shred -u "wo-$STAMP.dump"
+          if [ -f "wo-$STAMP.storage.tar.gz" ]; then
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$PASS" --symmetric --cipher-algo AES256 \
+              --output "wo-$STAMP.storage.tar.gz.gpg" "wo-$STAMP.storage.tar.gz"
+            shred -u "wo-$STAMP.storage.tar.gz"
+          fi
 
       - name: Upload to Google Drive
         env:
@@ -68,6 +128,8 @@ jobs:
           printf '%s\n' "$RCLONE_CONFIG_TEXT" > ~/.config/rclone/rclone.conf
           rclone copy "wo-$STAMP.dump.gpg" "gdrive:WO Tracker/Backups/database/"
           rclone copy "wo-$STAMP.counts.json" "gdrive:WO Tracker/Backups/database/"
+          [ -f "wo-$STAMP.storage.tar.gz.gpg" ] && rclone copy "wo-$STAMP.storage.tar.gz.gpg" "gdrive:WO Tracker/Backups/database/"
+          [ -f "wo-$STAMP.storage-SKIPPED.txt" ] && rclone copy "wo-$STAMP.storage-SKIPPED.txt" "gdrive:WO Tracker/Backups/database/"
           # Keep 90 days of daily backups, and the backup from the 1st of every month forever.
           rclone delete "gdrive:WO Tracker/Backups/database/" --min-age 90d --exclude "wo-*-01.*"
           rclone lsl "gdrive:WO Tracker/Backups/database/" | tail -5
@@ -79,6 +141,9 @@ jobs:
           path: |
             wo-${{ env.STAMP }}.dump.gpg
             wo-${{ env.STAMP }}.counts.json
+            wo-${{ env.STAMP }}.storage.tar.gz.gpg
+            wo-${{ env.STAMP }}.storage-SKIPPED.txt
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Get the size-check script
@@ -90,6 +155,9 @@ jobs:
       - name: Check database size (fails at 80% of the free 500 MB, so GitHub emails you)
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          BACKUP_PASSPHRASE_ESCROW: ${{ secrets.BACKUP_PASSPHRASE_ESCROW }}
+          REQUIRE_PASSPHRASE_ESCROW: "1"
         run: bash repo/scripts/check-db-size.sh "$DB_URL"
 
       - name: Keep the free project active

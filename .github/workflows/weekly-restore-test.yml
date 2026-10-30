@@ -52,6 +52,26 @@ jobs:
           age=$(( ( $(date +%s) - $(date -d "$day" +%s) ) / 86400 ))
           echo "Backup $day is $age day(s) old"
           test "$age" -le 2
+          # The attachment FILES are a separate archive. If the backup has attachment rows but
+          # no file archive, the restore would bring back photos that no longer exist: fail now.
+          if rclone lsf "gdrive:WO Tracker/Backups/database/" --include "$base.storage.tar.gz.gpg" | grep -q .; then
+            rclone copy "gdrive:WO Tracker/Backups/database/$base.storage.tar.gz.gpg" .
+            echo "STORAGE_ARCHIVE=$base.storage.tar.gz.gpg" >> "$GITHUB_ENV"
+          elif rclone lsf "gdrive:WO Tracker/Backups/database/" --include "$base.storage-SKIPPED.txt" | grep -q .; then
+            echo "::warning::Backup $base was taken without attachment files (SUPABASE_SERVICE_KEY was not set). Photos and PDFs are not in this backup."
+          else
+            # Count attachments that existed when the backup was taken, not now: an order
+            # created after the backup would otherwise make this fail for the wrong reason.
+            with_files=$(jq -r '.counts.attachments // 0' "$base.counts.json")
+            if [ "$with_files" -gt 0 ]; then
+              echo "::error::The backup has $with_files attachment row(s) but no file archive (no *.storage.tar.gz.gpg and no *.storage-SKIPPED.txt). The backup is incomplete."
+              exit 1
+            fi
+            echo "No attachments existed when this backup was taken; nothing to verify."
+          fi
+          # With the guard above, "no archive and no skip marker" can only mean no attachments,
+          # so anything still reported as rows-without-a-file below is a real gap.
+          echo "CHECK_ATTACHMENTS=1" >> "$GITHUB_ENV"
 
       - name: Decrypt and restore into a throwaway database
         env:
@@ -65,6 +85,37 @@ jobs:
           /usr/lib/postgresql/17/bin/pg_restore -h localhost -U postgres -d restore_test --no-owner --no-acl --exit-on-error restore.dump
           psql -h localhost -U postgres -d restore_test -v ON_ERROR_STOP=1 -f supabase/tests/supabase_stub.sql
 
+      - name: Check the attachment files came back too
+        if: env.CHECK_ATTACHMENTS == '1'
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          have=0; missing=0; rows=0
+          psql -h localhost -U postgres -d restore_test -At -c \
+            "select storage_path from public.attachments where storage_path is not null order by storage_path" > restored_paths.txt
+          rows=$(grep -c . restored_paths.txt || true)
+          if [ "$rows" -eq 0 ]; then echo "ok   - no attachments in this backup"; exit 0; fi
+          if [ -n "$STORAGE_ARCHIVE" ]; then
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$PASS" --output storage.tar.gz --decrypt "$STORAGE_ARCHIVE"
+            test -s storage.tar.gz || { echo "::error::storage archive is empty"; exit 1; }
+            mkdir -p storage_check
+            tar -xzf storage.tar.gz -C storage_check
+            test -d storage_check/attachments || { echo "::error::storage archive has no attachments folder"; exit 1; }
+            while IFS= read -r p; do
+              [ -z "$p" ] && continue
+              if [ -f "storage_check/attachments/$p" ]; then have=$((have+1)); else missing=$((missing+1)); echo "::warning::missing file in archive: $p"; fi
+            done < restored_paths.txt
+            echo "Attachment files in archive: $have, rows without a file: $missing"
+          else
+            # Rows point at files, but the backup carried no file archive at all.
+            missing=$rows
+          fi
+          if [ "$missing" -gt 0 ]; then
+            echo "::error::Restore would leave $missing of $rows attachment(s) pointing at files that do not exist."
+            exit 1
+          fi
+          echo "ok   - every restored attachment has its file"
+
       - name: Compare with the live database
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -72,7 +123,7 @@ jobs:
         run: |
           taken=$(jq -r .taken_at "$BASE.counts.json")
           fail=0
-          for t in work_orders steps permits segments meters activity_log; do
+          for t in work_orders steps permits segments meters attachments activity_log; do
             col=created_at; [ "$t" = activity_log ] && col=changed_at
             restored=$(psql -h localhost -U postgres -d restore_test -At -c "select count(*) from public.$t")
             live=$(psql "$DB_URL" -At -c "select count(*) from public.$t where $col <= '$taken'")
