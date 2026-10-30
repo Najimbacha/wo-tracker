@@ -39,7 +39,10 @@ Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Everything the program needs, but not the data folder. `wo_tracker_data` is created at run
+; time (next to the program when the Windows app-data folder cannot be used); shipping a copy
+; from the build machine would install someone else's empty database alongside the program.
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "wo_tracker_data\*"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\WO Tracker"; Filename: "{app}\wo_tracker.exe"
