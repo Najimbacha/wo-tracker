@@ -189,10 +189,16 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
     t(_str(tr['summary']), size: 8.5, color: _P.muted),
   ]);
 
+  // A small section is wrapped so its heading can never be left stranded at the bottom of a
+  // page with its rows overleaf. `Stack` is the one layout widget the PDF library treats as a
+  // single unbreakable item; a bare Column is split between its children. Only the short
+  // sections use it: the long tables below stay breakable so they can run over several pages.
+  pw.Widget keepTogether(pw.Widget child) => pw.Stack(children: [child]);
+
   // Open orders by stage
   final stageRows = _rows(doc['stages']);
   final stageMax = stageRows.fold<num>(1, (m, r) => ((r['value'] as num?) ?? 0) > m ? (r['value'] as num) : m);
-  final stages = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+  final stages = keepTogether(pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
     heading(_str((doc['stages'] as Map)['title'])),
     for (final r in stageRows)
       pw.Padding(
@@ -212,7 +218,7 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
           pw.SizedBox(width: 26, child: n(_num(r['value']), strong: true, align: pw.TextAlign.right)),
         ]),
       ),
-  ]);
+  ]));
 
   // A three-column list (steps completed, orders completed)
   pw.Widget grid3(List<pw.Widget> cells) => pw.LayoutBuilder(builder: (ctx, c) {
@@ -229,10 +235,10 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
       );
 
   final stepRows = _rows(doc['steps']);
-  final steps = pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+  final steps = keepTogether(pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
     heading(_str((doc['steps'] as Map)['title'])),
     if (stepRows.isEmpty) t(empty, color: _P.faint) else grid3([for (final r in stepRows) cell(_str(r['label']), _num(r['value']))]),
-  ]);
+  ]));
 
   // Tables
   // The PDF library's tables don't follow right-to-left text, so for Arabic the column
@@ -372,7 +378,10 @@ Future<Uint8List> reportPdf(Map<String, Object?> doc, ReportFonts fonts) async {
       stages,
       pw.SizedBox(height: 16),
       steps,
-      pw.NewPage(),
+      // No forced page break here: it left a page holding only the few steps rows and then
+      // empty space, and gave Arabic (whose font is taller) an extra page. Let the tables
+      // flow on from wherever the short sections ended.
+      pw.SizedBox(height: 18),
       ...delays,
       pw.SizedBox(height: 18),
       ...contractors,
