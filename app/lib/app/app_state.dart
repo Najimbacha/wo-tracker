@@ -2,12 +2,18 @@
 // today's date in Riyadh, and the one place where changes are saved (with Undo).
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Directory, File, FileMode, Platform;
 
 import 'package:flutter/material.dart' hide Actions;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
+import '../data/local_backup.dart';
 import '../data/memory_repository.dart';
 import '../data/models.dart';
 import '../data/order_rows.dart';
@@ -57,7 +63,7 @@ class AppState extends ChangeNotifier {
   final Map<String, dynamic> textAr;
   final HijriCalendar calendar;
   final Map<String, dynamic> demoFile;
-  final SharedPreferences prefs;
+  final AppPrefs prefs;
   final RulesEngine engine;
   late final Insights insights;
   late final Actions actions;
@@ -81,21 +87,62 @@ class AppState extends ChangeNotifier {
   Timer? _midnight;
   Timer? _dayCheck;
 
+  /// The folder resolved once at start-up by [_resolveDataDir]; the database and photos use it.
+  String? _dataDirPath;
+
   // ---------------------------------------------------------------- start-up
+
+  /// Appends a start-up step to `boot.log` in the data folder.
+  ///
+  /// Start-up failures show as one short banner, which is not enough to see where a machine
+  /// stops. This file is written next to the database, so a user reporting "the app will not
+  /// start" can attach it. Never throws: logging must not cause the failure it describes.
+  static String? _blogPath;
+  static void _blog(String line) {
+    try {
+      final p = _blogPath;
+      if (p == null) return;
+      File(p).writeAsStringSync('${DateTime.now().toIso8601String()} $line\n', mode: FileMode.append, flush: true);
+    } catch (_) {}
+  }
 
   static Future<AppState> load() async {
     Future<Map<String, dynamic>> json(String path) async => jsonDecode(await rootBundle.loadString(path)) as Map<String, dynamic>;
+    // Resolve the writable folder BEFORE anything touches path_provider. SharedPreferences on
+    // Windows writes its .json into the same support folder and throws while creating it, so
+    // an unusable profile folder would stop the app before the database code ever runs.
+    final dataDir = await _resolveDataDir();
+    _blogPath = '$dataDir${Platform.pathSeparator}boot.log';
+    _blog('load(): dataDir=$dataDir');
     final app = AppState._(
       await json('assets/rules/rules.json'),
       await json('assets/i18n/en.json'),
       await json('assets/i18n/ar.json'),
       HijriCalendar(await json('assets/calendar/umalqura.json')),
       await json('assets/demo/demo_orders.json'),
-      await SharedPreferences.getInstance(),
+      await _openPrefs(dataDir),
     );
+    _blog('prefs opened, demoMode=${app.demoMode}');
+    app._dataDirPath = dataDir;
     await app._openRepository();
     app._scheduleMidnight();
     return app;
+  }
+
+  /// Opens the settings store for [dataDir].
+  ///
+  /// The `shared_preferences` Windows plugin keeps its own path provider and asks it to create
+  /// `%APPDATA%\<company>\<product>`, which throws on a locked profile folder and stops the
+  /// app before the database code runs. Point that provider at the folder the app already
+  /// proved it can write to, so settings land beside the database instead.
+  static Future<AppPrefs> _openPrefs(String dataDir) async {
+    PathProviderPlatform.instance = _AppPathProvider(dataDir);
+    final store = SharedPreferencesStorePlatform.instance;
+    if (store is SharedPreferencesWindows) {
+      // ignore: invalid_use_of_visible_for_testing_member
+      store.pathProvider = _AppPathProvider(dataDir);
+    }
+    return AppPrefs(await SharedPreferences.getInstance());
   }
 
   bool get demoMode => prefs.getBool('demoMode') ?? false;
@@ -114,6 +161,138 @@ class AppState extends ChangeNotifier {
     await prefs.setString('powersyncUrl', c.powersyncUrl.trim());
   }
 
+  /// The one folder this app writes to. Resolved once, before anything else uses it.
+  ///
+  /// `path_provider` normally gives the Windows/mobile app-data folder, but it creates that
+  /// folder as a side effect and throws if it cannot (`Directory.create` on a locked or
+  /// restricted profile folder). Both the preferences file and the database need this folder,
+  /// so it is resolved here, with a fallback to a `wo_tracker_data` folder next to the
+  /// program. Without the fallback the app cannot start at all.
+  static Future<String> _resolveDataDir() async {
+    // Under `flutter test` there is no app-data plugin, and tests run in demo mode, which
+    // never touches this folder. Answer with a temp path instead of probing for one, so the
+    // suite does not create folders next to the Flutter SDK.
+    if (Platform.environment['FLUTTER_TEST'] == 'true') {
+      return Directory.systemTemp.createTempSync('wo_tracker').path;
+    }
+    Directory? preferred;
+    try {
+      preferred = await getApplicationSupportDirectory();
+    } catch (_) {
+      preferred = null;
+    }
+    if (preferred != null && await _usable(preferred)) return preferred.path;
+
+    final exe = File(Platform.resolvedExecutable).parent;
+    // NOT 'data': the Flutter Windows runner keeps its own assets and app.so in
+    // `<exe dir>/data`, and creating our own there breaks the engine on next start.
+    final fallback = Directory('${exe.path}${Platform.pathSeparator}wo_tracker_data');
+    if (await _usable(fallback)) return fallback.path;
+
+    // Neither works: report the original problem rather than a confusing later one.
+    return (preferred ?? await getApplicationSupportDirectory()).path;
+  }
+
+  /// True when [dir] exists (or can be created) and a file can be written inside it.
+  static Future<bool> _usable(Directory dir) async {
+    try {
+      if (!await dir.exists()) await dir.create(recursive: true);
+      final probe = File('${dir.path}${Platform.pathSeparator}.write-test');
+      await probe.writeAsString('x', flush: true);
+      await probe.delete();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Where the database, settings and photos live on this device.
+  String? get dataDirPath => _dataDirPath;
+
+  /// Writes the whole local data folder to [zipPath] (a local backup the user keeps).
+  Future<BackupInfo> backupTo(String zipPath) async {
+    final dir = _dataDirPath ?? await _resolveDataDir();
+    return LocalBackup.write(dataDir: dir, zipPath: zipPath, orders: data.orders.length);
+  }
+
+  /// Replaces everything on this device with the backup at [zipPath].
+  ///
+  /// The current data is copied aside first (`<data folder>_before-restore_<time>`), so a
+  /// restore of the wrong file can still be undone by hand. The database is closed before its
+  /// files are replaced and reopened afterwards, because Windows will not let a file that is in
+  /// use be overwritten.
+  Future<BackupInfo> restoreFrom(String zipPath) async {
+    final dir = _dataDirPath ?? await _resolveDataDir();
+    final info = await LocalBackup.inspect(zipPath); // refuses anything that is not ours
+    final staged = await Directory.systemTemp.createTemp('wo-restore');
+    try {
+      await LocalBackup.extract(zipPath: zipPath, destDir: staged.path);
+
+      final stamp = DateTime.now().toIso8601String().replaceAll(':', '-').substring(0, 19);
+      await _copyDir(Directory(dir), Directory('${dir}_before-restore_$stamp'));
+
+      // Close the store so the database file is not in use while it is replaced.
+      for (final s in _subs) {
+        await s.cancel();
+      }
+      _subs.clear();
+      final old = _repo;
+      _repo = null;
+      await old?.dispose();
+
+      await _replaceData(staged.path, dir);
+      return info;
+    } finally {
+      // Always leave the app with an open store: if replacing a file failed half-way, the old
+      // or partly replaced data is still opened rather than leaving every screen without one.
+      if (_repo == null) {
+        try {
+          await _openRepository();
+        } catch (_) {}
+      }
+      try {
+        await staged.delete(recursive: true);
+      } catch (_) {}
+    }
+  }
+
+  /// Copies the staged backup over the live data folder: database, settings and photos.
+  static Future<void> _replaceData(String from, String to) async {
+    final sep = Platform.pathSeparator;
+    final target = Directory(to);
+    if (!await target.exists()) await target.create(recursive: true);
+
+    // Start from a clean database: a leftover -wal/-shm from the old data would otherwise be
+    // applied on top of the restored file.
+    for (final name in const ['wo_tracker.db', 'wo_tracker.db-wal', 'wo_tracker.db-shm', 'shared_preferences.json']) {
+      final f = File('$to$sep$name');
+      if (await f.exists()) await f.delete();
+    }
+    for (final name in const ['wo_tracker.db', 'wo_tracker.db-wal', 'shared_preferences.json']) {
+      final src = File('$from$sep$name');
+      if (await src.exists()) await src.copy('$to$sep$name');
+    }
+
+    // Photos: the backup is the complete set, so anything not in it is removed.
+    final photos = Directory('$to${sep}photos');
+    if (await photos.exists()) await photos.delete(recursive: true);
+    final srcPhotos = Directory('$from${sep}photos');
+    if (await srcPhotos.exists()) await _copyDir(srcPhotos, photos);
+  }
+
+  /// Recursive copy of a folder (files and sub-folders).
+  static Future<void> _copyDir(Directory from, Directory to) async {
+    await to.create(recursive: true);
+    await for (final e in from.list(recursive: false, followLinks: false)) {
+      final name = e.path.substring(e.path.lastIndexOf(Platform.pathSeparator) + 1);
+      if (e is Directory) {
+        await _copyDir(e, Directory('${to.path}${Platform.pathSeparator}$name'));
+      } else if (e is File) {
+        await e.copy('${to.path}${Platform.pathSeparator}$name');
+      }
+    }
+  }
+
   Future<void> _openRepository() async {
     for (final s in _subs) {
       await s.cancel();
@@ -127,18 +306,25 @@ class AppState extends ChangeNotifier {
       if (demoMode) {
         next = MemoryRepository(DemoData.load(demoFile, today), segmentStepKeys: segmentStepKeys);
       } else {
-        final dir = await getApplicationSupportDirectory();
+        final dirPath = _dataDirPath ?? await _resolveDataDir();
+        _blog('opening repo: demoMode=$demoMode dir=$dirPath');
         next = await PowerSyncRepository.open(
-          path: '${dir.path}/wo_tracker.db',
+          path: '$dirPath/wo_tracker.db',
           config: syncConfig,
           segmentStepKeys: segmentStepKeysOf(rules),
-          photosDir: '${dir.path}/photos',
+          photosDir: '$dirPath/photos',
         );
+        _blog('repo opened, orders=${next.current.orders.length}');
       }
       startupError = null;
     } catch (e) {
+      _blog('repo FAILED: $e');
       startupError = '$e';
-      next = MemoryRepository(const []);
+      try {
+        File('${_dataDirPath ?? ''}${Platform.pathSeparator}boot-error.log').writeAsStringSync('$e\n');
+      } catch (_) {}      // Not demo mode: this is the database failing to open, so the Demo banner must not
+      // claim sample orders are showing (there are none).
+      next = MemoryRepository(const [], isDemo: false);
     }
     _repo = next;
     _evalCache.clear();
@@ -456,4 +642,42 @@ class AppState extends ChangeNotifier {
     selectedOrderId = id;
     notifyListeners();
   }
+}
+
+/// Thin wrapper over SharedPreferences so the rest of the app has one settings type.
+///
+/// SharedPreferences resolves its file through path_provider; [_AppPathProvider] makes that
+/// answer the folder the app already proved it can write to.
+class AppPrefs {
+  AppPrefs(this._prefs);
+  final SharedPreferences _prefs;
+
+  bool? getBool(String key) => _prefs.getBool(key);
+  String? getString(String key) => _prefs.getString(key);
+  Future<void> setBool(String key, bool value) => _prefs.setBool(key, value);
+  Future<void> setString(String key, String value) => _prefs.setString(key, value);
+}
+
+/// Answers path_provider with one known-good folder.
+///
+/// Installed once at start-up, before SharedPreferences opens its file. The Windows plugin
+/// would otherwise ask path_provider to create `%APPDATA%\<company>\<product>` and throw when
+/// that is not possible, which stops the app during start-up. Everything that asks
+/// path_provider afterwards gets the same answer, which is what we want: preferences, the
+/// database and photos all live in one folder.
+class _AppPathProvider extends PathProviderWindows {
+  _AppPathProvider(this.dir);
+  final String dir;
+
+  @override
+  Future<String?> getApplicationSupportPath() async => dir;
+
+  @override
+  Future<String?> getApplicationDocumentsPath() async => dir;
+
+  @override
+  Future<String?> getApplicationCachePath() async => dir;
+
+  @override
+  Future<String?> getTemporaryPath() async => dir;
 }

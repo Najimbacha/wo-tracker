@@ -25,8 +25,16 @@ dependencies:
   file_selector: ^1.0.3
   open_filex: ^4.5.0
   share_plus: ^13.3.1
+  # Local backup: the data folder written to (and read back from) one .zip file.
+  archive: ^4.5.2
   path_provider: ^2.1.5
+  # Lets the app tell path_provider which folder to use, so start-up does not fail when the
+  # Windows profile folder cannot be created.
+  path_provider_platform_interface: ^2.1.2
+  path_provider_windows: ^2.3.0
   shared_preferences: ^2.5.3
+  shared_preferences_platform_interface: ^2.4.0
+  shared_preferences_windows: ^2.4.1
 
 dev_dependencies:
   flutter_test:

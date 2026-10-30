@@ -8,7 +8,11 @@ import 'order_rows.dart';
 import 'repository.dart';
 
 class MemoryRepository extends Repository {
-  MemoryRepository(List<OrderInput> orders, {this.segmentStepKeys = const {}}) {
+  /// [isDemo] is true only for the sample orders shown by Demo mode. The app also uses
+  /// this class as the fallback when the real database cannot open (`app_state.dart`);
+  /// that one passes `isDemo: false`, so the Demo banner never claims a sample mode that
+  /// is not running.
+  MemoryRepository(List<OrderInput> orders, {this.segmentStepKeys = const {}, this.isDemo = true}) {
     final names = <String>{};
     for (final o in orders) {
       if (o.contractor != null && o.contractor!.trim().isNotEmpty) names.add(o.contractor!.trim());
@@ -34,7 +38,7 @@ class MemoryRepository extends Repository {
   final _sync = StreamController<SyncInfo>.broadcast();
 
   @override
-  bool get isDemo => true;
+  final bool isDemo;
   @override
   Stream<RepoData> get data => _controller.stream;
   @override
