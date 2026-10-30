@@ -1,10 +1,14 @@
 // Settings: language, alert timings, contractors, districts, cable sizes, the report
-// signature, sync (sign in), Demo mode and Data health.
+// signature, sync (sign in), local backup, Demo mode and Data health.
+import 'dart:io';
+
+import 'package:file_selector/file_selector.dart' as fs;
 import 'package:flutter/material.dart' hide Actions;
 import 'package:flutter/services.dart';
 
 import '../../app/app_state.dart';
 import '../../app/scope.dart';
+import '../../data/local_backup.dart';
 import '../../data/models.dart';
 import '../../data/powersync_repository.dart' show supabaseStarted;
 import '../../data/repository.dart';
@@ -50,16 +54,18 @@ class SettingsScreen extends StatelessWidget {
           ),
         ]),
       ),
+      const _BackupCard(),
     ];
     return LayoutBuilder(builder: (context, c) {
       final per = c.maxWidth >= 1100 ? 3 : (c.maxWidth >= 720 ? 2 : 1);
       // Cards stack in columns (each column as tall as its own cards), so a short card
       // never leaves a big empty gap beside a tall one.
-      // 0 sync, 1 language, 2 alerts, 3 contractors, 4 districts, 5 cables, 6 report, 7 data health
+      // 0 sync, 1 language, 2 alerts, 3 contractors, 4 districts, 5 cables, 6 report,
+      // 7 data health, 8 local backup
       final columns = switch (per) {
-        3 => const [[0, 3], [1, 4, 5, 6], [2, 7]],
-        2 => const [[0, 1, 3, 6], [2, 4, 5, 7]],
-        _ => const [[0, 1, 2, 3, 4, 5, 6, 7]],
+        3 => const [[0, 3], [1, 4, 5, 6], [2, 7, 8]],
+        2 => const [[0, 1, 3, 6], [2, 4, 5, 7, 8]],
+        _ => const [[0, 1, 2, 3, 4, 5, 6, 7, 8]],
       };
       Widget column(List<int> ids) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             for (var i = 0; i < ids.length; i++) ...[if (i > 0) const SizedBox(height: 16), cards[ids[i]]],
@@ -89,6 +95,107 @@ Future<void> exportEverything(BuildContext context) async {
     if (saved != null && !saved.shared) app.showToast(app.s.t('toast.fileSaved', {'path': saved.path}));
   } catch (e) {
     app.showToast(app.s.t('toast.exportFailed', {'reason': fileErrorReason(e, app.s.t)}), error: true);
+  }
+}
+
+/// Local backup: the whole data folder (orders, photos, settings) saved as one .zip file the
+/// user keeps wherever they like, and restored from it. Separate from the nightly cloud backup.
+class _BackupCard extends StatefulWidget {
+  const _BackupCard();
+  @override
+  State<_BackupCard> createState() => _BackupCardState();
+}
+
+class _BackupCardState extends State<_BackupCard> {
+  bool _busy = false;
+
+  Future<void> _backupNow() async {
+    final app = context.appRead;
+    final s = app.s;
+    final loc = await fs.getSaveLocation(
+      suggestedName: LocalBackup.fileNameFor(DateTime.now()),
+      acceptedTypeGroups: [fs.XTypeGroup(label: 'Backup', extensions: const ['zip'])],
+    );
+    if (loc == null) return;
+    var path = loc.path;
+    if (!path.toLowerCase().endsWith('.zip')) path = '$path.zip';
+    setState(() => _busy = true);
+    try {
+      final info = await app.backupTo(path);
+      await app.prefs.setString('lastLocalBackup', info.createdAt);
+      app.showToast(s.t('backup.saved', {'path': path}));
+    } catch (e) {
+      app.showToast(s.t('toast.exportFailed', {'reason': fileErrorReason(e, s.t)}), error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _restoreNow() async {
+    final app = context.appRead;
+    final s = app.s;
+    final picked = await fs.openFile(acceptedTypeGroups: [fs.XTypeGroup(label: 'Backup', extensions: const ['zip'])]);
+    if (picked == null) return;
+    BackupInfo info;
+    try {
+      info = await LocalBackup.inspect(picked.path);
+    } on BackupException {
+      app.showToast(s.t('backup.notBackup'), error: true);
+      return;
+    }
+    if (!mounted) return;
+    String when(BackupInfo i) => i.createdAt.length >= 10 ? s.date(i.createdAt.substring(0, 10)) : i.createdAt;
+    final ok = await confirmDialog(
+      context,
+      title: s.t('backup.restoreTitle'),
+      body: s.t('backup.restoreBody', {'when': when(info), 'orders': info.orders ?? '–', 'photos': info.photos}),
+      confirm: s.t('settings.restoreBackup'),
+      danger: true,
+    );
+    if (!ok || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      final restored = await app.restoreFrom(picked.path);
+      app.showToast(s.t('backup.restored', {'orders': restored.orders ?? '–', 'photos': restored.photos}));
+    } on BackupException {
+      app.showToast(s.t('backup.notBackup'), error: true);
+    } catch (e) {
+      app.showToast(s.t('toast.exportFailed', {'reason': '$e'}), error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final s = app.s;
+    final last = app.prefs.getString('lastLocalBackup');
+    final lastText = last == null
+        ? s.t('settings.noBackupYet')
+        : s.t('settings.lastBackup', {'when': last.length >= 10 ? s.date(last.substring(0, 10)) : last});
+    return SectionCard(
+      title: s.t('settings.backup'),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(s.t('settings.backupNote'), style: TextStyle(color: C.muted, fontSize: 13)),
+        const SizedBox(height: 6),
+        Text(lastText, style: TextStyle(color: C.faint, fontSize: 12)),
+        const SizedBox(height: 10),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          FilledButton.icon(
+            onPressed: _busy ? null : _backupNow,
+            icon: const Icon(Icons.save_alt_outlined, size: 18),
+            label: Text(s.t('settings.backupNow')),
+          ),
+          OutlinedButton.icon(
+            onPressed: _busy ? null : _restoreNow,
+            icon: const Icon(Icons.settings_backup_restore_outlined, size: 18),
+            label: Text(s.t('settings.restoreBackup')),
+          ),
+        ]),
+        if (_busy) const Padding(padding: EdgeInsets.only(top: 12), child: LinearProgressIndicator()),
+      ]),
+    );
   }
 }
 
