@@ -28,6 +28,8 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
     if (!app.data.loaded) return const DelayedLoader();
     final list = app.memo('followUp', () => app.insights.followUp(app.orders, app.today, alertSettings: app.alertSettings));
     if (list.isEmpty) return EmptyState(icon: Icons.groups_outlined, title: s.t('followUp.empty'));
+    // One contractor: there is nothing to pick, so the whole width belongs to the detail.
+    if (list.length == 1) return _Detail(key: ValueKey(list.first.contractor), con: list.first, standalone: true);
     final cur = list.firstWhere((c) => c.contractor == _selected, orElse: () => list.first);
     final wide = isWide(context);
     final side = ListView(children: [
@@ -91,8 +93,11 @@ class _DetailPage extends StatelessWidget {
 String _name(Strings s, String c) => c == unassignedContractor ? s.t('common.unassigned') : c;
 
 class _Detail extends StatefulWidget {
-  const _Detail({super.key, required this.con});
+  const _Detail({super.key, required this.con, this.standalone = false});
   final ContractorFollowUp con;
+
+  /// True when this detail is the whole screen (one contractor, so no picker to the left).
+  final bool standalone;
   @override
   State<_Detail> createState() => _DetailState();
 }
@@ -102,6 +107,11 @@ class _DetailState extends State<_Detail> {
   ContractorFollowUp get con => widget.con;
   void onLang(String l) => setState(() => lang = l);
 
+  /// Groups that are the engineer's own work: the Kashfeya survey and the tasreeh paperwork.
+  /// The Plan screen owns those; Follow-up carries only what the contractor owes, so the two
+  /// screens never list the same orders.
+  static bool _theirWork(String group) => group != 'paperwork';
+
   /// The message for the contractor, in [l].
   static String message(AppState app, ContractorFollowUp c, String l) {
     final s = app.stringsFor(l);
@@ -109,7 +119,7 @@ class _DetailState extends State<_Detail> {
       ..writeln(s.t('followUp.msgTitle', {'contractor': _name(s, c.contractor), 'date': s.date(app.today)}))
       ..writeln(s.t('followUp.msgFrom', {'name': app.data.settings.preparedBy}))
       ..writeln();
-    for (final g in c.sortedGroups) {
+    for (final g in c.sortedGroups.where((g) => _theirWork(g.group))) {
       b.writeln('${s.t('followUp.group.${g.group}')} (${g.items.length})');
       b.writeln(g.items.map((i) => i.woNumber ?? '').join(' · '));
       b.writeln();
@@ -122,16 +132,50 @@ class _DetailState extends State<_Detail> {
     final app = context.app;
     final s = app.s;
     final last = _lastFollowUp(app, con.contractor);
+    // Where this contractor's open orders stand: the whole picture in one line, so the
+    // screen can be understood without reading every row.
+    final stages = <String, int>{};
+    for (final o in app.orders) {
+      if (o.deleted || (o.contractor ?? '') != con.contractor) continue;
+      final ev = app.evaluate(o);
+      if (ev.status != 'open' && ev.status != 'on_hold') continue;
+      final st = ev.stage;
+      if (st != null) stages[st] = (stages[st] ?? 0) + 1;
+    }
     return ListView(padding: const EdgeInsets.all(16), children: [
+      if (widget.standalone) ...[
+        Text(s.t('followUp.oneTitle'), style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 4),
+      ],
       Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, runSpacing: 8, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(_name(s, con.contractor), style: Theme.of(context).textTheme.titleLarge),
-          Text(s.t('followUp.inProgress', {'count': con.orders}), style: TextStyle(color: C.muted)),
+          Text(
+            _name(s, con.contractor),
+            style: widget.standalone
+                ? const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)
+                : Theme.of(context).textTheme.titleLarge,
+          ),
+          Wrap(spacing: 10, children: [
+            Text(s.t('followUp.inProgress', {'count': con.orders}), style: TextStyle(color: C.muted)),
+            if (con.late > 0) Text(s.t('followUp.late', {'count': con.late}), style: TextStyle(color: C.critical, fontWeight: FontWeight.w600)),
+          ]),
         ]),
         if (last != null) Text(s.t('followUp.lastFollowedUp', {'when': last}), style: TextStyle(color: C.faint, fontSize: 12.5)),
       ]),
+      if (stages.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        Text(s.t('followUp.where'), style: TextStyle(color: C.faint, fontSize: 12)),
+        const SizedBox(height: 5),
+        Wrap(spacing: 8, runSpacing: 6, children: [
+          for (final k in (stages.keys.toList()..sort())) Pill('${s.stage(k)} · ${stages[k]}', color: stageColor(k), background: C.chip),
+        ]),
+      ],
       const SizedBox(height: 16),
-      for (final g in con.sortedGroups) ...[
+      // Only the contractor's own work: the engineer's steps live on the Plan screen.
+      if (con.sortedGroups.every((g) => !_theirWork(g.group)))
+        EmptyState(icon: Icons.task_alt, title: s.t('followUp.chaseEmptyTitle'), body: s.t('followUp.chaseEmptyBody'))
+      else
+      for (final g in con.sortedGroups.where((g) => _theirWork(g.group))) ...[
         SectionCard(
           title: s.t('followUp.group.${g.group}'),
           trailing: g.severity == null

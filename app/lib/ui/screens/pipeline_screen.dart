@@ -12,6 +12,11 @@ import '../nav.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
+/// The steps the engineer does personally: the Kashfeya survey and the tasreeh paperwork.
+/// Everything else is carried out by the contractor and belongs to the Follow-up screen, so
+/// the two screens never list the same orders.
+const Set<String> _mySteps = {'kashfeya', 'tasreeh_applied'};
+
 /// One order and the steps it is ready to start, with the longest wait on any of them.
 class _Ready {
   const _Ready(this.order, this.steps, this.days);
@@ -35,19 +40,29 @@ class _PipelineScreenState extends State<PipelineScreen> {
     final s = app.s;
     if (!app.data.loaded) return const DelayedLoader();
 
-    // Every order that can be started now, with the steps open to it.
+    // Every order with a step of YOUR work ready to start, and the steps open to it.
     final rows = <_Ready>[];
+    var waitingOnContractor = 0;
     for (final x in app.evaluated) {
       if (x.ev.status != 'open' && x.ev.status != 'on_hold') continue;
       final keys = <String>[];
       var days = 0;
+      var theirs = false;
       for (final st in x.ev.steps) {
         if (st.state != 'ready') continue;
+        if (!_mySteps.contains(st.step.key)) {
+          theirs = true;
+          continue;
+        }
         if (!keys.contains(st.step.key)) keys.add(st.step.key);
         final d = app.insights.daysWaiting(x.order, x.ev, st.id, app.today);
         if (d > days) days = d;
       }
-      if (keys.isNotEmpty) rows.add(_Ready(x.order, keys, days));
+      if (keys.isNotEmpty) {
+        rows.add(_Ready(x.order, keys, days));
+      } else if (theirs) {
+        waitingOnContractor++;
+      }
     }
 
     // How many orders each kind of work would cover: the size of each batch.
@@ -91,7 +106,13 @@ class _PipelineScreenState extends State<PipelineScreen> {
       ]),
       const SizedBox(height: 12),
       if (rows.isEmpty)
-        EmptyState(icon: Icons.check_circle_outline, title: s.t('plan.emptyTitle'), body: s.t('plan.emptyBody'))
+        waitingOnContractor > 0
+            ? EmptyState(
+                icon: Icons.engineering_outlined,
+                title: s.t('plan.emptyMineTitle'),
+                body: s.t('plan.emptyMineBody', {'count': waitingOnContractor}),
+              )
+            : EmptyState(icon: Icons.check_circle_outline, title: s.t('plan.emptyTitle'), body: s.t('plan.emptyBody'))
       else ...[
         // One chip per kind of work, biggest batch first. Tapping narrows the list below.
         Wrap(spacing: 8, runSpacing: 8, children: [
