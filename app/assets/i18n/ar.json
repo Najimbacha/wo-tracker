@@ -340,7 +340,7 @@
   "pipeline.title": "الخطة",
   "plan.hint": "مجموعة حسب الحي: يمكن إنجاز عدة أوامر في جولة واحدة.",
   "plan.emptyBody": "يظهر الأمر هنا بمجرد إنجاز الخطوة التي قبله.",
-  "followUp.chaseEmptyBody": "يظهر عملهم هنا بعد إنجاز الكشفية والتصريح من جهتك.",
+  "followUp.chaseEmptyBody": "يظهر عملهم هنا بعد إنجاز الكشفية من جهتك.",
   "followUp.chaseEmptyTitle": "لا يوجد عمل بانتظار المقاول.",
   "plan.emptyMineBody": "{count} أمراً بانتظار المقاول — افتح المتابعة.",
   "plan.emptyMineTitle": "لا يوجد عمل جاهز من جهتك.",

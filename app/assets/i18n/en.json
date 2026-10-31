@@ -340,7 +340,7 @@
   "pipeline.title": "Plan",
   "plan.hint": "Grouped by district: one trip can do several orders.",
   "plan.emptyBody": "An order appears here as soon as the step before it is done.",
-  "followUp.chaseEmptyBody": "Their work shows here once Kashfeya and tasreeh are done on your side.",
+  "followUp.chaseEmptyBody": "Their work shows here once the Kashfeya survey is done on your side.",
   "followUp.chaseEmptyTitle": "Nothing is waiting on the contractor.",
   "plan.emptyMineBody": "{count} orders are waiting on the contractor — open Follow-up.",
   "plan.emptyMineTitle": "Nothing is ready on your side.",

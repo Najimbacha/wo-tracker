@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../app/app_state.dart';
 import '../../app/scope.dart';
 import '../../domain/insights.dart';
+import '../../domain/work_owner.dart';
 import '../../i18n/strings.dart';
 import '../../report/files.dart';
 import '../nav.dart';
@@ -107,10 +108,23 @@ class _DetailState extends State<_Detail> {
   ContractorFollowUp get con => widget.con;
   void onLang(String l) => setState(() => lang = l);
 
-  /// Groups that are the engineer's own work: the Kashfeya survey and the tasreeh paperwork.
-  /// The Plan screen owns those; Follow-up carries only what the contractor owes, so the two
-  /// screens never list the same orders.
-  static bool _theirWork(String group) => group != 'paperwork';
+  /// The contractor's side of each group: only the orders that still have a step for THEM.
+  /// The engineer's steps (Kashfeya, SEC close-out forms) are on the Plan screen, so they are
+  /// left out here and the two screens never list the same order. Groups left empty disappear.
+  static List<FollowUpGroup> theirGroups(ContractorFollowUp c) {
+    int rank(String? s) => s == 'critical' ? 2 : (s == 'warning' ? 1 : 0);
+    final out = <FollowUpGroup>[];
+    for (final g in c.sortedGroups) {
+      final items = [for (final i in g.items) if (i.steps.any((id) => !isEngineerStep(id))) i];
+      if (items.isEmpty) continue;
+      final fg = FollowUpGroup(g.group);
+      // Recompute the group's severity from what is left, not from what was dropped.
+      fg.severity = items.map((i) => i.severity).reduce((a, b) => rank(a) >= rank(b) ? a : b);
+      fg.items.addAll(items);
+      out.add(fg);
+    }
+    return out;
+  }
 
   /// The message for the contractor, in [l].
   static String message(AppState app, ContractorFollowUp c, String l) {
@@ -119,9 +133,9 @@ class _DetailState extends State<_Detail> {
       ..writeln(s.t('followUp.msgTitle', {'contractor': _name(s, c.contractor), 'date': s.date(app.today)}))
       ..writeln(s.t('followUp.msgFrom', {'name': app.data.settings.preparedBy}))
       ..writeln();
-    for (final g in c.sortedGroups.where((g) => _theirWork(g.group))) {
+    for (final g in theirGroups(c)) {
       b.writeln('${s.t('followUp.group.${g.group}')} (${g.items.length})');
-      b.writeln(g.items.map((i) => i.woNumber ?? '').join(' · '));
+      b.writeln(g.items.map((i) => i.woNumber ?? '').join(' Â· '));
       b.writeln();
     }
     return b.toString().trim();
@@ -167,15 +181,15 @@ class _DetailState extends State<_Detail> {
         Text(s.t('followUp.where'), style: TextStyle(color: C.faint, fontSize: 12)),
         const SizedBox(height: 5),
         Wrap(spacing: 8, runSpacing: 6, children: [
-          for (final k in (stages.keys.toList()..sort())) Pill('${s.stage(k)} · ${stages[k]}', color: stageColor(k), background: C.chip),
+          for (final k in (stages.keys.toList()..sort())) Pill('${s.stage(k)} Â· ${stages[k]}', color: stageColor(k), background: C.chip),
         ]),
       ],
       const SizedBox(height: 16),
       // Only the contractor's own work: the engineer's steps live on the Plan screen.
-      if (con.sortedGroups.every((g) => !_theirWork(g.group)))
+      if (theirGroups(con).isEmpty)
         EmptyState(icon: Icons.task_alt, title: s.t('followUp.chaseEmptyTitle'), body: s.t('followUp.chaseEmptyBody'))
       else
-      for (final g in con.sortedGroups.where((g) => _theirWork(g.group))) ...[
+      for (final g in theirGroups(con)) ...[
         SectionCard(
           title: s.t('followUp.group.${g.group}'),
           trailing: g.severity == null
@@ -199,7 +213,7 @@ class _DetailState extends State<_Detail> {
                     app.orderById(i.id)!.district,
                     i.steps.map((x) => s.step(x.split('@').first)).toSet().join(', '),
                     if (i.startsOn != null) s.t('board.startsOn', {'date': app.dateShort(i.startsOn!)}),
-                  ].whereType<String>().where((x) => x.isNotEmpty).join(' · '),
+                  ].whereType<String>().where((x) => x.isNotEmpty).join(' Â· '),
                   trailing: i.startsOn == null ? Mono(s.t('common.daysShort', {'count': i.daysWaiting}), size: 11.5, color: i.severity == null ? C.faint : severityColor(i.severity)) : null,
                 ),
           ]),
@@ -210,7 +224,7 @@ class _DetailState extends State<_Detail> {
         title: s.t('followUp.send'),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           SegmentedButton<String>(
-            segments: const [ButtonSegment(value: 'en', label: Text('English')), ButtonSegment(value: 'ar', label: Text('العربية'))],
+            segments: const [ButtonSegment(value: 'en', label: Text('English')), ButtonSegment(value: 'ar', label: Text('Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'))],
             selected: {lang},
             onSelectionChanged: (v) => onLang(v.first),
           ),

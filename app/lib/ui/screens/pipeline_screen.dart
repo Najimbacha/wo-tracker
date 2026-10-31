@@ -8,14 +8,13 @@ import 'package:flutter/material.dart' hide Actions;
 
 import '../../app/scope.dart';
 import '../../domain/order_input.dart';
+import '../../domain/work_owner.dart';
 import '../nav.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
-/// The steps the engineer does personally: the Kashfeya survey and the tasreeh paperwork.
-/// Everything else is carried out by the contractor and belongs to the Follow-up screen, so
-/// the two screens never list the same orders.
-const Set<String> _mySteps = {'kashfeya', 'tasreeh_applied'};
+// Which steps are the engineer's own is defined in domain/work_owner.dart, so this screen and
+// Follow-up cannot disagree about who does what.
 
 /// One order and the steps it is ready to start, with the longest wait on any of them.
 class _Ready {
@@ -50,7 +49,7 @@ class _PipelineScreenState extends State<PipelineScreen> {
       var theirs = false;
       for (final st in x.ev.steps) {
         if (st.state != 'ready') continue;
-        if (!_mySteps.contains(st.step.key)) {
+        if (!isEngineerStep(st.step.key)) {
           theirs = true;
           continue;
         }
