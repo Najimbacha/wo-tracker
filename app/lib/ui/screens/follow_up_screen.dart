@@ -135,8 +135,14 @@ class _DetailState extends State<_Detail> {
         SectionCard(
           title: s.t('followUp.group.${g.group}'),
           trailing: g.severity == null
-              ? Mono('${g.items.length}', color: C.muted)
-              : Pill(s.t('followUp.late', {'count': g.items.where((i) => i.severity != null).length}), color: severityColor(g.severity), background: g.severity == 'critical' ? C.criticalSoft : C.warningSoft),
+              ? Mono(s.t('followUp.groupOrders', {'count': g.items.length}), size: 12, color: C.muted)
+              // The badge counts the orders in THIS group. One order can be in two groups (it has
+              // ready steps in each), so these badges never add up to the contractor's late count.
+              : Row(mainAxisSize: MainAxisSize.min, children: [
+                  Mono(s.t('followUp.groupOrders', {'count': g.items.length}), size: 12, color: C.muted),
+                  const SizedBox(width: 6),
+                  Pill(s.t('followUp.late', {'count': g.items.where((i) => i.severity != null).length}), color: severityColor(g.severity), background: g.severity == 'critical' ? C.criticalSoft : C.warningSoft),
+                ]),
           padding: const EdgeInsets.fromLTRB(8, 14, 8, 8),
           child: Column(children: [
             for (final i in g.items)

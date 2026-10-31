@@ -81,10 +81,6 @@ class _BoardScreenState extends State<BoardScreen> {
                 );
               }),
       ),
-      Padding(
-        padding: EdgeInsets.fromLTRB(pad, 0, pad, 14),
-        child: Text(s.t('board.footer'), style: TextStyle(fontSize: 12.5, color: C.faint)),
-      ),
     ]);
   }
 }
@@ -249,10 +245,16 @@ class _Card extends StatelessWidget {
     if (c.onHold) return Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft);
     if (c.startsOn != null) return const SizedBox.shrink();
     final text = c.daysWaiting <= 0 ? s.t('board.waitingNew') : s.t('board.waitingDays', {'count': c.daysWaiting});
-    if (c.severity == 'critical') return Pill(text, color: C.critical, background: C.criticalSoft);
-    if (c.severity == 'warning') return Pill(text, color: C.warning, background: C.warningSoft);
-    if (c.daysWaiting <= 0) return Pill(text, color: C.accentDark, background: C.accentSoft);
-    return Pill(text);
+    final Widget pill = c.severity == 'critical'
+        ? Pill(text, color: C.critical, background: C.criticalSoft)
+        : c.severity == 'warning'
+            ? Pill(text, color: C.warning, background: C.warningSoft)
+            : c.daysWaiting <= 0
+                ? Pill(text, color: C.accentDark, background: C.accentSoft)
+                : Pill(text);
+    // The number is days since the last completed step; Today's alerts count from when the
+    // step started. The tooltip names the difference so the two never look contradictory.
+    return Tooltip(message: s.t('board.waitingTip'), child: pill);
   }
 }
 

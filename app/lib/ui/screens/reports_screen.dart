@@ -172,8 +172,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
         label: Text(s.t('report.saveImage')),
       ),
       if (_busy) const Padding(padding: EdgeInsets.only(top: 14), child: LinearProgressIndicator()),
-      const SizedBox(height: 16),
-      Text(s.t('report.preparedByNote', {'name': app.data.settings.preparedBy}), style: TextStyle(color: C.faint, fontSize: 12)),
     ]);
     final preview = FutureBuilder<Uint8List>(
       future: _pdf,
