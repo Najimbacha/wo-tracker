@@ -131,25 +131,20 @@ class _Queue extends StatelessWidget {
               trailing: Text(d.date == app.today ? s.t('today.startsToday') : s.t('board.startsOn', {'date': '${s.weekday(d.date)} ${app.dateShort(d.date)}'}),
                   maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: C.muted)),
             ),
-      for (final col in board)
-        if (col.cards.isNotEmpty && col.stage != 'starting') ...[
-          _Head(
-            title: s.t('today.stage.${col.stage}'),
-            count: col.cards.length,
-            onTap: () => app.go('board'),
+      // Every open order, by stage, belongs to the Board screen. This used to repeat the first
+      // four cards of each stage here, which meant two screens showed the same list.
+      if (board.any((c) => c.cards.isNotEmpty && c.stage != 'starting'))
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 8, top: 10),
+            child: TextButton.icon(
+              onPressed: () => app.go('board'),
+              icon: const Icon(Icons.view_kanban_outlined, size: 18),
+              label: Text(s.t('today.openBoard', {'count': active.length})),
+            ),
           ),
-          for (final c in col.cards.take(4))
-            if (app.orderById(c.id) != null)
-              OrderTile(
-                order: app.orderById(c.id)!,
-                selected: c.id == selected,
-                dense: true,
-                onTap: () => openOrder(context, c.id),
-                subtitle: [c.district, c.nextKey == null ? null : s.t('order.nextStep', {'step': s.todo(c.nextKey!)})].whereType<String>().join(' · '),
-                trailing: c.onHold ? Pill(s.status('on_hold'), color: C.warning, background: C.warningSoft) : Mono(s.t('common.daysShort', {'count': c.daysWaiting}), size: 11.5, color: C.faint),
-              ),
-          if (col.cards.length > 4) _More(count: col.cards.length - 4, onTap: () => app.go('board')),
-        ],
+        ),
       const SizedBox(height: 80),
     ];
     return ListView(children: children);
